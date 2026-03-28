@@ -110,18 +110,7 @@ Open flags: [N critical] | Tasks with no due date: [N]
 
 ### 5.3 — Receivables Priority (March 2026)
 
-| Client | Amount | Priority |
-|---|---|---|
-| Secure — Bharat Electricity Show | ₹23,01,000 | #1 URGENT |
-| TOTO | ₹5,79,478 | #2 |
-| Elliott Ebara (LNG '26 Doha) | ₹5,71,215 | #3 — Settlement agreed: $11,074 to be paid, $3,225 written off |
-| Labguard — CPhI | ₹5,22,169 | #4 |
-| Spectrum | ₹1,69,000 | #5 |
-| **Total** | **₹41,42,862** | |
-
-**Payment terms (standard):** 90% on execution of agreement. 10% on handover.
-**Cash lag:** Payment typically received 30–60 days after project completion.
-**Indian corporate tax:** Effective rate 26% (25% + 4% cess). Tracked separately by Sonal. No current liability at confirmed pipeline levels. Advance tax schedule: 15 Jun (15%), 15 Sep (45%), 15 Dec (75%), 15 Mar (100%).
+→ **See A_Archives.md Section 5.3** for the authoritative receivables table and payment terms. Do not duplicate here.
 
 ---
 ## SECTION 17 — STANDING COMMANDS

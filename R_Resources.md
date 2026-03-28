@@ -2,6 +2,28 @@
 # Load this when: prospecting, outbound campaigns, new client evaluation, sector research
 # Last updated: [date]
 
+## SECTION 2 — COMPANY PROFILE
+
+| Parameter | Value |
+|---|---|
+| Company | First Rain Exhibits India Pvt. Ltd. |
+| Founded | 2005 (20 years in business) |
+| Headquarters | Unit 115, Lodha Supremus II, Wagle Estate, Mumbai |
+| GSTIN | 27AAACF8868Q1ZO |
+| Email | accounts@firstrain.co.in |
+| Team size | 10 people (fully remote) |
+
+**What the company does:**
+Full turnkey exhibition stall design and build. Every engagement is custom — no modular kits, no rate cards. Each quote is built from scratch based on client brief, stall size, geography, and complexity.
+
+**Service scope includes:** Concept & spatial design · Fabrication & build · Graphics & signage · Furniture & AV · Electricals & lighting · Transportation, installation & dismantling
+
+**Explicitly excluded from scope (always):** Product installation, electrical consumption charges, organiser deposits/bonds, hostesses, catering, internet, consumables, anything not explicitly stated in the quote.
+
+**Geographies served:** Pan-India + International (Global)
+
+---
+
 ## SECTION 4 — IDEAL CLIENT PROFILE (ICP)
 
 Every lead entering the system — inbound or outbound — is scored against this definition before it touches Dhruv or Chinmay's time.
