@@ -24,7 +24,9 @@
       "Bash(open -a TextEdit /Users/monicadebnath/Desktop/FirstRain-Brain/sync_memory.sh)",
       "Bash(chmod +x ~/Desktop/FirstRain-Brain/sync_memory.sh)",
       "Bash(./sync_memory.sh)",
-      "Bash(open -a TextEdit ~/Desktop/FirstRain-Brain/sync_memory.sh)"
+      "Bash(open -a TextEdit ~/Desktop/FirstRain-Brain/sync_memory.sh)",
+      "Bash(open -a TextEdit ~/.zshrc)",
+      "Bash(source ~/.zshrc)"
     ]
   }
 }
