@@ -20,7 +20,11 @@
       "Bash(open -a TextEdit /Users/monicadebnath/Desktop/FirstRain-Brain/.claude/commands/end.md)",
       "Bash(open -a TextEdit /Users/monicadebnath/Desktop/FirstRain-Brain/.claude/commands/monday.md)",
       "Bash(touch /Users/monicadebnath/Desktop/FirstRain-Brain/.claude/commands/production.md)",
-      "Bash(open -a TextEdit /Users/monicadebnath/Desktop/FirstRain-Brain/.claude/commands/production.md)"
+      "Bash(open -a TextEdit /Users/monicadebnath/Desktop/FirstRain-Brain/.claude/commands/production.md)",
+      "Bash(open -a TextEdit /Users/monicadebnath/Desktop/FirstRain-Brain/sync_memory.sh)",
+      "Bash(chmod +x ~/Desktop/FirstRain-Brain/sync_memory.sh)",
+      "Bash(./sync_memory.sh)",
+      "Bash(open -a TextEdit ~/Desktop/FirstRain-Brain/sync_memory.sh)"
     ]
   }
 }
