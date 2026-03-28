@@ -21,7 +21,7 @@
 |---|---|---|
 | Secure — Bharat Electricity Show | ₹23,01,000 | #1 URGENT — not yet collected |
 | TOTO | ₹5,79,478 | #2 — chase active |
-| Elliott Ebara (Doha) | ₹5,71,215 | #3 — settlement agreed: $11,074 to be paid, $3,225 written off |
+| Elliott Ebara (Doha) | ₹10,50,879.88 | #3 — payment agreed ₹10,50,879.88. Expected receipt 2–7 May 2026 (35–40 days from 28 Mar). |
 | Labguard — CPhI | ₹5,22,169 | #4 |
 | Spectrum | ₹1,69,000 | #5 |
 
@@ -96,6 +96,8 @@
 | MEMORY.md | ✅ Created 28 Mar 2026 |
 | /start command | ✅ Built 28 Mar 2026 |
 | /end command | ✅ Built 28 Mar 2026 |
+| /monday command | ✅ Built 28 Mar 2026 |
+| /production command | ✅ Built 28 Mar 2026 |
 | agent_margin.md | ⬜ Not yet built |
 | agent_production.md | ⬜ Not yet built |
 | agent_cfo.md | ⬜ Not yet built |
@@ -107,6 +109,14 @@
 ---
 
 ## 📝 RUNNING LOG — Updates go here, newest first
+
+### 28 Mar 2026 — Session 4
+- Elliott Ebara receivable updated: ₹10,50,879.88 agreed, expected 2–7 May 2026
+- /monday command trimmed and working (max 6 tool calls)
+- /production command built and tested — full Notion task breakdown working
+- sync_memory.sh fixed — now commits via git (old API-based version was broken)
+- Two Anthropic API keys exposed in conversation — both must be rotated at console.anthropic.com
+- .zshrc created on Mac
 
 ### 28 Mar 2026 — Session 3
 - /start briefing run — memory loaded and reviewed
