@@ -7,7 +7,11 @@
       "Bash(open -a TextEdit /Users/monicadebnath/Desktop/FirstRain-Brain/P_Projects.md)",
       "Bash(open -a TextEdit /Users/monicadebnath/Desktop/FirstRain-Brain/A_Areas.md)",
       "Bash(open -a TextEdit /Users/monicadebnath/Desktop/FirstRain-Brain/R_Resources.md)",
-      "Bash(open -a TextEdit /Users/monicadebnath/Desktop/FirstRain-Brain/A_Archives.md)"
+      "Bash(open -a TextEdit /Users/monicadebnath/Desktop/FirstRain-Brain/A_Archives.md)",
+      "Bash(claude mcp:*)",
+      "Skill(update-config)",
+      "Skill(update-config:*)",
+      "Bash(open -a TextEdit /Users/monicadebnath/.claude/projects/-Users-monicadebnath-Desktop-FirstRain-Brain/memory/MEMORY.md)"
     ]
   }
 }
