@@ -19,11 +19,12 @@
 
 | Client | Amount | Status |
 |---|---|---|
-| Secure — Bharat Electricity Show | ₹23,01,000 | #1 URGENT — not yet collected |
-| TOTO | ₹5,79,478 | #2 — chase active |
-| Elliott Ebara (Doha) | ₹10,50,879.88 | #3 — payment agreed ₹10,50,879.88. Expected receipt 2–7 May 2026 (35–40 days from 28 Mar). |
-| Labguard — CPhI | ₹5,22,169 | #4 |
-| Spectrum | ₹1,69,000 | #5 |
+| Secure — Bharat Electricity Show | ₹5,81,100 | #1 — Mar-26. ₹17,19,900 received. Balance outstanding. |
+| TOTO | ₹5,79,478 | #2 — Mar-26 — chase active |
+| Elliott Ebara (LNG) | ₹12,77,535 | #3 — Mar-26. Payment expected 2–7 May 2026. |
+| Mosil | ₹1,77,000 | #4 — Apr-26 |
+| Messung | ₹4,34,700 | #5 — Apr-26 |
+| **Total outstanding** | **₹30,49,813** | |
 
 ---
 
@@ -46,6 +47,7 @@
 | Amaara | Blended 33% commitment FY27. | Europe May'26 exception at 17.6% already approved. Every subsequent Amaara quote must clear 33%. |
 | Elliott Ebara | Verbal = Existing Confirmed only. | Closed Won requires PO. Never treat verbal as revenue. |
 | Gerresheimer | Highest margin client at 71%. | Protect rate at all costs. Never discount. |
+| Labguard | Analytica 2026. Old CPhI receivable cleared. | Quote submitted ₹13,80,000 + 18% GST = ₹16,28,400 total. Awaiting PO. |
 
 ---
 
@@ -109,6 +111,15 @@
 ---
 
 ## 📝 RUNNING LOG — Updates go here, newest first
+
+### 28 Mar 2026 — Session 5
+- Receivables updated from live MIS data (screenshot)
+- Secure: ₹17,19,900 received — balance ₹5,81,100 remaining
+- Spectrum: fully collected — removed from receivables
+- Labguard: old CPhI receivable cleared — new Analytica 2026 quote ₹16,28,400 (inc. GST) submitted, awaiting PO
+- Elliott Ebara relabelled to LNG project — ₹12,77,535, expected 2–7 May 2026
+- Mosil ₹1,77,000 and Messung ₹4,34,700 added as new project receivables (Apr-26)
+- Total outstanding receivables: ₹30,49,813
 
 ### 28 Mar 2026 — Session 4
 - Elliott Ebara receivable updated: ₹10,50,879.88 agreed, expected 2–7 May 2026
