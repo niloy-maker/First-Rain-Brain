@@ -11,7 +11,11 @@
       "Bash(claude mcp:*)",
       "Skill(update-config)",
       "Skill(update-config:*)",
-      "Bash(open -a TextEdit /Users/monicadebnath/.claude/projects/-Users-monicadebnath-Desktop-FirstRain-Brain/memory/MEMORY.md)"
+      "Bash(open -a TextEdit /Users/monicadebnath/.claude/projects/-Users-monicadebnath-Desktop-FirstRain-Brain/memory/MEMORY.md)",
+      "Bash(git -C /Users/monicadebnath/Desktop/FirstRain-Brain status)",
+      "Bash(git -C /Users/monicadebnath/Desktop/FirstRain-Brain diff)",
+      "Bash(git -C /Users/monicadebnath/Desktop/FirstRain-Brain add .claude/settings.local.json)",
+      "Bash(git -C:*)"
     ]
   }
 }
