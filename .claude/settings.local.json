@@ -18,7 +18,9 @@
       "Bash(git -C:*)",
       "Bash(open -a TextEdit /Users/monicadebnath/Desktop/FirstRain-Brain/.claude/commands/start.md)",
       "Bash(open -a TextEdit /Users/monicadebnath/Desktop/FirstRain-Brain/.claude/commands/end.md)",
-      "Bash(open -a TextEdit /Users/monicadebnath/Desktop/FirstRain-Brain/.claude/commands/monday.md)"
+      "Bash(open -a TextEdit /Users/monicadebnath/Desktop/FirstRain-Brain/.claude/commands/monday.md)",
+      "Bash(touch /Users/monicadebnath/Desktop/FirstRain-Brain/.claude/commands/production.md)",
+      "Bash(open -a TextEdit /Users/monicadebnath/Desktop/FirstRain-Brain/.claude/commands/production.md)"
     ]
   }
 }
