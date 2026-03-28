@@ -15,7 +15,9 @@
       "Bash(git -C /Users/monicadebnath/Desktop/FirstRain-Brain status)",
       "Bash(git -C /Users/monicadebnath/Desktop/FirstRain-Brain diff)",
       "Bash(git -C /Users/monicadebnath/Desktop/FirstRain-Brain add .claude/settings.local.json)",
-      "Bash(git -C:*)"
+      "Bash(git -C:*)",
+      "Bash(open -a TextEdit /Users/monicadebnath/Desktop/FirstRain-Brain/.claude/commands/start.md)",
+      "Bash(open -a TextEdit /Users/monicadebnath/Desktop/FirstRain-Brain/.claude/commands/end.md)"
     ]
   }
 }
