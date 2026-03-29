@@ -100,6 +100,7 @@
 | /end command | ✅ Built 28 Mar 2026 |
 | /monday command | ✅ Built 28 Mar 2026 |
 | /production command | ✅ Built 28 Mar 2026 |
+| FY_end_31Mar2026.md | ✅ Created 29 Mar 2026 — run on 31 Mar |
 | agent_margin.md | ⬜ Not yet built |
 | agent_production.md | ⬜ Not yet built |
 | agent_cfo.md | ⬜ Not yet built |
@@ -111,6 +112,12 @@
 ---
 
 ## 📝 RUNNING LOG — Updates go here, newest first
+
+### 29 Mar 2026 — Session 6
+- FY-end verification template created: FY_end_31Mar2026.md
+- Template covers 8 blocks: Cash, Receivables, FY25-26 Financials, Client Ledger, Pipeline, Active Projects, Marketing Spend, Active Quotes
+- To be run on 31 Mar with Sonal's MIS + bank statement
+- No numerical data changed this session
 
 ### 28 Mar 2026 — Session 5
 - Receivables updated from live MIS data (screenshot)
