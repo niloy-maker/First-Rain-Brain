@@ -113,6 +113,14 @@
 
 ## 📝 RUNNING LOG — Updates go here, newest first
 
+### 29 Mar 2026 — Session 7
+- Investigated Anthropic Projects API — confirmed NO API exists for claude.ai Projects
+- Files API (beta) exists at /v1/files but is for Messages API use only — unrelated to claude.ai Projects
+- sync_memory.sh git-based approach is correct and stays as-is
+- ANTHROPIC_API_KEY set in ~/.zshrc and working
+- Manual copy-paste is the only way to update claude.ai Project knowledge base
+- Recommendation: update claude.ai Project manually at FY-end or weekly
+
 ### 29 Mar 2026 — Session 6
 - FY-end verification template created: FY_end_31Mar2026.md
 - Template covers 8 blocks: Cash, Receivables, FY25-26 Financials, Client Ledger, Pipeline, Active Projects, Marketing Spend, Active Quotes

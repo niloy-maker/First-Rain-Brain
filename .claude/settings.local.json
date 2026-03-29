@@ -26,7 +26,10 @@
       "Bash(./sync_memory.sh)",
       "Bash(open -a TextEdit ~/Desktop/FirstRain-Brain/sync_memory.sh)",
       "Bash(open -a TextEdit ~/.zshrc)",
-      "Bash(source ~/.zshrc)"
+      "Bash(source ~/.zshrc)",
+      "Bash(echo $ANTHROPIC_API_KEY)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebSearch"
     ]
   }
 }
