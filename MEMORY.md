@@ -1,5 +1,6 @@
 # First Rain — Running Memory Log
-# Last updated: 28 March 2026
+# Last updated: 31 March 2026
+# GitHub sync test — inserted 31 Mar 2026 via Claude Code
 # Update this file at the end of every important conversation.
 # Command: "Update MEMORY.md with key decisions from this conversation"
 
@@ -7,47 +8,54 @@
 
 ## 🔴 ACTIVE ALERTS (check these first, every time)
 
-- Secure Meters = 52.5% of FY26-27 pipeline — CONCENTRATION RISK. Flag every time.
-- Cash reserve = ₹42,54,357 = 1.64 months of burn — CRITICAL. Operating cash alone is not safe.
-- Amaara Europe May'26 = strategic exception at 17.6% CM — flag immediately if any new Amaara quote comes in below 33%.
+- Cash reserve = ₹22,64,418 = 0.89 months burn — CRITICAL. Below 1 month. Treasury ₹1,38,26,443 is the real buffer.
+- Secure Meters = 52.5% of FY27 pipeline + 26.6% of FY26 revenue — DOUBLE BREACH. Concentration ceiling is 25%. Flag every time.
+- FY27 pipeline = ₹3.92 Cr only — ₹1.06 Cr contribution deficit vs annual burn even at FY26's 51% CM. New business wins are survival-critical.
+- Amaara Vitafoods ₹34L active project (32 days to show, Shilpa) — CM% unconfirmed, must clear 33% floor. Receivable ₹34L also outstanding — #1 cash priority.
 - Industry page content approval PENDING since Feb 2026 — SEO for pharma/chemicals/HVAC cannot go live until Niloy approves.
 - Sales hunter hire = required, not yet actioned — immediate priority.
 
 ---
 
-## 🔴 RECEIVABLES — Chase Status (March 2026)
+## 🔴 RECEIVABLES — Chase Status (31 Mar 2026 — FY-end verified)
 
 | Client | Amount | Status |
 |---|---|---|
-| Secure — Bharat Electricity Show | ₹5,81,100 | #1 — Mar-26. ₹17,19,900 received. Balance outstanding. |
-| TOTO | ₹5,79,478 | #2 — Mar-26 — chase active |
-| Elliott Ebara (LNG) | ₹12,77,535 | #3 — Mar-26. Payment expected 2–7 May 2026. |
-| Mosil | ₹1,77,000 | #4 — Apr-26 |
-| Messung | ₹4,34,700 | #5 — Apr-26 |
-| **Total outstanding** | **₹30,49,813** | |
+| Amaara Vitafoods | ₹34,00,000 | #1 URGENT — collecting this alone doubles operating cash |
+| Secure — Bharat Electricity Show | ₹6,30,948 | #2 — Mar-26. Chase active. |
+| Elliott Ebara (LNG) | ₹10,23,016 | #3 — Payment expected 2–7 May 2026. |
+| TOTO | ₹4,91,083 | #4 — Mar-26 — chase active |
+| Messung | ₹3,93,139 | #5 — Apr-26 |
+| Mosil | ₹1,50,000 | #6 — Apr-26 |
+| **Total outstanding** | **₹60,88,186** | |
 
 ---
 
 ## 🟠 ACTIVE PROJECTS — Closed Won FY26-27
 
-| Customer | Show | Date | Exec | Urgent flag |
-|---|---|---|---|---|
-| Mosil Lubricants | IDMC Lucknow | 23–24 Apr 2026 | Dhruv | 26 days to show — fabricator status? |
-| Messung Systems | Smart Home Expo | 28–30 Apr 2026 | Shilpa | 31 days to show |
-| Bechem | BME Delhi | 8–9 Apr 2026 | Dhruv | URGENT — 11 days to show. Contact: Adarsh KT |
+| Customer | Show | Date | SP | Exec | Urgent flag |
+|---|---|---|---|---|---|
+| Bechem | BME Delhi | 8–9 Apr 2026 | ₹1,82,000 | Chinmay | 🔴 URGENT — 8 days to show. Contact: Adarsh KT |
+| Mosil Lubricants | IDMC Lucknow | 23–24 Apr 2026 | ₹1,50,000 | Dhruv | 21 days to show |
+| Messung Systems | Smart Home Expo | 28–30 Apr 2026 | ₹6,30,000 | Shilpa | 21 days to show |
+| Amaara Vitafoods | Vitafoods Europe | ~2 May 2026 | ₹34,00,000 | Shilpa | 32 days. CM% unconfirmed — must clear 33%. Shilpa carries ₹40.3L of ₹43.6L total active SP. |
 
 ---
 
 ## 🟠 ACTIVE QUOTES / PIPELINE DECISIONS
 
-| Client | Situation | Decision on file |
-|---|---|---|
-| Nordex | Always negotiates. FY27 130 sqm. | Quote ₹24.50L with buffer. Floor: ₹21.14L SP. CP max ₹15.91L. Do not go below floor. |
-| Klenzaids | Negotiates without logic. | CPhI quote ₹38L — zero buffer built in. Hold firm. Scope reduction only lever. |
-| Amaara | Blended 33% commitment FY27. | Europe May'26 exception at 17.6% already approved. Every subsequent Amaara quote must clear 33%. |
-| Elliott Ebara | Verbal = Existing Confirmed only. | Closed Won requires PO. Never treat verbal as revenue. |
-| Gerresheimer | Highest margin client at 71%. | Protect rate at all costs. Never discount. |
-| Labguard | Analytica 2026. Old CPhI receivable cleared. | Quote submitted ₹13,80,000 + 18% GST = ₹16,28,400 total. Awaiting PO. |
+| Client | Quote SP | Status | Decision on file |
+|---|---|---|---|
+| Secure — MEE | ₹18,95,000 | On hold | Hold — do not revise down |
+| Secure — RenewX | ₹9,40,000 | Awaiting confirmation — positive | Floor ₹7,24,000. Do not go below. |
+| Labguard — Analytica | ₹13,80,000 | Awaiting confirmation — positive | ₹13,80,000 + 18% GST = ₹16,28,400 total |
+
+**Permanent client rules (carry forward every FY):**
+- Elliott Ebara: Verbal = Existing Confirmed only. PO required before Closed Won. Never treat verbal as revenue.
+- Gerresheimer: Highest margin client (74% FY26). Protect rate at all costs. Never discount.
+- Amaara: Blended 33% commitment across all FY27 shows. Flag any individual quote below 33% immediately.
+- Nordex: Always negotiates. Floor ₹21.14L SP. CP max ₹15.91L. Do not go below floor. (FY27 status unknown — check)
+- Klenzaids: Negotiates without logic. Hold firm on scope. Scope reduction only lever. (FY27 status unknown — check)
 
 ---
 
@@ -80,8 +88,8 @@
 - Margin floor: 33% per project, hard floor, no exceptions
 - Minimum account revenue: ₹15L per account per FY
 - Client concentration ceiling: 25% max per client
-- Monthly burn: ₹26,00,000
-- Runway alert triggers below: ₹78,00,000 cash (3 months)
+- Monthly burn: ₹25,50,000
+- Runway alert triggers below: ₹76,50,000 cash (3 months)
 - Contribution is the only real score — never praise revenue without checking margin first
 
 ---
@@ -94,7 +102,7 @@
 | P_Projects.md | ✅ Live |
 | A_Areas.md | ✅ Live |
 | R_Resources.md | ✅ Live |
-| A_Archives.md | ✅ Live |
+| A_Archives.md | ✅ Live — Section 19 added 30 Mar 2026 (3-year project register FY24/25/26 from MIS CSV) |
 | MEMORY.md | ✅ Created 28 Mar 2026 |
 | /start command | ✅ Built 28 Mar 2026 |
 | /end command | ✅ Built 28 Mar 2026 |
@@ -112,6 +120,42 @@
 ---
 
 ## 📝 RUNNING LOG — Updates go here, newest first
+
+### 31 Mar 2026 — Session 10 (FY-end verification complete)
+- Full FY-end verification run across all 8 blocks (A–H) using FY_end_31Mar2026.md template
+- Block A: Cash ₹22,64,418 (0.89 months), Treasury ₹1,38,26,443, OD ₹1,21,00,000, Burn confirmed ₹25.5L/month
+- Block B: Receivables updated to ₹60,88,186 — Amaara Vitafoods ₹34L added (was entirely unrecorded)
+- Block C: FY25-26 finals — Revenue ₹6,32,08,451 | Contribution ₹3,22,07,013 | CM 51% | Surplus +₹16,07,013
+- Block C split: Exhibits ₹6,06,11,649 | Interiors ₹7,51,952 | Rent ₹18,44,850
+- Block C geography: India ₹3,25,81,607 (51.5%) | International ₹3,06,26,843 (48.5%) — India now majority
+- Block D: 21-client ledger confirmed. Secure revenue ~26.6% — ceiling breach. Interior Patils 13% CM one-off. ₹54.1L rent/non-client gap — Sonal to verify.
+- Block E: FY27 pipeline = ₹3.92 Cr (down 33% from ₹5.87 Cr). Deficit ₹1.06 Cr at 51% CM. Breakeven = ₹7.65 Cr.
+- Block F: 4 active projects. Amaara Vitafoods ₹34L added (Shilpa, 32 days). Bechem PM corrected from Dhruv → Chinmay.
+- Block G: Marketing spend confirmed — no changes
+- Block H: Secure MEE ₹18.95L (hold), Secure RenewX ₹9.40L (positive), Labguard ₹13.80L (positive). Nordex/Klenzaids absent — status unknown.
+- 3 open items for Sonal: (1) ₹54.1L rent/non-client gap; (2) Amaara Vitafoods CM%; (3) Nordex and Klenzaids FY27 status
+- MEMORY.md, A_Archives.md, R_Resources.md all updated
+- /end run — all files saved and verified. FY26 closed. FY27 begins.
+
+### 31 Mar 2026 — Session 9 (FY-end day)
+- /start briefing run — memory loaded and reviewed
+- No decisions made, no data changed
+- FY_end_31Mar2026.md template flagged as ready to run — Sonal's MIS + bank statement required
+- Bechem / BME Delhi re-flagged as most urgent (8 days to show as of today)
+
+### 30 Mar 2026 — Session 8
+- FRPL MIS 2025-26 RevenueDetailed.csv imported and analysed
+- A_Archives.md updated with Section 19 — Historical Project Register
+  - FY26: 40 closed projects | ₹6.47 Cr | CM 40%
+  - FY25: 37 closed projects | ₹6.11 Cr | CM 46%
+  - FY24: 31 closed projects | ₹5.83 Cr | CM ~47%
+  - All projects include: Sr.No, ProjectNo, Company, Show, Month, Sqm, Location, Sales, VC, Commission, Contribution, CM%, Industry, SizeBracket, Stage
+  - FY24 VC itemised breakdown table also added (Contractor/Graphics/Labour/Materials etc)
+- RenewX Chennai quote built (28 sqm India stand, Secure Meters):
+  - Recommended SP: ₹9,50,000 | CP: ₹4,85,000 | Contribution: ₹4,65,000 | CM: 49%
+  - Hard floor: ₹7,24,000 SP (33% CM)
+  - Reference: F24-30 Acrex 2024 (36 sqm Delhi) — closest India comparable
+  - Chennai premium (~₹28,000) applied over base Delhi VC rate
 
 ### 29 Mar 2026 — Session 7
 - Investigated Anthropic Projects API — confirmed NO API exists for claude.ai Projects
