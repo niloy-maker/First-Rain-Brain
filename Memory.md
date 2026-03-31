@@ -2,6 +2,7 @@
 # Last updated: 31 March 2026
 # GitHub sync test — inserted 31 Mar 2026 via Claude Code
 # Update this file at the end of every important conversation.
+# Claude Code is the single source of truth for all session updates.
 # Command: "Update MEMORY.md with key decisions from this conversation"
 
 ---
