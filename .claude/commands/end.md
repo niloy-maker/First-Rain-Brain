@@ -8,3 +8,10 @@ Specifically:
 5. Update the system status table if any new files were built
 
 Show me the exact changes before saving. Wait for my approval.
+
+After I approve, save the changes AND automatically run these git commands to push to GitHub:
+1. git add MEMORY.md .claude/commands/start.md .claude/commands/end.md
+2. git commit -m "Session update: memory saved [date]"
+3. git push origin main
+
+Confirm to me when the push is complete.
