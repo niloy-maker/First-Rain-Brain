@@ -106,8 +106,8 @@
 | R_Resources.md | ✅ Live |
 | A_Archives.md | ✅ Live — Section 19 added 30 Mar 2026 (3-year project register FY24/25/26 from MIS CSV) |
 | MEMORY.md | ✅ Created 28 Mar 2026 |
-| /start command | ✅ Built 28 Mar 2026 |
-| /end command | ✅ Updated 31 Mar 2026 — now auto-pushes to GitHub |
+| /start command | ✅ Updated 31 Mar 2026 — now pulls live from GitHub before briefing |
+| /end command | ✅ Updated 31 Mar 2026 — now auto-pushes MEMORY.md + start.md + end.md |
 | /monday command | ✅ Built 28 Mar 2026 |
 | /production command | ✅ Built 28 Mar 2026 |
 | FY_end_31Mar2026.md | ✅ Created 29 Mar 2026 — run on 31 Mar |
@@ -122,6 +122,19 @@
 ---
 
 ## 📝 RUNNING LOG — Updates go here, newest first
+
+### 31 Mar 2026 — Session 13 (git conflict resolved + repo cleaned)
+- Memory.md (old capitalisation) conflict resolved — MEMORY.md confirmed as single canonical file
+- /end command updated to push start.md + end.md alongside MEMORY.md every session
+- Git remote origin confirmed stable with current token
+- Repo is clean — local and GitHub now fully in sync
+
+### 31 Mar 2026 — Session 12 (GitHub sync + /start upgraded)
+- /start command updated to fetch MEMORY.md live from GitHub (Step 0)
+- Plain text prompt created for Claude.ai chat (no /start needed)
+- /end command confirmed working end-to-end with auto-push
+- /end now pushes MEMORY.md + start.md + end.md on every session
+- Two test lines inserted to MEMORY.md to verify GitHub sync — both confirmed live
 
 ### 31 Mar 2026 — Session 11 (GitHub sync established)
 - /end command updated to auto-push to GitHub after approval
