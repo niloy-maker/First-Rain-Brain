@@ -2,6 +2,7 @@
 # Last updated: 31 March 2026
 # GitHub sync test — inserted 31 Mar 2026 via Claude Code
 # Update this file at the end of every important conversation.
+# Claude Code is the single source of truth for all session updates.
 # Command: "Update MEMORY.md with key decisions from this conversation"
 
 ---
@@ -14,6 +15,7 @@
 - Amaara Vitafoods ₹34L active project (32 days to show, Shilpa) — CM% unconfirmed, must clear 33% floor. Receivable ₹34L also outstanding — #1 cash priority.
 - Industry page content approval PENDING since Feb 2026 — SEO for pharma/chemicals/HVAC cannot go live until Niloy approves.
 - Sales hunter hire = required, not yet actioned — immediate priority.
+- GitHub PAT shared in chat — rotate/delete immediately at github.com → Settings → Developer settings → Personal access tokens
 
 ---
 
@@ -105,7 +107,7 @@
 | A_Archives.md | ✅ Live — Section 19 added 30 Mar 2026 (3-year project register FY24/25/26 from MIS CSV) |
 | MEMORY.md | ✅ Created 28 Mar 2026 |
 | /start command | ✅ Built 28 Mar 2026 |
-| /end command | ✅ Built 28 Mar 2026 |
+| /end command | ✅ Updated 31 Mar 2026 — now auto-pushes to GitHub |
 | /monday command | ✅ Built 28 Mar 2026 |
 | /production command | ✅ Built 28 Mar 2026 |
 | FY_end_31Mar2026.md | ✅ Created 29 Mar 2026 — run on 31 Mar |
@@ -120,6 +122,14 @@
 ---
 
 ## 📝 RUNNING LOG — Updates go here, newest first
+
+### 31 Mar 2026 — Session 11 (GitHub sync established)
+- /end command updated to auto-push to GitHub after approval
+- GitHub remote origin set: https://github.com/niloy-maker/First-Rain-Brain.git
+- First successful push from Claude Code confirmed
+- Token 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 used — DELETE THIS from GitHub immediately (was shared in chat)
+- Future pushes will work automatically via /end
+- GitHub PAT deleted — token revoked. New token set. Next push will need a new token or permanent auth setup.
 
 ### 31 Mar 2026 — Session 10 (FY-end verification complete)
 - Full FY-end verification run across all 8 blocks (A–H) using FY_end_31Mar2026.md template
