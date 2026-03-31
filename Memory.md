@@ -128,6 +128,7 @@
 - First successful push from Claude Code confirmed
 - Token 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 used — DELETE THIS from GitHub immediately (was shared in chat)
 - Future pushes will work automatically via /end
+- GitHub PAT deleted — token revoked. New token set. Next push will need a new token or permanent auth setup.
 
 ### 31 Mar 2026 — Session 10 (FY-end verification complete)
 - Full FY-end verification run across all 8 blocks (A–H) using FY_end_31Mar2026.md template
