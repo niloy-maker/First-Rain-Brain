@@ -41,7 +41,7 @@
 | Mosil Lubricants | IDMC Lucknow | 23–24 Apr 2026 | ₹1,50,000 | Dhruv | 22 days |
 | Messung Systems | Smart Home Expo | 28–30 Apr 2026 | ₹6,30,000 | Shilpa | 27 days |
 | Amaara Vitafoods | Vitafoods Europe | 5–7 May 2026 | ₹34,00,000 | Shilpa | 34 days. CM% unconfirmed — must clear 33% floor. |
-| Labguard | Analytica Lab India | 22–24 May 2026 | ₹13,60,000 | Smita | 51 days. NEW — closed won 1 Apr 2026. |
+| Labguard | Analytica Lab India | 22–24 Apr 2026 | ₹13,60,000 | Smita | 21 days. NEW — closed won 1 Apr 2026. |
 
 ---
 
@@ -143,6 +143,13 @@
 ---
 
 ## 📝 RUNNING LOG — Updates go here, newest first
+
+### 1 Apr 2026 — Session 17 (Labguard date corrected)
+- Labguard Analytica Lab India show dates corrected: 22–24 May 2026 → 22–24 Apr 2026
+- Days to show updated: 51 days → 21 days (now before Messung Smart Home Expo)
+- ⚠️ Resource flag raised: Labguard (Smita, 22–24 Apr) and Messung (Shilpa, 28–30 Apr) overlap in same week — check capacity
+- "Shift all projects to Closed Won" request raised — PENDING CLARIFICATION. Does this mean: (A) delivered/archive, (B) Notion CRM update, or (C) PO confirmation flag?
+- No receivables or quote changes this session
 
 ### 1 Apr 2026 — Session 16 (permissions configured)
 - Added Bash(*) to .claude/settings.local.json — all bash commands now auto-approved for this project
