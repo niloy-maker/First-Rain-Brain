@@ -130,6 +130,7 @@
 | /end command | ✅ Updated 31 Mar 2026 — now auto-pushes MEMORY.md + start.md + end.md |
 | /monday command | ✅ Built 28 Mar 2026 |
 | /production command | ✅ Rebuilt 1 Apr 2026 — 2-round batch fetch (was 30+ calls, now ~6) |
+| .claude/settings.local.json | ✅ Updated 1 Apr 2026 — Bash(*) + WebFetch(raw.githubusercontent.com) pre-approved. No more permission prompts for trusted workflows. |
 | FY_end_31Mar2026.md | ✅ Created 29 Mar 2026 — run on 31 Mar |
 | agent_margin.md | ⬜ Not yet built |
 | agent_production.md | ⬜ Not yet built |
@@ -142,6 +143,14 @@
 ---
 
 ## 📝 RUNNING LOG — Updates go here, newest first
+
+### 1 Apr 2026 — Session 16 (permissions configured)
+- Added Bash(*) to .claude/settings.local.json — all bash commands now auto-approved for this project
+- WebFetch(domain:raw.githubusercontent.com) was already present — confirmed working
+- WebFetch(domain:google.com) auto-added by Claude Code when fetch was approved during testing
+- All 3 permission tests passed: Bash (date/whoami), GitHub raw fetch, google.com boundary test
+- /start will now run fully uninterrupted — no permission prompts expected
+- No receivables, quotes, or project changes this session
 
 ### 1 Apr 2026 — Session 15 (FY25-26 actuals updated)
 - FY25-26 final actuals received from Sonal:
