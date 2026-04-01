@@ -1,5 +1,5 @@
 # First Rain — Running Memory Log
-# Last updated: 31 March 2026
+# Last updated: 1 April 2026
 # GitHub sync test — inserted 31 Mar 2026 via Claude Code
 # Update this file at the end of every important conversation.
 # Claude Code is the single source of truth for all session updates.
@@ -11,7 +11,7 @@
 
 - Cash reserve = ₹22,64,418 = 0.89 months burn — CRITICAL. Below 1 month. Treasury ₹1,38,26,443 is the real buffer.
 - Secure Meters = 52.5% of FY27 pipeline + 26.6% of FY26 revenue — DOUBLE BREACH. Concentration ceiling is 25%. Flag every time.
-- FY27 pipeline = ₹3.92 Cr only — ₹1.06 Cr contribution deficit vs annual burn even at FY26's 51% CM. New business wins are survival-critical.
+- FY27 pipeline = ₹3.92 Cr only — at FY26's actual 40.4% CM, contribution = ₹1.58 Cr vs ₹3.06 Cr burn = ₹1.48 Cr deficit. WORSE than previously estimated. New business wins are survival-critical.
 - Amaara Vitafoods ₹34L active project (32 days to show, Shilpa) — CM% unconfirmed, must clear 33% floor. Receivable ₹34L also outstanding — #1 cash priority.
 - Industry page content approval PENDING since Feb 2026 — SEO for pharma/chemicals/HVAC cannot go live until Niloy approves.
 - Sales hunter hire = required, not yet actioned — immediate priority.
@@ -33,14 +33,15 @@
 
 ---
 
-## 🟠 ACTIVE PROJECTS — Closed Won FY26-27
+## 🟠 ACTIVE PROJECTS — Closed Won FY26-27 (Total SP: ₹57,22,000)
 
-| Customer | Show | Date | SP | Exec | Urgent flag |
+| Customer | Show | Date | SP | Exec | Days / Flag |
 |---|---|---|---|---|---|
-| Bechem | BME Delhi | 8–9 Apr 2026 | ₹1,82,000 | Chinmay | 🔴 URGENT — 8 days to show. Contact: Adarsh KT |
-| Mosil Lubricants | IDMC Lucknow | 23–24 Apr 2026 | ₹1,50,000 | Dhruv | 21 days to show |
-| Messung Systems | Smart Home Expo | 28–30 Apr 2026 | ₹6,30,000 | Shilpa | 21 days to show |
-| Amaara Vitafoods | Vitafoods Europe | ~2 May 2026 | ₹34,00,000 | Shilpa | 32 days. CM% unconfirmed — must clear 33%. Shilpa carries ₹40.3L of ₹43.6L total active SP. |
+| Bechem | BME Delhi | 8–9 Apr 2026 | ₹1,82,000 | Chinmay | 🔴 7 days — URGENT. Contact: Adarsh KT |
+| Mosil Lubricants | IDMC Lucknow | 23–24 Apr 2026 | ₹1,50,000 | Dhruv | 22 days |
+| Messung Systems | Smart Home Expo | 28–30 Apr 2026 | ₹6,30,000 | Shilpa | 27 days |
+| Amaara Vitafoods | Vitafoods Europe | 5–7 May 2026 | ₹34,00,000 | Shilpa | 34 days. CM% unconfirmed — must clear 33% floor. |
+| Labguard | Analytica Lab India | 22–24 May 2026 | ₹13,60,000 | Smita | 51 days. NEW — closed won 1 Apr 2026. |
 
 ---
 
@@ -50,7 +51,7 @@
 |---|---|---|---|
 | Secure — MEE | ₹18,95,000 | On hold | Hold — do not revise down |
 | Secure — RenewX | ₹9,40,000 | Awaiting confirmation — positive | Floor ₹7,24,000. Do not go below. |
-| Labguard — Analytica | ₹13,80,000 | Awaiting confirmation — positive | ₹13,80,000 + 18% GST = ₹16,28,400 total |
+| Labguard — Analytica | ₹13,80,000 | ✅ CLOSED WON 1 Apr 2026 — moved to Active Projects | ₹13,80,000 + 18% GST = ₹16,28,400 total |
 
 **Permanent client rules (carry forward every FY):**
 - Elliott Ebara: Verbal = Existing Confirmed only. PO required before Closed Won. Never treat verbal as revenue.
@@ -85,13 +86,32 @@
 
 ---
 
+## 🟢 FY25-26 ACTUALS — FINAL (Updated 1 Apr 2026)
+
+| Metric | Total | Exhibits | Interiors | Rent |
+|---|---|---|---|---|
+| **Revenue** | **₹6,84,22,552** | ₹6,48,94,982 | ₹13,93,220 | ₹21,34,350 |
+| **Contribution** | **₹2,67,95,377** | ₹2,66,18,330 | ₹1,77,047 | — |
+| **Variable Cost** | **₹3,94,92,825** | — | — | — |
+| **CM% (projects only)** | **40.4%** | | | |
+| **Monthly Burn** | **₹23,00,000** | FY25-26 actual | | |
+| **Annual Burn** | **₹2,76,00,000** | | | |
+| **Surplus / (Deficit)** | **(₹8,04,623)** | vs ₹23L/mo × 12 = ₹2.76 Cr burn | | |
+
+- ⚠️ Outstanding payables ~₹66,00,000 (includes tax obligations) — bifurcation pending from Sonal
+- ⚠️ CM% revised DOWN from earlier Session 10 estimate of 51% — treat 51% as a data error, 40.4% is live
+- ⚠️ FY26 closed at a **DEFICIT of ~₹8L** against annual burn
+- FY26-27 projected burn: ₹25,50,000/month = ₹3,06,00,000/year (step-up of ₹2.5L/mo)
+
+---
+
 ## 🟢 FINANCIAL RULES — NON-NEGOTIABLE (permanent)
 
 - Margin floor: 33% per project, hard floor, no exceptions
 - Minimum account revenue: ₹15L per account per FY
 - Client concentration ceiling: 25% max per client
-- Monthly burn: ₹25,50,000
-- Runway alert triggers below: ₹76,50,000 cash (3 months)
+- Monthly burn: ₹25,50,000 (FY26-27 projected) | ₹23,00,000 was FY25-26 actual
+- Runway alert triggers below: ₹76,50,000 cash (3 months at FY27 burn)
 - Contribution is the only real score — never praise revenue without checking margin first
 
 ---
@@ -109,7 +129,7 @@
 | /start command | ✅ Updated 31 Mar 2026 — now pulls live from GitHub before briefing |
 | /end command | ✅ Updated 31 Mar 2026 — now auto-pushes MEMORY.md + start.md + end.md |
 | /monday command | ✅ Built 28 Mar 2026 |
-| /production command | ✅ Built 28 Mar 2026 |
+| /production command | ✅ Rebuilt 1 Apr 2026 — 2-round batch fetch (was 30+ calls, now ~6) |
 | FY_end_31Mar2026.md | ✅ Created 29 Mar 2026 — run on 31 Mar |
 | agent_margin.md | ⬜ Not yet built |
 | agent_production.md | ⬜ Not yet built |
@@ -122,6 +142,29 @@
 ---
 
 ## 📝 RUNNING LOG — Updates go here, newest first
+
+### 1 Apr 2026 — Session 15 (FY25-26 actuals updated)
+- FY25-26 final actuals received from Sonal:
+  - Total Revenue ₹6,84,22,552 | Exhibits ₹6,48,94,982 | Interiors ₹13,93,220 | Rent ₹21,34,350
+  - Total Contribution ₹2,67,95,377 | Exhibits ₹2,66,18,330 | Interiors ₹1,77,047
+  - Total Variable Cost ₹3,94,92,825
+  - CM% (project revenue) = 40.4% — NOT 51% as estimated in Session 10. Treat 51% as error.
+  - FY25-26 monthly burn = ₹23L (NOT ₹25.5L — that is FY26-27 projected)
+  - FY26 closed at DEFICIT ~₹8L against ₹2.76 Cr annual burn (₹23L × 12)
+  - Outstanding payables ~₹66L (incl. tax) — bifurcation from Sonal pending
+- FY25-26 Actuals section added to MEMORY.md for permanent reference
+- FY25-26 monthly burn confirmed ₹23L; FY26-27 projected burn ₹25.5L — both now in Financial Rules
+- FY27 pipeline deficit recalculated at correct 40.4% CM: ₹1.48 Cr gap vs ₹3.06 Cr burn
+- No receivables, quotes, or project changes this session
+
+### 1 Apr 2026 — Session 14 (Closed Won update + /production rebuilt)
+- 5 deals confirmed Closed Won FY26-27 in CRM: Bechem, Mosil, Messung, Amaara, Labguard
+- Labguard Analytica ₹13,60,000 moved from Active Quotes → Active Projects (Smita, 22–24 May)
+- Total active SP now ₹57,22,000 across 5 projects
+- All 5 projects confirmed in Notion as "In Progress (Current FY)" — Labguard Anacon'26 created today
+- /production skill rebuilt: 2-round batch fetch (1 search + parallel fetches) vs old 30+ sequential calls
+- Notion project URL mapping saved to memory file (reference_notion_projects.md) — no re-discovery needed
+- Active Quotes now: Secure MEE ₹18.95L (hold), Secure RenewX ₹9.40L (awaiting)
 
 ### 31 Mar 2026 — Session 13 (git conflict resolved + repo cleaned)
 - Memory.md (old capitalisation) conflict resolved — MEMORY.md confirmed as single canonical file
