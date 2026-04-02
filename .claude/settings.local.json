@@ -29,7 +29,10 @@
       "Bash(source ~/.zshrc)",
       "Bash(echo $ANTHROPIC_API_KEY)",
       "WebFetch(domain:docs.anthropic.com)",
-      "WebSearch"
+      "WebSearch",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(*)",
+      "WebFetch(domain:google.com)"
     ]
   }
 }

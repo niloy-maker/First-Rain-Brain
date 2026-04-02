@@ -1,5 +1,5 @@
 # First Rain — Running Memory Log
-# Last updated: 1 April 2026
+# Last updated: 2 April 2026
 # GitHub sync test — inserted 31 Mar 2026 via Claude Code
 # Update this file at the end of every important conversation.
 # Claude Code is the single source of truth for all session updates.
@@ -132,6 +132,7 @@
 | /production command | ✅ Rebuilt 1 Apr 2026 — 2-round batch fetch (was 30+ calls, now ~6) |
 | .claude/settings.local.json | ✅ Updated 1 Apr 2026 — Bash(*) + WebFetch(raw.githubusercontent.com) pre-approved. No more permission prompts for trusted workflows. |
 | FY_end_31Mar2026.md | ✅ Created 29 Mar 2026 — run on 31 Mar |
+| Skills & Agents architecture | ⚠️ Designed in claude.ai Project — decisions NOT yet synced to MEMORY.md. Requires manual paste from claude.ai session. |
 | agent_margin.md | ⬜ Not yet built |
 | agent_production.md | ⬜ Not yet built |
 | agent_cfo.md | ⬜ Not yet built |
@@ -143,6 +144,12 @@
 ---
 
 ## 📝 RUNNING LOG — Updates go here, newest first
+
+### 2 Apr 2026 — Session 18 (GitHub sync + file commits)
+- production.md and settings.local.json were updated in Sessions 14 & 16 but never committed to git — committed now
+- Labguard Anacon'26 date corrected in reference_notion_projects.md: 22–24 May → 22–24 Apr 2026
+- AI OS / Skills & Agents architecture sessions occurred in claude.ai Project — decisions recorded in Project knowledge base but NOT yet pulled into MEMORY.md. Flagged in System status. Pending: user to paste session decisions for MEMORY sync.
+- No receivables, quotes, or project data changes this session
 
 ### 1 Apr 2026 — Session 17 (Labguard date corrected)
 - Labguard Analytica Lab India show dates corrected: 22–24 May 2026 → 22–24 Apr 2026
