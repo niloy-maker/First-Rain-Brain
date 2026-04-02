@@ -132,24 +132,117 @@
 | /production command | ✅ Rebuilt 1 Apr 2026 — 2-round batch fetch (was 30+ calls, now ~6) |
 | .claude/settings.local.json | ✅ Updated 1 Apr 2026 — Bash(*) + WebFetch(raw.githubusercontent.com) pre-approved. No more permission prompts for trusted workflows. |
 | FY_end_31Mar2026.md | ✅ Created 29 Mar 2026 — run on 31 Mar |
-| Skills & Agents architecture | ⚠️ Designed in claude.ai Project — decisions NOT yet synced to MEMORY.md. Requires manual paste from claude.ai session. |
-| agent_margin.md | ⬜ Not yet built |
-| agent_production.md | ⬜ Not yet built |
-| agent_cfo.md | ⬜ Not yet built |
-| agent_outbound.md | ⬜ Not yet built |
-| harness_monday.md | ⬜ Not yet built |
-| harness_quote.md | ⬜ Not yet built |
-| harness_lead.md | ⬜ Not yet built |
+| AI OS — 8-dept architecture | ✅ Designed 31 Mar–1 Apr 2026 in claude.ai. Now synced to MEMORY.md. See AI OS section below. |
+| Skill files (existing 6) | ✅ Live — brand-context, style-guide, voice-guide, growth-marketing, product-offerings, campaign-performance |
+| Plugin folder structure | ⬜ To migrate — upgrade flat .md skills to jezweb plugin format (SKILL.md + references/) |
+| agent_outbound_hunter.md | ⬜ Not yet built — Dept 1 |
+| agent_campaign_content.md | ⬜ Not yet built — Dept 2 |
+| agent_outbound_researcher.md | ⬜ Not yet built — Dept 3 |
+| agent_cfo.md | ⬜ Not yet built — Dept 4 |
+| agent_production.md | ⬜ Not yet built — Dept 5 |
+| agent_ceo_strategy.md | ⬜ Not yet built — Dept 6 |
+| agent_creative_design.md | ⬜ Not yet built — Dept 7 |
+| agent_people_ops.md | ⬜ Not yet built — Dept 8 |
+| plugin_marketing_team_lead/ | ⬜ Not yet built — Orchestrator (build last) |
+
+---
+
+## 🟢 AI OS ARCHITECTURE — FIRST RAIN SKILLS & AGENTS
+*Designed 31 Mar–1 Apr 2026 in claude.ai. Source repos identified. Build sequence set.*
+
+### Source Repos (install once)
+| Repo | Stars | Primary Use |
+|---|---|---|
+| alirezarezvani/claude-skills | 5,200+ | C-level, marketing, finance, PM skills — most comprehensive non-dev library |
+| wondelai/skills | Community top | 25 framework-based skills: EOS, StoryBrand, Blue Ocean, $100M Offers, Drive |
+| coreyhaines31/marketingskills | Rising | 33 skills: copywriting, cold-email, email-seq, ad-creative, paid-ads, CRO |
+| jezweb/claude-skills | 587 stars | Writing plugin: strategy-document, proposal-writer — also defines plugin folder structure |
+| smixs/creative-director-skill | Specialist | AI Creative Director — SIT/TRIZ/SCAMPER, Cannes-calibrated scoring |
+| garrytan/gstack | 15K+ (5 days) | design-consultation, design-review, design-shotgun |
+| tuanductran/hr-skills | Specialist | 15+ HR skills: recruiting, performance, compensation, workforce planning |
+
+### Plugin Folder Structure (jezweb standard — migrate existing 6 skills to this)
+```
+firstrain-marketing/
+├── .claude-plugin/plugin.json
+└── skills/
+    ├── [skill-name]/
+    │   ├── SKILL.md          ← recipe only, under 200 lines
+    │   └── references/       ← heavy context loaded on demand
+    │       ├── brand-context.md
+    │       └── icp-rules.md
+```
+
+### 8-Department Agent Map
+| # | Department | Agent File | Owner | Status |
+|---|---|---|---|---|
+| 1 | Sales & Outbound (ABM) | agent_outbound_hunter.md | Dhruv / Niloy Tier 1 | ⬜ |
+| 2 | Marketing & Content | agent_campaign_content.md | Pankaj / CrossNibble | ⬜ |
+| 3 | Market Intelligence | agent_outbound_researcher.md | Dhruv / Niloy review | ⬜ |
+| 4 | Finance & MIS (CFO) | agent_cfo.md | Niloy guardrail | ⬜ |
+| 5 | Project Delivery | agent_production.md | Chinmay / Shilpa | ⬜ |
+| 6 | Strategy & Leadership | agent_ceo_strategy.md | Niloy only | ⬜ |
+| 7 | Design & Creative | agent_creative_design.md | Mangesh review / Komal exec | ⬜ |
+| 8 | HR & People Ops | agent_people_ops.md | Niloy (sole owner currently) | ⬜ |
+| — | Orchestrator | plugin_marketing_team_lead/ | Routes all work — build last | ⬜ |
+
+### Priority Skills to Build (custom — First Rain specific)
+**Week 1 (Now — unblocks live campaigns):**
+- `lookalike-finder` — ICP-matched prospects from seed client or show list. 3 trigger modes: seed client / show name / vertical. Outputs 8–12 named accounts, tiered, with ICP rationale. Dhruv → Freckle.io → Google AI Studio scorer.
+- `outbound-email` — 4-touch Lemlist sequence copy, show-specific, fear-hook, sector-matched
+- `linkedin-post` — Niloy's LinkedIn content: show countdowns, sector insight, portfolio drops
+- `ad-creative` — Google Ads copy: Show-Specific, Sector-Specific, Competitor Conquest variants
+- `margin-gate` — L2 Margin Gate check: SP, CP, CM%, floor alert if <33%
+- `production-command` — already rebuilt as /production skill ✅
+
+**Week 2:**
+- `whatsapp-broadcast` · `lead-magnet` · `case-study-writer`
+- `stand-design-brief` · `spatial-concept` · `doha-protocol`
+- `sales-hunter-jd` · `onboarding-plan` · `fragility-audit`
+
+**Week 3:** Build agents 1–8 (bundle skills per dept)
+**Week 4:** Build `plugin_marketing_team_lead/` orchestrator (last)
+
+### EOS / Traction Framework — Adopted
+- **Integrator gap identified** — Visionary (Niloy) without Integrator is the root cause of deferred decisions (sales hunter, strategy execution). Sales hunter hire is partly an Integrator/Sales hybrid.
+- **Q1 FY27 Rocks** (set, not yet tracked formally): (1) 3 new enterprise accounts outside Secure Meters, (2) Secure concentration below 40%, (3) Sales hunter hired + 15 Tier 1 accounts assigned, (4) CPhI China — 10 meeting enquiries before 16 Jun, (5) 6 marketing skills live, (6) Secure MEE/RenewX PO confirmed
+- **Weekly Scorecard** (7 measurables): New qualified leads 5+/week, LI acceptance 55%+, email reply 8%+, active quotes 3+, receivables collected ₹5L+/week, CM on active quotes 33%+, Secure pipeline % <50%
+- **/monday v2** — rebuild to follow L10 format: Segue → Scorecard → Rock Review → Headlines → To-Do → IDS (60 min) → Conclude
+
+### Learning Path Decided
+1. **Anthropic Academy** (free) — anthropic.skilljar.com — Start: Introduction to Agent Skills → Sub-agents in Claude Code → Claude 101
+2. **Udemy — Mastering Claude Cowork & AI Agents** (₹800–1,200 on sale, Prof. Ryan Ahmed) — zero-code, business workflows
+3. Skip AI Hero ($795) — too developer-heavy for non-developer operator
 
 ---
 
 ## 📝 RUNNING LOG — Updates go here, newest first
 
-### 2 Apr 2026 — Session 18 (GitHub sync + file commits)
+### 2 Apr 2026 — Session 18 (AI OS sync to GitHub)
 - production.md and settings.local.json were updated in Sessions 14 & 16 but never committed to git — committed now
 - Labguard Anacon'26 date corrected in reference_notion_projects.md: 22–24 May → 22–24 Apr 2026
-- AI OS / Skills & Agents architecture sessions occurred in claude.ai Project — decisions recorded in Project knowledge base but NOT yet pulled into MEMORY.md. Flagged in System status. Pending: user to paste session decisions for MEMORY sync.
+- Full AI OS architecture (8 departments, source repos, custom skills, EOS framework, learning path) synced from claude.ai Project memory into MEMORY.md — see AI OS section above
 - No receivables, quotes, or project data changes this session
+
+### 1 Apr 2026 (claude.ai) — AI OS Design Sessions (Skills & Agents — Depts 7 & 8)
+- Design & Creative dept designed: agent_creative_design.md — Mangesh/Komal. Key skills: stand-design-brief, spatial-concept, creative-director (smixs), design-review-fr, ux-heuristics (wondelai), brand-guidelines (Anthropic official)
+- HR & People Ops dept designed: agent_people_ops.md — Niloy as de-facto HR until headcount justifies hire. Key skills: sales-hunter-jd (IMMEDIATE), talent-acquisition, onboarding-plan, 90-day-review, fragility-audit, sop-writer
+- Source repos confirmed for Depts 7+8: smixs/creative-director-skill, garrytan/gstack (15K+ stars), tuanductran/hr-skills
+- Full 8-dept AI OS picture complete: Niloy → Marketing Team Lead Plugin → 8 agents
+
+### 1 Apr 2026 (claude.ai) — AI OS Design Sessions (Skills & Agents — Depts 1–6 + EOS)
+- Full 6-department AI OS roadmap built using top-rated repos (alirezarezvani 5,200+, wondelai, coreyhaines31, jezweb)
+- 16 custom skills identified and sequenced across Sales, Marketing, Research, Finance, Delivery, Strategy
+- EOS/Traction framework adopted: Integrator gap diagnosed as root structural problem; Q1 FY27 Rocks set; Weekly Scorecard designed (7 measurables); /monday v2 to follow L10 format
+- wondelai bundles to install: sales-influence (Influence, Predictable Revenue, $100M Offers), marketing-cro (StoryBrand, Contagious, Scorecard Marketing), strategy-growth (EOS, Blue Ocean, Crossing the Chasm)
+- Jezweb plugin folder structure to be adopted — migrate existing 6 flat skill files to SKILL.md + references/ format
+
+### 31 Mar 2026 (claude.ai) — AI OS Design Sessions (Lookalike-Finder + Initial Roadmap)
+- Learning path decided: Anthropic Academy (free, 3–4 hrs) → Udemy Mastering Claude Cowork & AI Agents (₹800–1,200); skip AI Hero ($795)
+- Initial 16-skill marketing roadmap built from skills course slide analysis (social-copy, blog-writer, lead-magnet, lp-builder, ad-creative, market-research)
+- Lookalike-finder skill fully designed: 3 trigger modes (seed client / show / vertical), ICP filter rules, seed client profiles (Secure, Christie, Gerresheimer, Iberchem), output format, research method, Freckle.io handoff
+- Workflow: lookalike-finder → Freckle.io enrichment → Google AI Studio ICP scorer → Tier 1 Niloy / Tier 2 Lemlist / Tier 3 nurture
+- Agent_outbound.md identified as home for lookalike-finder
 
 ### 1 Apr 2026 — Session 17 (Labguard date corrected)
 - Labguard Analytica Lab India show dates corrected: 22–24 May 2026 → 22–24 Apr 2026
