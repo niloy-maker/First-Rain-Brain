@@ -1,5 +1,5 @@
 # First Rain — Running Memory Log
-# Last updated: 2 April 2026
+# Last updated: 7 April 2026 (Session 21)
 # GitHub sync test — inserted 31 Mar 2026 via Claude Code
 # Update this file at the end of every important conversation.
 # Claude Code is the single source of truth for all session updates.
@@ -12,9 +12,9 @@
 - Cash reserve = ₹22,64,418 = 0.89 months burn — CRITICAL. Below 1 month. Treasury ₹1,38,26,443 is the real buffer.
 - Secure Meters = 52.5% of FY27 pipeline + 26.6% of FY26 revenue — DOUBLE BREACH. Concentration ceiling is 25%. Flag every time.
 - FY27 pipeline = ₹3.92 Cr only — at FY26's actual 40.4% CM, contribution = ₹1.58 Cr vs ₹3.06 Cr burn = ₹1.48 Cr deficit. WORSE than previously estimated. New business wins are survival-critical.
-- Amaara Vitafoods ₹34L active project (32 days to show, Shilpa) — CM% unconfirmed, must clear 33% floor. Receivable ₹34L also outstanding — #1 cash priority.
+- Amaara Vitafoods ₹34L active project (32 days to show, Barcelona, Shilpa) — CP: Ashok Saltwater €23,850 = ₹25,62,725 @ ₹107.45/€ (3 Apr 2026). Fabrication-only, no additional expenses. CM% = 24.63% — conscious account-level decision. Blended 33% across all Amaara FY27 shows is governing metric, not per-show floor. Receivable ₹34L outstanding — #1 cash priority.
 - Industry page content approval PENDING since Feb 2026 — SEO for pharma/chemicals/HVAC cannot go live until Niloy approves.
-- Sales hunter hire = required, not yet actioned — immediate priority.
+- Sales hunter hire = Round 1 CIDS Topgrading interview DONE — go-ahead from Niloy. HR Round 2 scheduled Monday 6 Apr 2026.
 - GitHub PAT shared in chat — rotate/delete immediately at github.com → Settings → Developer settings → Personal access tokens
 
 ---
@@ -25,7 +25,7 @@
 |---|---|---|
 | Amaara Vitafoods | ₹34,00,000 | #1 URGENT — collecting this alone doubles operating cash |
 | Secure — Bharat Electricity Show | ₹6,30,948 | #2 — Mar-26. Chase active. |
-| Elliott Ebara (LNG) | ₹10,23,016 | #3 — Payment expected 2–7 May 2026. |
+| Elliott Ebara (LNG) | ₹10,23,016 | ✅ RECEIVED 2 Apr 2026 — US$11,069 received |
 | TOTO | ₹4,91,083 | #4 — Mar-26 — chase active |
 | Messung | ₹3,93,139 | #5 — Apr-26 |
 | Mosil | ₹1,50,000 | #6 — Apr-26 |
@@ -33,15 +33,15 @@
 
 ---
 
-## 🟠 ACTIVE PROJECTS — Closed Won FY26-27 (Total SP: ₹57,22,000)
+## 🟠 ACTIVE PROJECTS — Closed Won FY26-27 (Total SP: ₹57,42,000)
 
 | Customer | Show | Date | SP | Exec | Days / Flag |
 |---|---|---|---|---|---|
-| Bechem | BME Delhi | 8–9 Apr 2026 | ₹1,82,000 | Chinmay | 🔴 7 days — URGENT. Contact: Adarsh KT |
-| Mosil Lubricants | IDMC Lucknow | 23–24 Apr 2026 | ₹1,50,000 | Dhruv | 22 days |
+| Bechem | BME Delhi | 8–9 Apr 2026 | ₹1,82,000 | Chinmay | 🔴 7 days — URGENT. Contact: Adarsh KT. CP: Nandu ₹1,19,000 (CM ~34.6%) |
+| Mosil Lubricants | IDMC Lucknow | 23–24 Apr 2026 | ₹1,50,000 | Dhruv | 22 days. CP: Nandu ₹1,27,000 (CM ~15.3% ⚠️ BELOW FLOOR — check) |
 | Messung Systems | Smart Home Expo | 28–30 Apr 2026 | ₹6,30,000 | Shilpa | 27 days |
-| Amaara Vitafoods | Vitafoods Europe | 5–7 May 2026 | ₹34,00,000 | Shilpa | 34 days. CM% unconfirmed — must clear 33% floor. |
-| Labguard | Analytica Lab India | 22–24 Apr 2026 | ₹13,60,000 | Smita | 21 days. NEW — closed won 1 Apr 2026. |
+| Amaara Vitafoods | Vitafoods Europe, Barcelona | 5–7 May 2026 | ₹34,00,000 | Shilpa | 32 days. CP: Ashok Saltwater €23,850 = ₹25,62,725 @ ₹107.45/€ (3 Apr). CM% = 24.63%. Fabrication-only, no additional expenses. Account-level decision — blended 33% governs. |
+| Labguard | Analytica Lab India, Mumbai | 22–24 Apr 2026 | ₹13,80,000 | Smita | 15 days. CP: ₹4,80,000 (Nandu ₹4,25,000 + Graphics ₹50,000 + Travel ₹5,000). CM% = 65% ✅. 80 sqmt. |
 
 ---
 
@@ -50,13 +50,13 @@
 | Client | Quote SP | Status | Decision on file |
 |---|---|---|---|
 | Secure — MEE | ₹18,95,000 | On hold | Hold — do not revise down |
-| Secure — RenewX | ₹9,40,000 | Awaiting confirmation — positive | Floor ₹7,24,000. Do not go below. |
+| Secure — RenewX | ₹9,38,000 | ✅ CONFIRMED | SP ₹9,38,000 + GST confirmed. CP: ₹5,53,000 (Nandu ₹3,30,000 + Graphics ₹35,000 + Plants/Green Wall ₹45,000 + Bamboo ₹25,000 + TV ₹30,000 + CCD ₹28,000 + Travel ₹60,000). CM% = 41% ✅. 27.5 sqmt, Chennai. Floor ₹7,24,000. |
 | Labguard — Analytica | ₹13,80,000 | ✅ CLOSED WON 1 Apr 2026 — moved to Active Projects | ₹13,80,000 + 18% GST = ₹16,28,400 total |
 
 **Permanent client rules (carry forward every FY):**
 - Elliott Ebara: Verbal = Existing Confirmed only. PO required before Closed Won. Never treat verbal as revenue.
 - Gerresheimer: Highest margin client (74% FY26). Protect rate at all costs. Never discount.
-- Amaara: Blended 33% commitment across all FY27 shows. Flag any individual quote below 33% immediately.
+- Amaara: Blended 33% commitment across all FY27 shows. Individual show CM% may be below 33% as an **account-level exception** — evaluate at account level, not per show. Vitafoods Europe Barcelona CM% = 24.63% — granted account-level exception. Do not apply per-show floor to Amaara without checking blended rate first.
 - Nordex: Always negotiates. Floor ₹21.14L SP. CP max ₹15.91L. Do not go below floor. (FY27 status unknown — check)
 - Klenzaids: Negotiates without logic. Hold firm on scope. Scope reduction only lever. (FY27 status unknown — check)
 
@@ -217,6 +217,23 @@ firstrain-marketing/
 ---
 
 ## 📝 RUNNING LOG — Updates go here, newest first
+
+### 7 Apr 2026 — Session 21 (Labguard + RenewX cost sheets confirmed)
+- Labguard Analytica Lab India (Mumbai, 80 sqmt): CP confirmed ₹4,80,000 (Nandu ₹4,25,000 + Graphics ₹50,000 + Travel ₹5,000). SP ₹13,80,000 (corrected from ₹13,60,000 — earlier typo). Contribution ₹9,00,000. CM% = 65% ✅. Total FY27 active SP updated to ₹57,42,000.
+- Secure RenewX 2026 (Chennai, 27.5 sqmt): SP updated to ₹9,38,000 (was ₹9,35,000). CP confirmed ₹5,53,000. Contribution ₹3,85,000. CM% = 41% ✅. Cost breakdown: Nandu ₹3,30,000 + Graphics ₹35,000 + Plants/Green Wall ₹45,000 + Bamboo ₹25,000 + TV ₹30,000 + CCD ₹28,000 + Travel ₹60,000.
+
+### 3 Apr 2026 — Session 20 (Amaara CP + EUR rate updated; Secure RenewX SP confirmed)
+- Amaara Vitafoods Barcelona: CP confirmed — Ashok Saltwater €23,850. EUR/INR rate @ ₹107.45 (3 Apr 2026) → CP = ₹25,62,725. Fabrication-only cost, no additional expenses. SP ₹34,00,000 → Contribution ₹8,37,275 → CM% = 24.63%. Granted **account-level exception** — blended 33% across all Amaara FY27 shows is governing metric.
+- Secure RenewX: SP confirmed at ₹9,35,000 + GST (was ₹9,40,000 quoted). Status updated to CONFIRMED.
+- Active Alerts, Active Projects, Active Quotes, and Permanent Client Rules all updated.
+
+### 2 Apr 2026 — Session 19 (CP finalized, receivable received, sales hunter R1 done)
+- Bechem BME Delhi: CP finalized — Nandu, ₹1,19,000. CM% ~34.6% (above 33% floor ✅)
+- Mosil IDMC Expo: CP finalized — Nandu, ₹1,27,000. CM% ~15.3% — ⚠️ CRITICAL BREACH of 33% floor. Immediate review required.
+- Amaara Vitafoods: CP finalized — Ashok Saltwater, €23,850 = ₹25,56,482 @ live rate ₹107.19/€ (2 Apr 2026). CM% = 24.81%. Fabrication-only cost, no other fees. Show is Barcelona (not Geneva). Confirmed as conscious account-level decision — blended 33% across all Amaara FY27 shows is the governing metric. Per-show floor does not apply here.
+- Elliott Ebara receivable ₹10,23,016 received — US$11,069 collected 2 Apr 2026. Remove from chase list.
+- Sales Hunter (Barnali, Bangalore): Round 1 CIDS Topgrading interview done. Go-ahead from Niloy. HR Round 2 scheduled Monday 6 Apr 2026.
+- Resume analysis: 19 yrs experience, inside sales management heavy, two large gaps (Oct 2016–Jun 2020 and Oct 2023–present). No exhibition industry background. Moderate fit — probe gaps + individual quota attainment in Round 2.
 
 ### 2 Apr 2026 — Session 18 (AI OS sync to GitHub)
 - production.md and settings.local.json were updated in Sessions 14 & 16 but never committed to git — committed now
