@@ -1,0 +1,38 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"[HOOK] $(date) — session active\" >> _context/session-log.md'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|Create",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"[AUDIT] File written: $(date)\" >> _outputs/audit-log.md'"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:notion.so)",
+      "WebFetch(domain:google.com)"
+    ]
+  },
+  "security": {
+    "block_external_claude_md": true,
+    "require_confirmation_on_new_mcp": true
+  }
+}

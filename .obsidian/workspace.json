@@ -1,0 +1,262 @@
+{
+  "main": {
+    "id": "65fef5048b3731aa",
+    "type": "split",
+    "children": [
+      {
+        "id": "9bf4722d9b045ef5",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "baacdafd2b31998e",
+            "type": "leaf",
+            "pinned": true,
+            "state": {
+              "type": "terminal:terminal",
+              "state": {
+                "terminal:terminal": {
+                  "cwd": null,
+                  "focus": false,
+                  "profile": {
+                    "args": [
+                      "--login"
+                    ],
+                    "executable": "/bin/zsh",
+                    "followTheme": true,
+                    "name": "",
+                    "platforms": {
+                      "darwin": true
+                    },
+                    "pythonExecutable": "python3",
+                    "restoreHistory": false,
+                    "rightClickAction": "copyPaste",
+                    "successExitCodes": [
+                      "0",
+                      "SIGINT",
+                      "SIGTERM"
+                    ],
+                    "terminalOptions": {
+                      "documentOverride": null
+                    },
+                    "type": "integrated",
+                    "useWin32Conhost": true
+                  },
+                  "serial": null
+                }
+              },
+              "pinned": true,
+              "icon": "terminal",
+              "title": "Terminal: ✳ Identify CPhI China 2026 Tier 1 prospects"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "03ec816ed760a45c",
+    "type": "split",
+    "children": [
+      {
+        "id": "ee250f9f9a66176e",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1843bbb611d3ac13",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "07d80e1a810b93c2",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "impor",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "1cc26c5d47ea1518",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 253.5
+  },
+  "right": {
+    "id": "515d1a5599e59f81",
+    "type": "split",
+    "children": [
+      {
+        "id": "224486a40af02328",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1f6bb355faeae7e8",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": true,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "a9fc90497e5ee0aa",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "ac7319ac39a638fa",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "0dc6327b957944dc",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "5ca37552c331d8f3",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          },
+          {
+            "id": "5ad7339c54c84839",
+            "type": "leaf",
+            "state": {
+              "type": "calendar",
+              "state": {},
+              "icon": "calendar-with-checkmark",
+              "title": "Calendar"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false,
+      "graph:Open graph view": false,
+      "terminal:Open terminal": false,
+      "smart-templates:Smart Templates: Open template context": false
+    }
+  },
+  "active": "baacdafd2b31998e",
+  "lastOpenFiles": [
+    "_context/session-log.md",
+    "_context/abm-accounts.md",
+    "_context/lead-gen-system.md",
+    "_context/competitive-landscape.md",
+    "_context/sales-process.md",
+    "_context/computer-use-rules.md",
+    "_context/autodream-memory.md",
+    "_context/kairos-instructions.md",
+    "_context/decision-log.md",
+    "_context/active-projects.md",
+    "_context/brand-voice.md",
+    "_context/team-map.md",
+    "_context/clients.md",
+    "_context/icp-rules.md",
+    "_context/financial-rules.md",
+    "CLAUDE.md",
+    "FirstRain-Intel/CLAUDE.md",
+    "08-Clients/Bechem",
+    "08-Clients/Messung",
+    "08-Clients/Mosil",
+    "08-Clients/Elliott-Ebara",
+    "08-Clients/Labguard",
+    "08-Clients/Iberchem",
+    "08-Clients/Amaara",
+    "08-Clients/Gerresheimer",
+    "08-Clients/Christie-Digital",
+    "08-Clients/Secure-Meters",
+    "FirstRain-Intel/wiki/shows/food-hospitality-thailand-2026.md",
+    "FirstRain-Intel/wiki/shows/vietfish-2026.md",
+    "FirstRain-Intel/wiki/shows/india-international-food-tech-expo.md",
+    "FirstRain-Intel/wiki/shows/sign-india-delhi.md",
+    "FirstRain-Intel/wiki/shows/hi-india-2026.md",
+    "FirstRain-Intel/wiki/shows/india-health-exhibition.md",
+    "FirstRain-Intel/wiki/shows/agribiz-connect.md",
+    "FirstRain-Intel/wiki/shows/mobileacc-expo.md",
+    "FirstRain-Intel/wiki/shows/biopharma-conclave.md"
+  ]
+}

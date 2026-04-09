@@ -32,7 +32,9 @@
       "WebSearch",
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(*)",
-      "WebFetch(domain:google.com)"
+      "WebFetch(domain:google.com)",
+      "mcp__4f0ff3f0-60f2-4485-9022-56005bb68c69__notion-create-database",
+      "mcp__4f0ff3f0-60f2-4485-9022-56005bb68c69__notion-update-data-source"
     ]
   }
 }

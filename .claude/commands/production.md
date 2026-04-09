@@ -1,77 +1,67 @@
 # /production — First Rain Production Check
 
-## APPROACH — 2 rounds. Always live. No cache.
+## APPROACH — 1 fetch. Always live. No cache.
 
-**Round 1:** 7 parallel searches of Tasks DB → collect all task URLs
-**Round 2:** Batch fetch all URLs in parallel → Status + Project per task
-**Output:** Grouped by project, DONE / PENDING split, flags applied.
+Fetch the ⚡ FR Production Tracker FY27 collection in a single call.
+Parse all 31 milestone rows. Output grouped status per project.
+
+**Collection:** `collection://965e6417-5103-4dd0-9b9f-b082bfe0a75f`
+**Board URL:** https://www.notion.so/ac84c676ad7249d2a79732d842f71d62
 
 ---
 
 ## KNOWN PROJECT MAP — hardcoded, no re-fetch needed
 
-| Project URL contains | Name | Show | Dates | Days | Exec | Fabricator |
+| Column Name | Project | Show | Dates | Days to Show | Exec | Fabricator |
 |---|---|---|---|---|---|---|
-| `334772f4...c381` | Bechem BME'26 | BME Delhi | 8–9 Apr 2026 | 7 | Chinmay | ⚠️ BLANK |
-| `335772f4...5892` | Labguard Anacon'26 | Analytica Lab India | 22–24 Apr 2026 | 21 | Smita | ⚠️ BLANK |
-| `7ea772f4...82ff` | Mosil IDMC'26 | IDMC Lucknow | 23–24 Apr 2026 | 22 | Dhruv | Nandu |
-| `325772f4...8073` | Messung SHE'26 | Smart Home Expo | 28–30 Apr 2026 | 27 | Shilpa | Rahul Exporacle |
-| `334772f4...c984` | Amaara Vitafoods | Vitafoods Europe | 5–7 May 2026 | 34 | Shilpa | Ashok Saltwater |
-
-**Tasks DB:** `collection://fe5772f4-6bf1-825a-95f1-07c0e17ebf31`
+| Bechem BME26 | Bechem BME'26 | BME Delhi | 8–9 Apr 2026 | 6 | Chinmay | ⚠️ BLANK |
+| Labguard Anacon26 | Labguard Anacon'26 | Analytica Lab India | 22–24 Apr 2026 | 20 | Smita | ⚠️ BLANK |
+| Mosil IDMC26 | Mosil IDMC'26 | IDMC Lucknow | 23–24 Apr 2026 | 21 | Dhruv | Nandu |
+| Messung SHE26 | Messung SHE'26 | Smart Home Expo | 28–30 Apr 2026 | 26 | Shilpa | Rahul Exporacle |
+| Amaara Vitafoods26 | Amaara Vitafoods | Vitafoods Europe | 5–7 May 2026 | 33 | Shilpa | Ashok Saltwater |
 
 ---
 
-## ROUND 1 — 7 Parallel Searches
+## STEP 1 — Single Fetch
 
-Search `collection://fe5772f4-6bf1-825a-95f1-07c0e17ebf31` with ALL 7 queries simultaneously.
-Use `page_size=25, max_highlight_length=0` on every call.
+Call `notion-fetch` on the board URL:
+```
+https://www.notion.so/ac84c676ad7249d2a79732d842f71d62
+```
 
-| # | Query |
-|---|---|
-| 1 | `proforma invoice advance customer received` |
-| 2 | `costing drawing technical drawing submission organizer` |
-| 3 | `fabricator finalisation advance fabricator security deposit` |
-| 4 | `internal execution meeting design approval mockup` |
-| 5 | `onsite schedule crew booking travel expense approval` |
-| 6 | `installation supervision possession handover pics` |
-| 7 | `dismantling final invoice payment customer fabricator` |
+Or search collection `collection://965e6417-5103-4dd0-9b9f-b082bfe0a75f` with an empty/broad query, `page_size=50`.
 
-Collect all **unique** task URLs across all 7 results. Deduplicate by URL.
-
----
-
-## ROUND 2 — Batch Fetch All Tasks (single parallel burst)
-
-Fetch every unique task URL from Round 1 **in parallel** (one message, many tool calls).
-From each page, extract:
-- `Task Name` — strip number prefix (e.g. `"1-"`, `"3- "`, `"8 - "`) and project suffix (e.g. `" (1)"`, `" (2)"`) for display
-- `Status` — one of: Done / In progress / Not started / On Hold / To Review
-- `Project` — array of URLs → match against PROJECT MAP above using URL snippet
+Each row returns:
+- `Milestone` — task name (e.g. "T04 Fabricator Finalisation")
+- `Bechem BME26` — `__YES__` or `__NO__`
+- `Labguard Anacon26` — `__YES__` or `__NO__`
+- `Mosil IDMC26` — `__YES__` or `__NO__`
+- `Messung SHE26` — `__YES__` or `__NO__`
+- `Amaara Vitafoods26` — `__YES__` or `__NO__`
 
 ---
 
-## STEP 3 — Group & Sort
+## STEP 2 — Parse & Transpose
 
-- Group tasks by project
-- Within each project, sort by task number (numeric prefix)
-- Split into **DONE** (Status = Done) and **PENDING** (everything else)
-- Output projects ordered by show date (Bechem first, Amaara last)
+For each project column, collect:
+- **DONE** tasks: rows where that column = `__YES__`
+- **PENDING** tasks: rows where that column = `__NO__`
+
+Sort by task number (numeric prefix T01, T02 … T31).
 
 ---
 
-## STEP 4 — Critical Path Rules
+## STEP 3 — Critical Path Rules
 
 Apply **per project** based on days to show:
 
-| Days to show | Tasks that must be Done | Severity |
+| Days to show | Tasks that must be ✅ | Severity |
 |---|---|---|
-| < 7 days | ALL tasks 1–20 | 🔴 URGENT |
-| 7–14 days | Tasks 1–19 | 🔴 flag |
-| 15–30 days | Tasks 1–12 | 🟠 flag |
-| > 30 days | Tasks 1–4 | ⚠️ warn if Not Started |
+| < 7 days | ALL tasks T01–T20 | 🔴 URGENT |
+| 7–14 days | T01–T19 | 🔴 flag |
+| 15–30 days | T01–T12 | 🟠 flag |
+| > 30 days | T01–T04 | ⚠️ warn if pending |
 
-Flag **any** On Hold task regardless of days.
 Flag **missing fabricator** regardless of days.
 
 ---
@@ -80,19 +70,19 @@ Flag **missing fabricator** regardless of days.
 
 ```
 [PROJECT NAME]
-Expo: DD Mon → DD Mon | Fabricator: [name or ⚠️ BLANK]
+Show: DD Mon → DD Mon | Exec: [name] | Fabricator: [name or ⚠️ BLANK]
 
-DONE: ✅
-- Task name
-- Task name
+✅ DONE (N):
+T01 Proforma Invoice Sent
+T04 Fabricator Finalisation
 
-PENDING:
-- 🔵 Task name  ← In Progress
-- ⬜ Task name  ← Not Started
-- 🟠 Task name  ← On Hold
+⬜ PENDING (N):
+T02 Advance Received – Client
+T03 Costing & Drawing
+...
 
 ⚠️ FLAGS
-- [Task name] — not Done, [N] days to show (critical path breach)
+- T03 Costing & Drawing — pending, 6 days to show (critical path breach)
 - Fabricator not set — assign before fabrication starts
 ```
 
@@ -108,12 +98,48 @@ Active: 5 | Closest: [Project] in [N] days | Open flags: [N]
 ---
 
 ## STATUS LEGEND
-✅ Done · 🔵 In Progress · ⬜ Not Started · 🟠 On Hold · 🔁 To Review
+✅ Done (checked) · ⬜ Pending (unchecked)
 
 ---
 
 ## UPDATING TASKS
 
-- **"mark [project] task [name] done"** → use `notion-update-page` on that task's URL, set `Status = Done`
-- **"refresh production"** → re-run from Round 1 (always live, no stale data)
-- Task URLs are discovered fresh each run — nothing to maintain manually
+- **"mark [project] [task] done"** → use `notion-update-page` on the T-row's page URL, set the project's checkbox = `__YES__`
+- **"refresh production"** → re-fetch the board URL (always live, no stale data)
+- To find a row's page URL: it was returned in the original create-pages call, or fetch the collection and get the page ID from results
+
+## MILESTONE ROW PAGE IDs (for direct updates)
+
+| Milestone | Page URL |
+|---|---|
+| T01 Proforma Invoice Sent | https://www.notion.so/336772f46bf181c4aeacf002b54ba580 |
+| T02 Advance Received – Client | https://www.notion.so/336772f46bf181f699ccd0b0bd4b3831 |
+| T03 Costing & Drawing | https://www.notion.so/336772f46bf181e4a7fcd57030b62fc0 |
+| T04 Fabricator Finalisation | https://www.notion.so/336772f46bf181e9981ed05637ea8045 |
+| T05 Advance to Fabricator | https://www.notion.so/336772f46bf1812ba493c7a2c7ec41a1 |
+| T06 Internal Execution Meeting | https://www.notion.so/336772f46bf18199a85dcdcfef9517a1 |
+| T07 Technical Drawing | https://www.notion.so/336772f46bf181dd9a64e1b525791605 |
+| T08 Fabricator Meeting | https://www.notion.so/336772f46bf18157a6d9dafaf3870be5 |
+| T09 Submission Drawings | https://www.notion.so/336772f46bf181f78e72ccd31c47d032 |
+| T10 Design Approval + Permission to Build | https://www.notion.so/336772f46bf1819bb850cd5f59b59122 |
+| T11 Organiser Form Submissions | https://www.notion.so/336772f46bf181b28666c386afee49db |
+| T12 Security Deposit | https://www.notion.so/336772f46bf1813a9075fdf2c2e73bd7 |
+| T13 Material Approval from MAM | https://www.notion.so/336772f46bf181a2bfdbc21c7604c7ac |
+| T14 Mock Up | https://www.notion.so/336772f46bf181a4b88dc58d9ffa45db |
+| T15 Onsite Schedule from Fabricator | https://www.notion.so/336772f46bf1812295acc0102d15798d |
+| T16 Travel Expense Approval | https://www.notion.so/336772f46bf181bd926df6f35ba2f955 |
+| T17 Crew Travel Booking | https://www.notion.so/336772f46bf181f0b934de3f22cd7886 |
+| T18 Graphics & Logo Checking | https://www.notion.so/336772f46bf181468a1edbd9317b7d0b |
+| T19 Graphics & Logo to Fabricator | https://www.notion.so/336772f46bf181a7978ceaece098b5e7 |
+| T20 Possession Pics | https://www.notion.so/336772f46bf181f4adb2f35893a2f574 |
+| T21 Installation Started | https://www.notion.so/336772f46bf181898363d410a11655e2 |
+| T22 Handover Pics | https://www.notion.so/336772f46bf1810ab353e0ce58cc0b4d |
+| T23 Dismantling Pics | https://www.notion.so/336772f46bf181d4a9c3d5acdfd93032 |
+| T24 Incremental Billing (IA) | https://www.notion.so/336772f46bf181078288d1ca2520173e |
+| T25 Customer Feedback Meeting | https://www.notion.so/336772f46bf1815f9910de6e8523c0d5 |
+| T26 Thank You Mail | https://www.notion.so/336772f46bf18136bf67e8dbe0bf508c |
+| T27 Final Invoice | https://www.notion.so/336772f46bf1817cbf88f79d0e63f91a |
+| T28 Final Payment | https://www.notion.so/336772f46bf181a89275ffc9ba164c3b |
+| T29 Deposit Return | https://www.notion.so/336772f46bf181e78569c533cb872af9 |
+| T30 Fabricator Feedback Meeting | https://www.notion.so/336772f46bf18119afd3ef9f97c2e794 |
+| T31 Fabricator Final Meeting | https://www.notion.so/336772f46bf18112b0a9c7aa4c097152 |
