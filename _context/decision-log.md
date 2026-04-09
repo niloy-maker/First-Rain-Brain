@@ -17,3 +17,4 @@
 | 9 Apr 2026  | Zoho Books = proposals/estimation only. Tally = actual invoicing source of truth. | Discovered during FY25-26 client file build. All Zoho "draft" invoices are estimates. | Sonal | Confirmed |
 | 9 Apr 2026  | Kelegent Metaplast = same customer as Shree Mahavir Metal (renamed). Two Zoho records to merge. | Found during 08-Clients build — identical amounts, same dates. | Sonal | To action |
 | 9 Apr 2026  | Scatterpie Analytics = tenant, not exhibition client. ₹2,12,400/month rent. Exclude from revenue/CM%. | Confirmed by Niloy during FY25-26 client file review. | Sonal | Confirmed |
+| 9 Apr 2026  | Telegram integration live. First Rain Brain accessible via bot. DM policy set to allowlist. | Mobile access to Brain — Niloy can run /context, /end etc. from phone. | Niloy | Done |

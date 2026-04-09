@@ -530,3 +530,83 @@ Open items:
 Next action: Fix git identity. BenAI meeting with Aryan today.
 ---
 [HOOK] Thu Apr  9 20:36:16 IST 2026 — session active
+[HOOK] Thu Apr  9 20:36:22 IST 2026 — session active
+[HOOK] Thu Apr  9 22:05:51 IST 2026 — session active
+[HOOK] Thu Apr  9 22:05:51 IST 2026 — session active
+[HOOK] Thu Apr  9 22:05:53 IST 2026 — session active
+[HOOK] Thu Apr  9 22:18:47 IST 2026 — session active
+[HOOK] Thu Apr  9 22:18:48 IST 2026 — session active
+[HOOK] Thu Apr  9 22:19:08 IST 2026 — session active
+[HOOK] Thu Apr  9 22:23:04 IST 2026 — session active
+[HOOK] Thu Apr  9 22:23:18 IST 2026 — session active
+[HOOK] Thu Apr  9 22:23:32 IST 2026 — session active
+[HOOK] Thu Apr  9 22:23:42 IST 2026 — session active
+[HOOK] Thu Apr  9 22:25:40 IST 2026 — session active
+[HOOK] Thu Apr  9 22:25:42 IST 2026 — session active
+[HOOK] Thu Apr  9 22:25:42 IST 2026 — session active
+[HOOK] Thu Apr  9 22:29:26 IST 2026 — session active
+[HOOK] Thu Apr  9 22:29:55 IST 2026 — session active
+[HOOK] Thu Apr  9 22:30:09 IST 2026 — session active
+[HOOK] Thu Apr  9 22:30:54 IST 2026 — session active
+[HOOK] Thu Apr  9 22:41:35 IST 2026 — session active
+[HOOK] Thu Apr  9 22:41:44 IST 2026 — session active
+[HOOK] Thu Apr  9 22:41:53 IST 2026 — session active
+[HOOK] Thu Apr  9 22:42:17 IST 2026 — session active
+[HOOK] Thu Apr  9 22:42:30 IST 2026 — session active
+[HOOK] Thu Apr  9 22:42:47 IST 2026 — session active
+[HOOK] Thu Apr  9 22:42:49 IST 2026 — session active
+[HOOK] Thu Apr  9 22:44:02 IST 2026 — session active
+[HOOK] Thu Apr  9 22:44:04 IST 2026 — session active
+[HOOK] Thu Apr  9 22:44:05 IST 2026 — session active
+[HOOK] Thu Apr  9 22:44:07 IST 2026 — session active
+[HOOK] Thu Apr  9 22:44:16 IST 2026 — session active
+[HOOK] Thu Apr  9 22:44:45 IST 2026 — session active
+[HOOK] Thu Apr  9 22:44:47 IST 2026 — session active
+[HOOK] Thu Apr  9 22:45:19 IST 2026 — session active
+[HOOK] Thu Apr  9 22:45:32 IST 2026 — session active
+[HOOK] Thu Apr  9 22:45:53 IST 2026 — session active
+[HOOK] Thu Apr  9 22:45:54 IST 2026 — session active
+[HOOK] Thu Apr  9 22:45:56 IST 2026 — session active
+[HOOK] Thu Apr  9 22:45:59 IST 2026 — session active
+[HOOK] Thu Apr  9 22:46:01 IST 2026 — session active
+[HOOK] Thu Apr  9 22:46:13 IST 2026 — session active
+[HOOK] Thu Apr  9 22:46:24 IST 2026 — session active
+[HOOK] Thu Apr  9 22:46:30 IST 2026 — session active
+[HOOK] Thu Apr  9 22:46:35 IST 2026 — session active
+[HOOK] Thu Apr  9 22:46:47 IST 2026 — session active
+[HOOK] Thu Apr  9 22:46:51 IST 2026 — session active
+[HOOK] Thu Apr  9 22:47:04 IST 2026 — session active
+[HOOK] Thu Apr  9 22:47:08 IST 2026 — session active
+[HOOK] Thu Apr  9 22:47:20 IST 2026 — session active
+
+---
+Date: 9 April 2026 (session 3 — Telegram integration)
+Key decisions:
+- Telegram channel live — sender 8770250893 paired and approved via code e90d70
+- DM policy switched from "pairing" to "allowlist" (locked down to approved sender only)
+- First Rain Brain now accessible via Telegram — /context tested and working
+Open items:
+- Amaara CM% still unconfirmed with Shilpa (Vitafoods Europe ~5 May approaching)
+- Secure Utility Week repricing outstanding (₹43.55L min SP or CP ≤₹26.04L)
+- 77 High ICP shows Jun–Aug — Pankaj exhibitor pulls not started
+- Bechem BME Delhi (today) — confirm execution status with Chinmay
+Next action: Chase Amaara ₹34L receivable + confirm CM% with Shilpa
+---
+[HOOK] Thu Apr  9 22:47:36 IST 2026 — session active
+
+---
+Date: 9 April 2026 (session 3 — Telegram integration)
+Key decisions:
+- Telegram channel live — sender 8770250893 paired and approved via code e90d70
+- DM policy switched from pairing to allowlist (locked down to approved sender only)
+- First Rain Brain now accessible via Telegram — /context tested and working
+Open items:
+- Amaara CM% still unconfirmed with Shilpa (Vitafoods Europe ~5 May approaching)
+- Secure Utility Week repricing outstanding (Rs43.55L min SP or CP <=Rs26.04L)
+- 77 High ICP shows Jun-Aug — Pankaj exhibitor pulls not started
+- Bechem BME Delhi (today) — confirm execution status with Chinmay
+Next action: Chase Amaara Rs34L receivable + confirm CM% with Shilpa
+---
+[HOOK] Thu Apr  9 22:47:50 IST 2026 — session active
+[HOOK] Thu Apr  9 22:47:57 IST 2026 — session active
+[HOOK] Thu Apr  9 22:48:09 IST 2026 — session active
