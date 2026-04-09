@@ -13,3 +13,4 @@
 | 8 Apr 2026  | Obsidian vault upgraded to v6.1              | Eliminated duplication. Hooks + _context/ system | Niloy | In Progress |
 | 8 Apr 2026  | FirstRain-Intel wiki built on Karpathy pattern| CPhI China 252 contacts ingested | Niloy | Live    |
 | 8 Apr 2026  | Vault v6.1 fully operational                 | 14 context files, 15 skills, hooks, 238 show pages, 2 competitor profiles | Niloy | Done |
+| 9 Apr 2026  | SOP: Weekly receivables chase cycle created  | Amaara ₹34L backlog exposed the gap. Sonal owns. Runs every Monday. | Sonal | Active |
