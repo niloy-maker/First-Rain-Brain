@@ -1,17 +1,32 @@
-Update MEMORY.md with key decisions from this conversation.
+Update session records with key decisions from this conversation.
 
-Specifically:
-1. Add a new entry under Running Log with today's date and time
-2. Update any receivables status that changed
-3. Update any quote decisions that were made
-4. Update any project flags that were resolved or created
-5. Update the system status table if any new files were built
+Ask: "What happened today? Give me 3–5 bullets." Wait for response.
+
+Then make exactly these changes:
+
+**1. Append to `_context/session-log.md`:**
+```
+---
+Date: [today] | Key decisions: [bullets] | Open items: [unresolved]
+Next action: [clearest next step]
+---
+```
+
+**2. If today had a financial, client, people, or strategic decision:**
+Add one row to `_context/decision-log.md`. Otherwise do not add.
+
+**3. Update `_context/autodream-memory.md`** with any verified fact changes
+(numbers, receivables, project status, quotes confirmed).
+
+**4. Update `_context/active-projects.md`** if any project status changed.
 
 Show me the exact changes before saving. Wait for my approval.
 
-After I approve, save the changes AND automatically run these git commands to push to GitHub:
-1. git add MEMORY.md .claude/commands/start.md .claude/commands/end.md
-2. git commit -m "Session update: memory saved [date]"
-3. git push origin main
+After approval, save all changed files and run:
+```
+git add _context/session-log.md _context/decision-log.md _context/autodream-memory.md _context/active-projects.md
+git commit -m "Session update: [date]"
+git push origin main
+```
 
-Confirm to me when the push is complete.
+Confirm when push is complete.

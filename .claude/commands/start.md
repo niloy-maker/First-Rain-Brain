@@ -1,18 +1,18 @@
-## Step 0 — Sync live memory from GitHub
-Fetch this URL using the WebFetch tool:
-https://raw.githubusercontent.com/niloy-maker/First-Rain-Brain/main/MEMORY.md
+## Step 0 — Load vault context
+Read these three files in order:
+1. `_context/active-projects.md`
+2. `_context/decision-log.md` 
+3. `_context/session-log.md` (last 3 entries only)
 
-Use this fetched content as the active MEMORY.md for this session.
-Ignore the local MEMORY.md — treat it as potentially stale.
-If the fetch fails, fall back to the local MEMORY.md and warn:
-"⚠️ GitHub sync failed — reading from local file. May be stale."
+## Step 1 — Summarise in 5 bullets
+1. 🔴 Active alerts (from financial-rules.md: cash, concentration, margin breaches)
+2. 🔴 Receivables — top 3 by amount (from active-projects.md or financial-rules.md)
+3. 🟠 Active projects — show date + days remaining (from active-projects.md)
+4. 🟠 Open quote decisions (from active-projects.md)
+5. 📝 Last session — date + key decisions made (from session-log.md)
 
-## Step 1 — Summarise
-From the fetched memory, summarise in 5 bullets:
-1. 🔴 Active alerts
-2. 🔴 Receivables — top 3 by amount
-3. 🟠 Active projects — show date + days remaining
-4. 🟠 Open quote decisions
-5. 📝 Last session — date + key decisions made
+Then say: "First Rain V2 loaded. What are we working on today?"
 
-Then say: "Memory loaded from GitHub. What are we working on today?"
+## Fallback — if _context/ files are missing
+Warn: "⚠️ _context/ files not found. Is Claude Code pointed at the vault root?"
+Check: `ls _context/` to verify the vault is the working directory.

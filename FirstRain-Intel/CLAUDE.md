@@ -6,39 +6,17 @@
 
 ---
 
-## Ideal Customer Profile (ICP)
-
-| Attribute | Criteria |
-|---|---|
-| Type | Indian companies exhibiting at B2B trade shows |
-| Revenue | ₹100 Crore+ annual revenue |
-| Show frequency | 2+ trade shows per year |
-| Geography | India-headquartered; exhibiting domestically or internationally |
-
----
-
-## Priority Sectors
-
-Track intelligence on companies and trends in these sectors above all others:
-
-1. **Energy / Smart Metering**
-2. **Pharma**
-3. **Specialty Chemicals**
-4. **HVAC**
-5. **AV / Tech**
-
----
+## ICP, Priority Sectors and Disqualifiers
+Load `../_context/icp-rules.md` — do not duplicate here.
+That file is the single source of truth. Use it to:
+- Qualify or disqualify any company before writing an intel article
+- Confirm sector priority when tagging articles
+- Apply BBANTI framework when evaluating show exhibitor lists
 
 ## Priority Shows
-
-Monitor exhibitor lists, floor plans, and industry news for these shows:
-
-1. **CPhI India** — Pharma
-2. **Elecrama** — Energy / Power / Smart Metering
-3. **ACREX** — HVAC / Building Services
-4. **Intersolar India** — Solar / Renewable Energy
-5. **Hannover Messe India** — Industrial Technology
-6. **bauma CONEXPO India** — Construction / Mining Equipment
+Load `../_context/lead-gen-system.md` for the full show calendar.
+The Intel wiki covers shows that are in scope per that file.
+When in doubt about whether a show is worth tracking: check if it appears in lead-gen-system.md first.
 
 ---
 
