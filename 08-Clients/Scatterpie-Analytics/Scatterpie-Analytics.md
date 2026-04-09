@@ -1,13 +1,15 @@
 # Scatterpie Analytics Private Limited
 
+> 🏢 TENANT — Not an exhibition client. Monthly office rent billing.
+
 ## Key Contacts
 | Name | Role | Channel |
 |---|---|---|
 | TBC | Primary | — |
 
-**Exec owner:** TBC
+**Exec owner:** Niloy (property / admin)
 
-## FY 2025-26 Invoice History
+## FY 2025-26 Rent Invoice History
 | Invoice | Date | Amount | Status |
 |---|---|---|---|
 | S/25-26/009 | 21 May 2025 | ₹2,12,400 | Draft |
@@ -22,11 +24,10 @@
 | S/25-26/065 | 06 Feb 2026 | ₹2,12,400 | Draft |
 | S/25-26/069 | 02 Mar 2026 | ₹2,12,400 | Draft |
 
-**FY25-26 Total Billed: ₹23,36,400**
-**FY25-26 Outstanding: ₹23,36,400**
-**FY25-26 Collected: ₹0**
+**FY25-26 Total Billed: ₹23,36,400 (rent)**
+**Note: Actual invoicing in Tally. Zoho used for estimation only.**
 
 ## Notes
-- 11 invoices at identical ₹2,12,400 each — monthly billing pattern (May 2025 – Mar 2026)
-- ⚠️ Unusual pattern: fixed monthly invoicing suggests a retainer or SaaS-type arrangement, not exhibition stands. Verify with Niloy / Sonal what this billing is for.
-- All invoices in draft — none marked sent or paid. Verify with Sonal.
+- TENANT — monthly rent ₹2,12,400. Not to be included in exhibition revenue or client scorecard.
+- Exclude from: ICP scoring, growth pipeline, CM% calculations, receivables chase (separate from client AR).
+- Rent reconciliation to be handled by Sonal via Tally.

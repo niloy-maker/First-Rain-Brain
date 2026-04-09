@@ -20,4 +20,5 @@
 ## Notes
 - Jewellery sector
 - Contact listed in _context/clients.md (Khushboo)
-- ⚠️ Harshit Gold Pvt Ltd invoiced same dates and same amounts (S/25-26/025 ₹6,94,135 + S/25-26/031 ₹7,778 on 16-19 Sep 2025) — likely the same show with two separate entities. Verify with Chinmay / Sonal that these are distinct projects, not duplicates.
+- Same project as Harshit Gold — billing split across two legal entities at the same show. Both maintained as separate customers.
+- Treat as group relationship: when quoting, both entities may be at the same show.

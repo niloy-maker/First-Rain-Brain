@@ -57,6 +57,20 @@ Flag immediately if any subsequent Amaara quote comes in below 33%.
 - Blended CM%: 40.4% (NOT 51% — earlier estimate was an error)
 - FY26 closed at deficit ~₹8L against ₹2.76 Cr annual burn
 
+## ZOHO vs TALLY — CRITICAL SYSTEM NOTE
+**Zoho Books is used for Quotation / Estimation / Proposal only.**
+**Actual invoicing happens in Tally. Tally is the financial source of truth.**
+
+Implications:
+- Never use Zoho invoice totals for revenue or receivables reporting — use Tally
+- All "draft" invoices in Zoho are proposals/estimates, not actual invoices
+- Zoho outstanding balances ≠ actual AR — always cross-check with Tally / Sonal
+- agent-finance must pull actuals from Sonal / Tally, not from Zoho invoice API
+- Scatterpie Analytics ₹23,36,400 in Zoho = rental income, not exhibition revenue — Tally handles separately
+
+## Non-exhibition revenue (exclude from CM% and client scorecard)
+- Scatterpie Analytics — TENANT. Monthly rent ₹2,12,400. Not a client. Handle via Tally / Sonal only.
+
 ## FY26-27 pipeline status
 - Confirmed pipeline SP: ₹3.92 Cr
 - At 40.4% CM: contribution ~₹1.58 Cr vs ₹3.06 Cr burn = ₹1.48 Cr deficit

@@ -19,5 +19,5 @@
 
 ## Notes
 - Jewellery sector
-- ⚠️ Swarn Shilp invoiced same amounts on same dates — likely same jewellery show, two exhibiting entities. Verify with team that these are distinct projects.
+- Same project as Swarn Shilp — billing split across two legal entities at the same show. Both maintained as separate customers.
 - Assign exec owner and contact.
