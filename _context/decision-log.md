@@ -14,3 +14,6 @@
 | 8 Apr 2026  | FirstRain-Intel wiki built on Karpathy pattern| CPhI China 252 contacts ingested | Niloy | Live    |
 | 8 Apr 2026  | Vault v6.1 fully operational                 | 14 context files, 15 skills, hooks, 238 show pages, 2 competitor profiles | Niloy | Done |
 | 9 Apr 2026  | SOP: Weekly receivables chase cycle created  | Amaara ₹34L backlog exposed the gap. Sonal owns. Runs every Monday. | Sonal | Active |
+| 9 Apr 2026  | Zoho Books = proposals/estimation only. Tally = actual invoicing source of truth. | Discovered during FY25-26 client file build. All Zoho "draft" invoices are estimates. | Sonal | Confirmed |
+| 9 Apr 2026  | Kelegent Metaplast = same customer as Shree Mahavir Metal (renamed). Two Zoho records to merge. | Found during 08-Clients build — identical amounts, same dates. | Sonal | To action |
+| 9 Apr 2026  | Scatterpie Analytics = tenant, not exhibition client. ₹2,12,400/month rent. Exclude from revenue/CM%. | Confirmed by Niloy during FY25-26 client file review. | Sonal | Confirmed |
