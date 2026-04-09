@@ -34,7 +34,9 @@
       "Bash(*)",
       "WebFetch(domain:google.com)",
       "mcp__4f0ff3f0-60f2-4485-9022-56005bb68c69__notion-create-database",
-      "mcp__4f0ff3f0-60f2-4485-9022-56005bb68c69__notion-update-data-source"
+      "mcp__4f0ff3f0-60f2-4485-9022-56005bb68c69__notion-update-data-source",
+      "mcp__claude_ai_Notion__notion-fetch",
+      "mcp__claude_ai_Notion__notion-search"
     ]
   }
 }

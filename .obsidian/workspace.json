@@ -46,7 +46,17 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "Terminal: ✳ Identify CPhI China 2026 Tier 1 prospects"
+              "title": "Terminal: ⠂ Switch to Sonnet 4.6 medium effort"
+            }
+          },
+          {
+            "id": "94390f0efb553775",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
             }
           }
         ]
@@ -222,6 +232,9 @@
   },
   "active": "baacdafd2b31998e",
   "lastOpenFiles": [
+    "_outputs/audit-log.md",
+    "R_Resources.md",
+    "MEMORY.md",
     "_context/session-log.md",
     "_context/abm-accounts.md",
     "_context/lead-gen-system.md",
@@ -254,9 +267,6 @@
     "FirstRain-Intel/wiki/shows/india-international-food-tech-expo.md",
     "FirstRain-Intel/wiki/shows/sign-india-delhi.md",
     "FirstRain-Intel/wiki/shows/hi-india-2026.md",
-    "FirstRain-Intel/wiki/shows/india-health-exhibition.md",
-    "FirstRain-Intel/wiki/shows/agribiz-connect.md",
-    "FirstRain-Intel/wiki/shows/mobileacc-expo.md",
-    "FirstRain-Intel/wiki/shows/biopharma-conclave.md"
+    "FirstRain-Intel/wiki/shows/india-health-exhibition.md"
   ]
 }

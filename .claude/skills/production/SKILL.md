@@ -13,11 +13,11 @@ _context/active-projects.md — for show dates and exec assignments
 Show all Closed Won projects from active-projects.md with days to show.
 
 ## Step 2 — Fetch live task status from Notion
-Notion Projects DB: collection://d62772f4-6bf1-82e3-b83d-077710962b4f
-Notion Tasks DB: collection://fe5772f4-6bf1-825a-95f1-07c0e17ebf31
+Fetch this Notion page directly:
+https://www.notion.so/firstraingroup/ac84c676ad7249d2a79732d842f71d62?v=dc05f7f9a3b4419c887f969f355f18db
 
-For each project: search Tasks DB by project name.
-Retrieve: Task Name, Status, Assigned, Due Date.
+Use notion-fetch with the page/database URL above.
+Retrieve all tasks: Task Name, Status, Assigned, Due Date, Project.
 
 ## Task status legend
 ✅ Done · 🔵 In Progress · 🟠 On Hold · 🟣 To Review · ⬜ Not Started · ❌ Cancelled
