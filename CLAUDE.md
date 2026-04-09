@@ -64,7 +64,7 @@ Run before every major recommendation:
 3+ No → flag before proceeding.
 
 ## SKILLS (invoke with /skill-name)
-/margin-gate · /context · /close · /today · /ghost · /monday · /challenge
+/margin-gate · /context · /end · /today · /ghost · /monday · /challenge
 /production · /lookalike-finder · /outbound-email · /linkedin-post
 /stand-design-brief · /doha-protocol · /sales-hunter-jd · /ultraplan-trigger
 

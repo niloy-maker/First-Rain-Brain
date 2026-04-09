@@ -47,3 +47,36 @@ Open items:
 - /close skill not recognized by CLI — skills directory may need session restart to load
 Next action: Reprice Secure Utility Week. Chase Amaara ₹34L receivable + confirm CM%.
 ---
+[HOOK] Thu Apr  9 15:00:58 IST 2026 — session active
+[HOOK] Thu Apr  9 15:00:59 IST 2026 — session active
+[HOOK] Thu Apr  9 15:00:59 IST 2026 — session active
+[HOOK] Thu Apr  9 15:02:19 IST 2026 — session active
+[HOOK] Thu Apr  9 15:02:32 IST 2026 — session active
+[HOOK] Thu Apr  9 15:02:32 IST 2026 — session active
+[HOOK] Thu Apr  9 15:02:39 IST 2026 — session active
+[HOOK] Thu Apr  9 15:02:46 IST 2026 — session active
+[HOOK] Thu Apr  9 15:02:53 IST 2026 — session active
+[HOOK] Thu Apr  9 15:02:54 IST 2026 — session active
+[HOOK] Thu Apr  9 15:02:54 IST 2026 — session active
+[HOOK] Thu Apr  9 15:03:14 IST 2026 — session active
+[HOOK] Thu Apr  9 15:03:18 IST 2026 — session active
+[HOOK] Thu Apr  9 15:14:17 IST 2026 — session active
+[HOOK] Thu Apr  9 15:14:46 IST 2026 — session active
+[HOOK] Thu Apr  9 15:14:54 IST 2026 — session active
+
+---
+Date: 9 April 2026 (session 2 — tooling cleanup)
+Key decisions:
+- Clarified /end vs /close — /end is the real session-closer; /close was a ghost skill registration (no SKILL.md on disk)
+- Fixed CLAUDE.md line 67 — replaced /close with /end in skills list
+- Confirmed Claude Code (terminal) and Claude Desktop Code tab are equivalent when pointed at vault root — same engine, separate session histories
+- Decided AGAINST mirroring full vault into a Claude.ai Project — stale snapshots create two sources of truth, violates v6.1 anti-duplication principle
+- Agreed on narrow Chat Project scope only: 5 stable anchor files (CLAUDE.md, brand-voice, icp-rules, financial-rules, clients) for mobile drafting. Never upload active-projects, decision-log, or session-log
+Open items:
+- Ghost /close skill registration still appears in in-memory skills index — clears on next CLI restart
+- FirstRain_Master_Prompt_v2_updated_27.3.26.md still sitting in vault root (pre-v6.1 monolithic prompt) — candidate for archive to _context/archive/
+- Secure Utility Week repricing still outstanding from prior session
+- Amaara CM% still unconfirmed with Shilpa
+Next action: Restart Claude Code CLI to clear ghost /close skill. Then reprice Secure Utility Week and chase Amaara.
+---
+[HOOK] Thu Apr  9 15:15:02 IST 2026 — session active
