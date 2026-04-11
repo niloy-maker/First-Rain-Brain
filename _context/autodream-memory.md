@@ -46,8 +46,15 @@
 - CPhI China campaign live: W1 tasks due Dhruv + Pankaj by 13 April
 - As Built document created: _outputs/FirstRain-OS-AsBuilt-2026-04-10.md (for BenAI meeting)
 - Brand voice (Exhibitions): fully rebuilt from StoryBrand BrandScript guide (Jan 2024). One-Liner, taglines, full framework in _context/brand-voice.md.
-- Scheduled reminders: Sales Circle + regional pricing (20 Apr), LinkedIn content strategy (20 Apr), Interiors brand voice (1 Jul).
+- Scheduled reminders: Sales Circle + regional pricing + tool stack review (20 Apr), LinkedIn content strategy (20 Apr), Interiors brand voice (1 Jul), competitive positioning review (1 Jul), Telegram team group chat decision (1 Jul 12:00).
 - ICP geography updated: India (Mumbai · Bengaluru · New Delhi · Greater Noida · Hyderabad · Chennai). International (Europe · SE Asia · China · Middle East · UK new market).
+- Dhruv removed from all campaign responsibilities (11 Apr). Pankaj (CrossNibble) = sole campaign owner (Tier 2 calls, Freckle, Lemlist, Wati, Google Ads). Bigin pipeline = Niloy only.
+- /schedule skill live (.claude/commands/schedule.md): Pankaj Google Drive report ingest + FirstRain-Intel show analysis 90-120 days + ICP picks per show + Telegram briefing + Gmail draft to niloy@firstrain.co.in. Also embedded in monday-sync.
+- Pankaj-Weekly-Report-Template.xlsx created: _outputs/Pankaj-Weekly-Report-Template.xlsx. 6 tabs (Weekly Leads, Google Ads Weekly, SEO Weekly, ABM Outreach, Task Tracker, Monthly Summary). Pankaj uploads to FirstRain-Weekly-Reports/Growth/Crossnibble/ on Google Drive. Must upload as Google Sheets format for auto-ingestion.
+- Google Drive Crossnibble folder ID: 13Wd4hJ9HIm3f2CbgwWh_dROijODDhLWQ
+- ABM sector list expanded to 13 sectors (11 Apr). Groups 1-3 fully populated (Electrical/Energy 18 accounts, Architecture/Interior 9 accounts, Construction Machinery 12 accounts). Groups 4-13 pending Niloy input.
+- Telegram message rules: instant alerts ≤300 chars. /monday and /schedule briefings = full format, no character limit. New triggers: Pankaj report missing + show within 90 days no outreach started.
+- monday-sync task updated (11 Apr): 9 steps — Notion + Bigin + Sonal report + Zoho Books + Pankaj report + show calendar Intel analysis (90-120 days) + update active-projects.md + Telegram + Gmail draft.
 - Team update 11 Apr: Sonal = Commercial Manager. Santosh = Sr Production Manager. Shilpa = Sr Project Executive (promoted). Komal = left. Chinmay = leaving for MBA ~1 year — succession in progress.
 
 ## Flagged for Niloy review

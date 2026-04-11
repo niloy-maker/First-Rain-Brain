@@ -976,3 +976,213 @@ Next action: Decide Chinmay account redistribution (Shilpa vs Dhruv) before his 
 [HOOK] Sat Apr 11 20:43:11 IST 2026 — session active
 [HOOK] Sat Apr 11 20:43:37 IST 2026 — session active
 [HOOK] Sat Apr 11 20:43:45 IST 2026 — session active
+[HOOK] Sat Apr 11 20:47:12 IST 2026 — session active
+[HOOK] Sat Apr 11 20:53:20 IST 2026 — session active
+[HOOK] Sat Apr 11 20:53:24 IST 2026 — session active
+[HOOK] Sat Apr 11 20:53:25 IST 2026 — session active
+[HOOK] Sat Apr 11 20:53:25 IST 2026 — session active
+[HOOK] Sat Apr 11 20:53:27 IST 2026 — session active
+[HOOK] Sat Apr 11 20:53:27 IST 2026 — session active
+[HOOK] Sat Apr 11 20:53:27 IST 2026 — session active
+[HOOK] Sat Apr 11 20:53:27 IST 2026 — session active
+[HOOK] Sat Apr 11 20:53:28 IST 2026 — session active
+[HOOK] Sat Apr 11 20:53:28 IST 2026 — session active
+[HOOK] Sat Apr 11 20:53:57 IST 2026 — session active
+[HOOK] Sat Apr 11 20:54:21 IST 2026 — session active
+[HOOK] Sat Apr 11 20:54:58 IST 2026 — session active
+[HOOK] Sat Apr 11 21:05:12 IST 2026 — session active
+[HOOK] Sat Apr 11 21:05:22 IST 2026 — session active
+[HOOK] Sat Apr 11 21:05:26 IST 2026 — session active
+[HOOK] Sat Apr 11 21:05:35 IST 2026 — session active
+[HOOK] Sat Apr 11 21:05:40 IST 2026 — session active
+[HOOK] Sat Apr 11 21:05:50 IST 2026 — session active
+[HOOK] Sat Apr 11 21:06:39 IST 2026 — session active
+[HOOK] Sat Apr 11 21:07:02 IST 2026 — session active
+[HOOK] Sat Apr 11 21:07:29 IST 2026 — session active
+[HOOK] Sat Apr 11 21:07:32 IST 2026 — session active
+[HOOK] Sat Apr 11 21:07:38 IST 2026 — session active
+[HOOK] Sat Apr 11 21:07:58 IST 2026 — session active
+[HOOK] Sat Apr 11 21:08:26 IST 2026 — session active
+[HOOK] Sat Apr 11 21:08:33 IST 2026 — session active
+[HOOK] Sat Apr 11 21:09:10 IST 2026 — session active
+[HOOK] Sat Apr 11 21:09:12 IST 2026 — session active
+[HOOK] Sat Apr 11 21:09:15 IST 2026 — session active
+[HOOK] Sat Apr 11 21:13:08 IST 2026 — session active
+[HOOK] Sat Apr 11 21:13:18 IST 2026 — session active
+[HOOK] Sat Apr 11 21:13:20 IST 2026 — session active
+[HOOK] Sat Apr 11 21:13:26 IST 2026 — session active
+[HOOK] Sat Apr 11 21:13:30 IST 2026 — session active
+[HOOK] Sat Apr 11 21:13:32 IST 2026 — session active
+[HOOK] Sat Apr 11 21:13:44 IST 2026 — session active
+[HOOK] Sat Apr 11 21:14:37 IST 2026 — session active
+[HOOK] Sat Apr 11 21:14:41 IST 2026 — session active
+[HOOK] Sat Apr 11 21:14:41 IST 2026 — session active
+[HOOK] Sat Apr 11 21:14:52 IST 2026 — session active
+[HOOK] Sat Apr 11 21:14:53 IST 2026 — session active
+[HOOK] Sat Apr 11 21:16:49 IST 2026 — session active
+[HOOK] Sat Apr 11 21:16:52 IST 2026 — session active
+[HOOK] Sat Apr 11 21:17:00 IST 2026 — session active
+[HOOK] Sat Apr 11 21:17:13 IST 2026 — session active
+[HOOK] Sat Apr 11 21:17:25 IST 2026 — session active
+[HOOK] Sat Apr 11 21:17:35 IST 2026 — session active
+[HOOK] Sat Apr 11 21:17:43 IST 2026 — session active
+[HOOK] Sat Apr 11 21:17:50 IST 2026 — session active
+[HOOK] Sat Apr 11 21:17:59 IST 2026 — session active
+[HOOK] Sat Apr 11 21:18:09 IST 2026 — session active
+[HOOK] Sat Apr 11 21:18:20 IST 2026 — session active
+[HOOK] Sat Apr 11 21:18:30 IST 2026 — session active
+[HOOK] Sat Apr 11 21:18:40 IST 2026 — session active
+[HOOK] Sat Apr 11 21:18:52 IST 2026 — session active
+[HOOK] Sat Apr 11 21:19:04 IST 2026 — session active
+[HOOK] Sat Apr 11 21:19:17 IST 2026 — session active
+[HOOK] Sat Apr 11 21:19:37 IST 2026 — session active
+[HOOK] Sat Apr 11 21:19:59 IST 2026 — session active
+[HOOK] Sat Apr 11 21:20:23 IST 2026 — session active
+[HOOK] Sat Apr 11 21:20:47 IST 2026 — session active
+[HOOK] Sat Apr 11 21:21:13 IST 2026 — session active
+[HOOK] Sat Apr 11 21:21:36 IST 2026 — session active
+[HOOK] Sat Apr 11 21:21:53 IST 2026 — session active
+[HOOK] Sat Apr 11 21:22:09 IST 2026 — session active
+[HOOK] Sat Apr 11 21:22:14 IST 2026 — session active
+[HOOK] Sat Apr 11 21:22:36 IST 2026 — session active
+[HOOK] Sat Apr 11 21:23:01 IST 2026 — session active
+[HOOK] Sat Apr 11 21:25:23 IST 2026 — session active
+[HOOK] Sat Apr 11 21:25:31 IST 2026 — session active
+[HOOK] Sat Apr 11 21:25:50 IST 2026 — session active
+[HOOK] Sat Apr 11 21:25:56 IST 2026 — session active
+[HOOK] Sat Apr 11 21:26:38 IST 2026 — session active
+[HOOK] Sat Apr 11 21:27:07 IST 2026 — session active
+[HOOK] Sat Apr 11 21:30:32 IST 2026 — session active
+[HOOK] Sat Apr 11 21:31:06 IST 2026 — session active
+[HOOK] Sat Apr 11 21:44:33 IST 2026 — session active
+[HOOK] Sat Apr 11 21:44:34 IST 2026 — session active
+[HOOK] Sat Apr 11 21:45:00 IST 2026 — session active
+[HOOK] Sat Apr 11 21:45:13 IST 2026 — session active
+[HOOK] Sat Apr 11 21:48:34 IST 2026 — session active
+[HOOK] Sat Apr 11 21:56:36 IST 2026 — session active
+[HOOK] Sat Apr 11 21:57:31 IST 2026 — session active
+[HOOK] Sat Apr 11 21:58:58 IST 2026 — session active
+[HOOK] Sat Apr 11 22:01:50 IST 2026 — session active
+[HOOK] Sat Apr 11 22:01:59 IST 2026 — session active
+[HOOK] Sat Apr 11 22:02:02 IST 2026 — session active
+[HOOK] Sat Apr 11 22:02:08 IST 2026 — session active
+[HOOK] Sat Apr 11 22:02:19 IST 2026 — session active
+[HOOK] Sat Apr 11 22:02:26 IST 2026 — session active
+[HOOK] Sat Apr 11 22:02:31 IST 2026 — session active
+[HOOK] Sat Apr 11 22:02:39 IST 2026 — session active
+[HOOK] Sat Apr 11 22:02:45 IST 2026 — session active
+[HOOK] Sat Apr 11 22:02:47 IST 2026 — session active
+[HOOK] Sat Apr 11 22:05:22 IST 2026 — session active
+[HOOK] Sat Apr 11 22:05:24 IST 2026 — session active
+[HOOK] Sat Apr 11 22:05:25 IST 2026 — session active
+[HOOK] Sat Apr 11 22:06:15 IST 2026 — session active
+[HOOK] Sat Apr 11 22:06:20 IST 2026 — session active
+[HOOK] Sat Apr 11 22:06:33 IST 2026 — session active
+[HOOK] Sat Apr 11 22:06:35 IST 2026 — session active
+[HOOK] Sat Apr 11 22:06:37 IST 2026 — session active
+[HOOK] Sat Apr 11 22:06:37 IST 2026 — session active
+[HOOK] Sat Apr 11 22:06:50 IST 2026 — session active
+[HOOK] Sat Apr 11 22:06:52 IST 2026 — session active
+[HOOK] Sat Apr 11 22:06:54 IST 2026 — session active
+[HOOK] Sat Apr 11 22:06:57 IST 2026 — session active
+[HOOK] Sat Apr 11 22:06:57 IST 2026 — session active
+[HOOK] Sat Apr 11 22:07:11 IST 2026 — session active
+[HOOK] Sat Apr 11 22:08:51 IST 2026 — session active
+[HOOK] Sat Apr 11 22:08:51 IST 2026 — session active
+[HOOK] Sat Apr 11 22:08:51 IST 2026 — session active
+[HOOK] Sat Apr 11 22:09:02 IST 2026 — session active
+[HOOK] Sat Apr 11 22:09:04 IST 2026 — session active
+[HOOK] Sat Apr 11 22:10:15 IST 2026 — session active
+[HOOK] Sat Apr 11 22:10:15 IST 2026 — session active
+[HOOK] Sat Apr 11 22:11:28 IST 2026 — session active
+[HOOK] Sat Apr 11 22:11:31 IST 2026 — session active
+[HOOK] Sat Apr 11 22:11:57 IST 2026 — session active
+[HOOK] Sat Apr 11 22:12:02 IST 2026 — session active
+[HOOK] Sat Apr 11 22:12:51 IST 2026 — session active
+[HOOK] Sat Apr 11 22:13:05 IST 2026 — session active
+[HOOK] Sat Apr 11 22:13:32 IST 2026 — session active
+[HOOK] Sat Apr 11 22:13:59 IST 2026 — session active
+[HOOK] Sat Apr 11 22:14:04 IST 2026 — session active
+[HOOK] Sat Apr 11 22:14:50 IST 2026 — session active
+[HOOK] Sat Apr 11 22:14:56 IST 2026 — session active
+[HOOK] Sat Apr 11 22:16:48 IST 2026 — session active
+[HOOK] Sat Apr 11 22:17:10 IST 2026 — session active
+[HOOK] Sat Apr 11 22:20:03 IST 2026 — session active
+[HOOK] Sat Apr 11 22:20:49 IST 2026 — session active
+[HOOK] Sat Apr 11 22:20:53 IST 2026 — session active
+[HOOK] Sat Apr 11 22:22:50 IST 2026 — session active
+[HOOK] Sat Apr 11 22:22:58 IST 2026 — session active
+[HOOK] Sat Apr 11 22:23:18 IST 2026 — session active
+[HOOK] Sat Apr 11 22:24:44 IST 2026 — session active
+[HOOK] Sat Apr 11 22:24:45 IST 2026 — session active
+[HOOK] Sat Apr 11 22:24:49 IST 2026 — session active
+[HOOK] Sat Apr 11 22:24:56 IST 2026 — session active
+[HOOK] Sat Apr 11 22:24:56 IST 2026 — session active
+[HOOK] Sat Apr 11 22:25:02 IST 2026 — session active
+[HOOK] Sat Apr 11 22:25:22 IST 2026 — session active
+[HOOK] Sat Apr 11 22:25:23 IST 2026 — session active
+[HOOK] Sat Apr 11 22:25:34 IST 2026 — session active
+[HOOK] Sat Apr 11 22:25:34 IST 2026 — session active
+[HOOK] Sat Apr 11 22:25:59 IST 2026 — session active
+[HOOK] Sat Apr 11 22:26:28 IST 2026 — session active
+[HOOK] Sat Apr 11 22:26:36 IST 2026 — session active
+[HOOK] Sat Apr 11 22:26:42 IST 2026 — session active
+[HOOK] Sat Apr 11 22:30:31 IST 2026 — session active
+[HOOK] Sat Apr 11 22:30:31 IST 2026 — session active
+[HOOK] Sat Apr 11 22:30:31 IST 2026 — session active
+[HOOK] Sat Apr 11 22:30:35 IST 2026 — session active
+[HOOK] Sat Apr 11 22:30:40 IST 2026 — session active
+[HOOK] Sat Apr 11 22:31:17 IST 2026 — session active
+
+---
+Date: 11 April 2026 (Session 6 — Vault Rooms 9–12 + Pankaj reporting system)
+Key decisions:
+- Dhruv removed from all campaign responsibilities. Pankaj (CrossNibble) owns Tier 2 calls + all campaign tools. Bigin pipeline → Niloy only.
+- /schedule skill built: ingests Pankaj's Google Drive report, analyses FirstRain-Intel for shows 90–120 days out, generates ICP account recommendations per show, sends Telegram briefing + Gmail draft to niloy@firstrain.co.in
+- ABM sector list expanded 5 → 13 sectors. Groups 1–3 fully populated (39 target accounts). Groups 4–13 pending.
+- Telegram message rules formalised: instant alerts ≤300 chars; /monday and /schedule = full format, no limit. Two new triggers added.
+- monday-sync updated: Notion + Bigin + Sonal + Zoho + Pankaj report + show calendar (90–120 days) → Telegram + Gmail draft every Monday.
+Open items:
+- ABM Groups 4–13 target accounts not yet populated (10 sectors)
+- Room 11 (computer-use-rules.md) deferred — no changes made
+- Pankaj must upload weekly reports as Google Sheets (not xlsx) for auto-ingestion
+- Team Telegram group chat decision deferred → reminder set 1 Jul 2026
+Next action: Tomorrow — review Layer 4 Orchestrator, Layer 3 department agents (all 6), Layer 2 skills (29 skills). Command: /start → "Continue vault review — Orchestrator, department agents, skills."
+---
+[HOOK] Sat Apr 11 22:31:43 IST 2026 — session active
+
+---
+Date: 11 April 2026 (Session 6 — Vault Rooms 9–12 + Pankaj reporting system)
+Key decisions:
+- Dhruv removed from all campaign responsibilities. Pankaj (CrossNibble) owns Tier 2 calls + all campaign tools. Bigin pipeline → Niloy only.
+- /schedule skill built: ingests Pankaj Google Drive report, analyses FirstRain-Intel for shows 90–120 days out, generates ICP account recommendations per show, sends Telegram briefing + Gmail draft to niloy@firstrain.co.in
+- ABM sector list expanded 5 → 13 sectors. Groups 1–3 fully populated (39 target accounts). Groups 4–13 pending.
+- Telegram message rules formalised: instant alerts ≤300 chars; /monday and /schedule = full format, no limit. Two new triggers added.
+- monday-sync updated: Notion + Bigin + Sonal + Zoho + Pankaj report + show calendar (90–120 days) → Telegram + Gmail draft every Monday.
+Open items:
+- ABM Groups 4–13 target accounts not yet populated (10 sectors)
+- Room 11 (computer-use-rules.md) deferred
+- Pankaj must upload weekly reports as Google Sheets (not xlsx) for auto-ingestion
+- Team Telegram group chat deferred → reminder set 1 Jul 2026
+Next action: Review Layer 4 Orchestrator, Layer 3 department agents, Layer 2 skills. Command: /start then state scope.
+---
+[HOOK] Sat Apr 11 22:32:10 IST 2026 — session active
+
+---
+Date: 11 April 2026 (Session 6 - Vault Rooms 9-12 + Pankaj reporting system)
+Key decisions:
+- Dhruv removed from all campaign responsibilities. Pankaj (CrossNibble) owns Tier 2 calls + all campaign tools. Bigin pipeline management = Niloy only.
+- /schedule skill built: ingests Pankaj Google Drive report + analyses FirstRain-Intel shows 90-120 days out + ICP account recommendations + Telegram briefing + Gmail draft to niloy@firstrain.co.in
+- ABM sector list expanded 5 to 13 sectors. Groups 1-3 fully populated (39 target accounts). Groups 4-13 pending Niloy input.
+- Telegram message rules formalised: instant alerts under 300 chars; /monday and /schedule = full format, no character limit. Two new triggers added (Pankaj report missing, show within 90 days no outreach).
+- monday-sync updated: Notion + Bigin + Sonal report + Zoho Books + Pankaj report + show calendar (90-120 days) → Telegram + Gmail draft every Monday.
+Open items:
+- ABM Groups 4-13 target accounts not yet populated (10 sectors remaining)
+- Room 11 (computer-use-rules.md) deferred - no changes made
+- Pankaj must upload weekly reports as Google Sheets not xlsx for auto-ingestion to work
+- Team Telegram group chat decision deferred - reminder set 1 Jul 2026
+Next action: Review Layer 4 Orchestrator + Layer 3 department agents (all 6) + Layer 2 skills (29). Command: /start then scope.
+---
+[HOOK] Sat Apr 11 22:32:39 IST 2026 — session active
+[HOOK] Sat Apr 11 22:33:02 IST 2026 — session active
+[HOOK] Sat Apr 11 22:33:11 IST 2026 — session active
