@@ -59,16 +59,18 @@ Total below 7 = **Tier 3** → Nurture only or Discard
 | Gerresheimer  | 71% margin FY26. Never discount. Protect always.         |
 | Amaara        | Blended 33% across ALL FY27 shows. Flag below 33%.       |
 | Nordex        | Floor ₹21.14L SP. CP max ₹15.91L. Hold firm.            |
-| Klenzaids     | Hold firm. Scope reduction only lever. No price cuts.    |
 
 ## Pipeline stage definitions
-1. **Lead** — ICP scored, not yet qualified via BBANTI
-2. **Qualified** — BBANTI passed, brief received or requested
-3. **Quote Sent** — SP issued, margin gate passed
-4. **Negotiation** — Client engaging on scope/price
-5. **PO Received** — Purchase order in hand (required for Closed Won)
-6. **Closed Won** — PO confirmed, production can begin
-7. **Closed Lost** — Document reason. Feed back to competitive-landscape.md.
+Source of truth: Bigin "Sales Pipeline 26-27". These stage names are exact.
+
+1. **New Leads & Enquiries** — Enquiry received, ICP scored, not yet BBANNTI qualified
+2. **BBANNTI Qualified** — All 6 BBANNTI criteria at least partially answered. Brief received or requested.
+3. **Requirement Gathering** — Active brief collection. Scope, sqm, open sides, objectives being confirmed.
+4. **Design** — Design work in progress. SP not yet issued.
+5. **Price Quote** — SP issued to client. Margin gate passed.
+6. **Existing Confirmed** — Client confirmed intent. PO pending or in process.
+7. **Closed Won 26-27** — PO in hand. Production can begin. Revenue recognised.
+8. **Closed Lost** — Document reason. Feed back to competitive-landscape.md.
 
 ## International project protocol
 - UK fabrication: GH Display (preferred), Exhibition Vision, CBE (last resort)

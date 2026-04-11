@@ -1,17 +1,20 @@
 # First Rain — Active Client Rules
 # Load when: quoting, client communications, production decisions.
-# Last updated: April 2026
+# Last updated: 11 April 2026
+# Source of truth: Bigin "Sales Pipeline 26-27" for all active deals and SP values.
+# Source of truth: Sonal's weekly report (Google Drive → FirstRain-Weekly-Reports/Finance) for CM% and receivables.
+# Source of truth: Zoho Books Estimates for customer contact information.
 
 ## Secure Meters
 Contacts: Rahul / Sankalp | Exec: Chinmay
 FY26 margin: 38% | FY26 contribution: ₹45,11,770
-CONCENTRATION RISK: 52.5% of FY27 pipeline. Ceiling 25%. Flag always.
-Active: Utility Week Live Birmingham, May 2026 — 24 sqm, 3-side open
-Fabricator: GH Display | Quote: GH10918/3 at £16,319.75 | Rate: ₹125/GBP
-Target SP: ₹42L | Floor SP: ₹39.5L
-3 open items: (1) Design fee on CP (2) UK VAT reclaim (3) Doha Protocol from GH Display
-PO from Secure required before committing GH Display.
-Active quotes: MEE ₹18.95L (on hold) | RenewX ₹9.4L (awaiting PO, floor ₹7.24L)
+CONCENTRATION RISK: 52.5% of FY27 pipeline. Ceiling 25%. LIVE BREACH. Flag always.
+**Active deals — pull from Bigin "Sales Pipeline 26-27":**
+- Closed Won: RenewX Chennai ₹9.35L (27 Apr 2026)
+- Design: Enlit Europe'26 Vienna ₹76.95L | Housing'26 Manchester ₹63.17L | Installer'26 Birmingham ₹39.31L | Utility Week'26 Birmingham ₹22.46L
+- Price Quote: MEE'26 Dubai ₹18.5L
+- BBANNTI Qualified: EPR Vietnam | EPR Indonesia/Enlit Asia | African Energy Week | CIGRE Paris | Elecrama 2027
+Rule: PO from Secure required before committing any fabricator or moving to Closed Won.
 
 ## Christie Digital
 Contacts: Monsi Cottrell (BigCineExpo) / Josh Hernandez (Infocomm) | Exec: Chinmay
@@ -26,8 +29,8 @@ Rule: HIGHEST MARGIN CLIENT. Never discount. Protect always.
 ## Amaara Vitafoods
 Contact: Karan | Exec: Shilpa
 FY26 margin: 23% (strategic exception — below floor)
-Active: Vitafoods Europe ~5 May 2026 | SP: ₹34L | CM%: unconfirmed
-Receivable: ₹34L outstanding — #1 cash priority
+Active: Vitafoods Europe ~5 May 2026 | SP: ₹34L | CM%: pull from Sonal's weekly report (Project CM% tab)
+Receivable: ₹34L outstanding — #1 cash priority | pull current amount from Sonal's weekly report (Receivables tab)
 Rule: Blended 33% across ALL FY27 shows. Flag any quote below 33% immediately.
 
 ## Labguard
@@ -38,7 +41,7 @@ Active: Analytica Lab India 22–24 Apr 2026 | SP: ₹13.6L
 ## Elliott Ebara
 Contact: Karnika | Exec: Shilpa
 FY26 margin: 36% | FY26 contribution: ₹28,97,740
-Receivable: ₹10,23,016 — expected 2–7 May 2026
+Receivable: pull current amount and status from Sonal's weekly report (Receivables tab)
 Rule: PO required before Closed Won. ALWAYS. Verbal ≠ revenue.
 
 ## Iberchem
@@ -49,7 +52,9 @@ Contact: Julia | Exec: Chinmay
 Rule: Always negotiates. Floor ₹21.14L SP. CP max ₹15.91L. Hold firm.
 
 ## Klenzaids
+**PROSPECT — Not yet a client. Estimates sent, no project closed.**
 Contact: Vinay Parte | vinay.parte@klenzaids.com | +91 98335 32898 | Exec: Chinmay
+Pipeline: 60sqm Pharma Pro & Pack Hyderabad ₹10.0L (Design stage)
 Rule: Hold firm. Scope reduction only lever. Never discount.
 
 ## Mosil
@@ -62,11 +67,27 @@ Active: Smart Home Expo 28–30 Apr 2026 | SP: ₹6.3L
 
 ## Bechem
 Contact: Adarsh KT | Exec: Chinmay
-Active: BME Delhi 8–9 Apr 2026 | SP: ₹1.82L | URGENT
+FY27 delivered: BME Delhi 8–9 Apr 2026 | SP: ₹1.82L | Invoiced ✓
+Pipeline: IMTEX'27 ₹8.34L | Wire India'26 ₹8.2L | ITME'26 ₹5.7L | Pune Machine Tool Expo ₹4.4L | Bharat Mobility'27 (BBANNTI)
 
-## Other contacts
-Molygraph: Jhumpa | TOTO: Kharpattu | Spectrum: Minal
-Truetzschler: Shiladitya Joshi | Axis Electricals: Ankita | Swarnshilp: Khushboo
+## Swarn Shilp
+Contact: Khushboo | Exec: Chinmay
+Pipeline: DJGF'26 Pragati Maidan ₹11.0L (Jul 2026)
+
+## Molygraph
+Contact: Jhumpa | Exec: Chinmay
+Pipeline: UBEiNX New Delhi ₹6.3L
+**Note:** Listed as "Anand Engineers Private Limited" in Zoho Books Estimates — same entity.
+
+## Spectrum Filtration
+Contact: Minal | Exec: Chinmay
+Pipeline: Pmec India'26 ₹6.12L (Sep 2026)
+
+## Enzyme Bioscience
+Pipeline: Vitafoods'27 JWCC ₹7.78L (Dec 2026)
+
+## GIC
+Pipeline: ELAsia BIEC Bengaluru ₹7.2L (Design stage)
 
 ## UK Fabricators (Doha Protocol mandatory before committing)
 1. GH Display — PREFERRED | John Hodson: johnhodson@ghdisplay.co.uk

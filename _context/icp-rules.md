@@ -4,7 +4,8 @@
 ## Who we target
 - Revenue: ₹100 Crore+ annual turnover
 - Exhibit frequency: 2+ shows per year
-- Geography priority: Gujarat, Mumbai, Delhi NCR, Hyderabad
+- Geography priority India (in order): Mumbai · Bengaluru · New Delhi · Greater Noida · Hyderabad · Chennai
+- Geography priority International (in order): Europe · South East Asia · China · Middle East · UK (new market)
 - Decision-maker titles: Head of Marketing / VP Marketing / Exhibition Manager /
   Brand Manager / Corporate Communications Director
 - Core fear: Exhibition failure = brand damage + personal career risk

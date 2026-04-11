@@ -73,4 +73,4 @@ _context/        → reference files, load on demand only
 _outputs/        → ALL Claude finished work goes here only
 FirstRain-Intel/ → market intelligence wiki (separate system)
 00-Inbox/        → capture anything here first
-08-Clients/      → one folder per client
+08-Accounts/     → one folder per account (clients + tagged prospects)

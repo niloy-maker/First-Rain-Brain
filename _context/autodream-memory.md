@@ -33,18 +33,22 @@
 - Orchestrator: single entry point, routes plain-language tasks to correct agent — tested with Messung brief
 - Telegram: @FirstRainOS_bot live. Niloy chat ID 8770250893. Token rotated 9 Apr. /telegram-alert skill live.
 - /end command: updated 10 Apr to auto-generate session bullets (no longer asks Niloy what happened)
-- 08-Clients: 25 client files built from FY25-26 Zoho data. Secure-Meters as benchmark format.
-- Zoho Books: proposals/estimation only. Tally is actual invoicing source of truth. All FY25-26 Zoho invoices are estimates.
+- 08-Accounts: client and prospect files (renamed from 08-Clients 11 Apr). Clients = active/past projects. Prospects tagged "PROSPECT — Not yet a client". Secure-Meters as benchmark format.
+- Zoho Books: proposals/estimation only. Tally is actual invoicing source of truth. All FY25-26 Zoho invoices are estimates. Zoho Books Estimates = source of truth for customer contact info.
 - Scatterpie Analytics: TENANT. ₹2,12,400/month rent. Not exhibition client. Exclude from all revenue/CM% reporting.
-- Kelegent Metaplast = Shree Mahavir Metal (renamed). Two Zoho records — Sonal to merge.
+- Kelegent Metaplast = Shree Mahavir Metal (renamed). Anand Engineers Private Limited = Molygraph (same entity in Zoho).
 - FY25-26 verified: 24 exhibition clients, ₹6.01Cr billed in Zoho estimates. Only Neutral Glass (₹30.95L) confirmed paid.
-- Google Drive FirstRain-Weekly-Reports/ live: Growth, Client-Delivery, Design, Finance, People subfolders created.
-- /close skill: v1.1 — auto-generates session summary (no longer asks Niloy)
+- Google Drive FirstRain-Weekly-Reports/ live: Growth, Client-Delivery, Design, Finance, People subfolders created. Sonal uploads Finance report every Monday.
+- /close skill: v1.2 — includes Notion production tracker sync + Bigin pipeline sync
+- monday-sync scheduled task: Monday 11:00 AM IST — Notion + Bigin + Sonal's report + Zoho Books new customer check → active-projects.md update + Telegram alert
 - FirstRain-Intel wiki: 241 show pages, 25 CPhI China Tier 1 accounts, 2 competitor profiles (Inoways added 9 Apr)
 - Two sales hunters approved 8 Apr: Domestic (May), International (June). Domestic JD drafted 9 Apr.
 - CPhI China campaign live: W1 tasks due Dhruv + Pankaj by 13 April
 - As Built document created: _outputs/FirstRain-OS-AsBuilt-2026-04-10.md (for BenAI meeting)
-- BenAI meeting prep created: _outputs/BenAI-Meeting-Prep-2026-04-10.md
+- Brand voice (Exhibitions): fully rebuilt from StoryBrand BrandScript guide (Jan 2024). One-Liner, taglines, full framework in _context/brand-voice.md.
+- Scheduled reminders: Sales Circle + regional pricing (20 Apr), LinkedIn content strategy (20 Apr), Interiors brand voice (1 Jul).
+- ICP geography updated: India (Mumbai · Bengaluru · New Delhi · Greater Noida · Hyderabad · Chennai). International (Europe · SE Asia · China · Middle East · UK new market).
+- Team update 11 Apr: Sonal = Commercial Manager. Santosh = Sr Production Manager. Shilpa = Sr Project Executive (promoted). Komal = left. Chinmay = leaving for MBA ~1 year — succession in progress.
 
 ## Flagged for Niloy review
 - Git identity still Monica Debnath — run: git config --global user.name "Niloy Debnath"
