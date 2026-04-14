@@ -1,15 +1,15 @@
 # First Rain — Active Projects and Pipeline
 # Auto-updated when Claude reads Bigin (triggered by /close).
-# Last updated: 11 April 2026
+# Last updated: 14 April 2026
 
 ## Closed Won FY26-27 — Executing now
 | Client         | Show              | Date          | SP      | Exec    | Flag             |
 |----------------|-------------------|---------------|---------|---------|------------------|
-| Labguard       | Analytica India   | 22–24 Apr 2026| ₹13.6L  | Shilpa  | 11 days 🔴       |
-| Mosil          | IDMC Lucknow      | 23–24 Apr 2026| ₹1.5L   | Dhruv   | 12 days 🔴       |
-| Messung        | Smart Home Expo   | 28–30 Apr 2026| ₹6.3L   | Shilpa  | 17 days ⚠️       |
+| Labguard       | Analytica India   | 22–24 Apr 2026| ₹13.6L  | Shilpa  | 10 days 🔴       |
+| Mosil          | IDMC Lucknow      | 23–24 Apr 2026| ₹1.5L   | Dhruv   | 11 days 🔴       |
+| Messung        | Smart Home Expo   | 28–30 Apr 2026| ₹6.3L   | Shilpa  | 16 days ⚠️       |
 | Amaara         | Vitafoods Europe  | ~5 May 2026   | ₹34L    | Shilpa  | CM% — confirm with Sonal's report |
-| Secure Meters  | RenewX Chennai    | 27 Apr 2026   | ₹9.35L  | TBC     | 16 days ⚠️ NEW   |
+| Secure Meters  | RenewX Chennai    | 27 Apr 2026   | ₹9.35L  | TBC     | 15 days ⚠️       |
 Total active SP: ₹64.75L
 
 ## Delivered FY26-27 (closed and invoiced)
@@ -19,30 +19,30 @@ Total active SP: ₹64.75L
 
 ## Production Status — from Notion ⚡ FR Production Tracker FY27
 **Source: https://www.notion.so/firstraingroup/ac84c676ad7249d2a79732d842f71d62**
-**Auto-updated every /close. Last pulled: 11 Apr 2026**
+**Auto-updated every /close. Last pulled: 14 Apr 2026**
 
-| Milestone                  | Labguard | Mosil | Messung | Amaara | Bechem |
-|----------------------------|----------|-------|---------|--------|--------|
-| T02 Advance Received       | ✗ | ✗ | ✗ | ✗ | ✓ |
-| T03 Costing Drawing        | ✗ | ✗ | ✗ | ✓ | ✓ |
-| T04 Fabricator Finalisation| ✗ | ✓ | ✓ | ✓ | ✓ |
-| T05 Advance to Fab.        | ✗ | ✗ | ✗ | ✗ | ✓ |
-| T06 Internal Exec. Mtg     | ✗ | ✗ | ✗ | ✗ | ✓ |
-| T07 Technical Drawing      | ✗ | ✗ | ✗ | ✗ | ✓ |
-| T08 Fabricator Meeting     | ✗ | ✗ | ✗ | ✗ | ✓ |
-| T09 Submission Drawings    | ✗ | ✗ | ✗ | ✗ | ✓ |
-| T12 Security Deposit       | ✗ | ✗ | ✗ | ✗ | ✓ |
-| T14 Mock Up                | ✗ | ✗ | ✗ | ✗ | ✗ |
-| T21 Installation Started   | ✗ | ✗ | ✗ | ✗ | ✗ |
-| T27 Final Invoice          | ✗ | ✗ | ✗ | ✗ | ✗ |
-| T31 Fab. Final Mtg         | ✗ | ✗ | ✗ | ✗ | ✗ |
+| Milestone                    | Labguard | Mosil | Messung | Amaara | Bechem |
+|------------------------------|----------|-------|---------|--------|--------|
+| T01–T04 (PI → Fab Final)     | ✓ | ✓ | ✓ | ✓ | ✓ |
+| T05 Advance to Fabricator    | ✓ | ✗ | ✓ | ✗ | ✓ |
+| T06 Internal Exec Meeting    | ✓ | ✓ | ✓ | ✗ | ✓ |
+| T07 Technical Drawing        | ✓ | ✓ | ✓ | ✗ | ✓ |
+| T08 Fabricator Meeting       | ✓ | ✓ | ✓ | ✗ | ✓ |
+| T09 Submission Drawings      | ✓ | ✓ | ✓ | ✓ | ✓ |
+| T10 Design Approval          | ✓ | ✓ | ✓ | ✓ | ✓ |
+| T11 Organiser Form Subs      | ✓ | ✓ | ✓ | ✓ | ✓ |
+| T12 Security Deposit         | ✗ | ✗ | ✓ | ✗ | ✓ |
+| T14 Mock Up                  | ✗ | ✗ | ✗ | ✗ | ✓ |
+| T21 Installation Started     | ✗ | ✗ | ✗ | ✗ | ✓ |
+| T22 Handover Pics            | ✗ | ✗ | ✗ | ✗ | ✓ |
+| T27 Final Invoice            | ✗ | ✗ | ✗ | ✗ | ✗ |
 
 **Last milestone reached:**
-- Bechem BME26: T12 Security Deposit → DELIVERED (invoiced)
-- Amaara Vitafoods26: T04 Fabricator Finalisation — show ~5 May ✅ 24 days
-- Messung SHE26: T04 Fabricator Finalisation — show 28–30 Apr ⚠️ 17 days (T14 not ticked)
-- Mosil IDMC26: T04 Fabricator Finalisation — show 23–24 Apr 🔴 12 days (T21 not ticked)
-- Labguard Anacon26: No milestones ticked yet — show 22–24 Apr 🔴 11 days (T21 not ticked)
+- Bechem BME26: T22 Handover Pics — show delivered 8–9 Apr ✓. T23–T31 post-show wrap pending.
+- Labguard Anacon26: T11 Organiser Form Submissions — show 22–24 Apr 🔴 **9 days — T21 NOT ticked**
+- Mosil IDMC26: T11 Organiser Form Submissions — show 23–24 Apr 🔴 **10 days — T21 NOT ticked**
+- Messung SHE26: T12 Security Deposit — show 28–30 Apr ⚠️ 15 days — T21 NOT ticked
+- Amaara Vitafoods26: T11 Organiser Form Submissions — show ~5 May 22 days (T05 advance to fab pending)
 
 ## Active quotes — from Bigin "Sales Pipeline 26-27" (11 Apr 2026)
 **This section is now sourced from Bigin. Check before every /monday.**
@@ -51,7 +51,6 @@ Total active SP: ₹64.75L
 | Deal | Client | SP | Closing Date |
 |------|---------|----|-------------|
 | 30sqm MEE'26, Dubai World Trade Centre | Secure Meters | ₹18.5L | 23 Jul 2026 |
-| 56sqm Pharma Pro & Pack, Hyderabad | ZETA GmbH | ₹8.9L | — |
 
 ### Design stage (quotes being worked)
 | Deal | Client | SP | Closing Date |

@@ -1,6 +1,29 @@
 Update session records with key decisions from this conversation.
 
-## Step 1 — Auto-generate session summary (do NOT ask Niloy)
+## Step 1 — Daily Status Update (ALWAYS ask before logging)
+
+Ask Niloy exactly this:
+
+---
+"Before I log the session — any updates to record?
+
+💰 **Payments received today?** (e.g. Amaara ₹X, Elliott ₹X)
+🏗️ **Project status changes?** (e.g. Labguard T21 ticked, Mosil advance paid)
+📋 **Any other changes?** (new PO, exec assigned, quote approved)
+
+Type them out or say 'none' to skip."
+---
+
+If Niloy provides updates:
+1. Prepend each update as a new line to `_context/daily-updates.md` in the format:
+   `[DATE] | [TYPE] | [DETAIL]`
+   Types: RECEIVED / PAID / STATUS / NOTE
+2. If a receivable is fully cleared, also update the receivables table in `_context/financial-rules.md` — mark amount as ₹0 and status as "Cleared [date] ✓"
+3. If cash position changed materially, update the operating cash line in `_context/financial-rules.md`
+
+If Niloy says 'none', skip to Step 2.
+
+## Step 2 — Auto-generate session summary (do NOT ask Niloy)
 Derive 3–5 bullets from this session by scanning:
 - Files written or edited today (check _outputs/ for today's date)
 - Decisions Niloy made explicitly (approvals, instructions, direction changes)

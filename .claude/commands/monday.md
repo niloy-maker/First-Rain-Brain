@@ -1,23 +1,18 @@
 # /monday — First Rain Weekly Intelligence Briefing
+# MESSAGE FORMAT: Full briefing — no character limit. 300-char rule applies to instant alerts only (telegram-alert skill).
 
 Execute the following steps in order. Do not use more than 6 tool calls total.
 
-## STEP 1 — Load Memory
-Read MEMORY.md completely.
-Note every item under:
-- Active Alerts
-- Receivables
-- Active Projects
-- Open Quote Decisions
-- Last session's Running Log entry
+## STEP 1 — Load Daily Updates (read THIS first — most current data)
+Read `_context/daily-updates.md` completely.
+Any entry here OVERRIDES stale data in financial-rules.md.
+Note all RECEIVED, PAID, STATUS entries from the last 7 days.
 
-## STEP 2 — Load Active Projects
-Read P_Projects.md completely.
-For each active project note:
-- Customer name
-- Show name and date
-- Days remaining to show (calculate from today's date)
-- Assigned exec
+## STEP 2 — Load Active Projects and Financials
+Read `_context/active-projects.md` completely.
+Read `_context/financial-rules.md` for receivables and cash.
+Apply Step 1 overrides before composing the briefing.
+Do NOT flag items already resolved in daily-updates.md.
 
 ## STEP 3 — Check Gmail for Payment Alerts
 Search Gmail for emails from the last 7 days containing:
@@ -25,10 +20,11 @@ payment, invoice, credited, debited, NEFT, RTGS
 
 Also search Gmail for emails from these clients in the last 7 days:
 Secure, TOTO, Elliott, Labguard, Spectrum, Amaara, Klenzaids, Nordex
+Payment emails found here also override stale receivables data.
 
 ## STEP 4 — Output the Weekly Briefing
 
-Present in this exact format:
+Present in this exact format and save to `_outputs/monday-[YYYY-MM-DD].md`:
 
 ---
 FIRST RAIN — MONDAY BRIEFING
@@ -58,3 +54,23 @@ Date: [today's date]
 NOTE: Notion task details not included here.
 Type /production for full Notion task breakdown.
 ---
+
+## STEP 5 — Send Telegram Briefing
+
+Use the `mcp__plugin_telegram_telegram__reply` MCP tool directly:
+- chat_id: `8770250893`
+- text: the full briefing from Step 4
+- format: `text`
+
+Do NOT use a Python script or the Telegram HTTP API. The MCP plugin (`@FirstRainOS1_bot`) is the correct and only channel. If the tool call fails, log to `_outputs/telegram-failed-[date].md` and note in session output.
+
+## STEP 6 — Create Gmail Draft
+
+Create a Gmail draft to niloy@firstrain.co.in using the gmail_create_draft MCP tool with:
+- **To:** niloy@firstrain.co.in
+- **Subject:** First Rain — Monday Briefing [today's date]
+- **Body:** The full briefing text from Step 4
+
+After creating the draft, confirm with: "✅ Gmail draft created — check Drafts in niloy@firstrain.co.in"
+
+If either Step 5 or Step 6 fails, report the error clearly — do not silently skip.

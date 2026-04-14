@@ -36,7 +36,35 @@
       "mcp__4f0ff3f0-60f2-4485-9022-56005bb68c69__notion-create-database",
       "mcp__4f0ff3f0-60f2-4485-9022-56005bb68c69__notion-update-data-source",
       "mcp__claude_ai_Notion__notion-fetch",
-      "mcp__claude_ai_Notion__notion-search"
+      "mcp__claude_ai_Notion__notion-search",
+      "mcp__mcp-registry__search_mcp_registry",
+      "mcp__31d796c5-eab3-42ed-9b65-c97a6c06c7dd__list_organizations",
+      "mcp__31d796c5-eab3-42ed-9b65-c97a6c06c7dd__list_contacts",
+      "mcp__31d796c5-eab3-42ed-9b65-c97a6c06c7dd__list_invoices",
+      "WebFetch(domain:benai.co)",
+      "WebFetch(domain:www.youtube.com)",
+      "WebFetch(domain:www.benai.co)",
+      "mcp__plugin_telegram_telegram__reply",
+      "mcp__211f86be-24d9-4ad8-8c8e-2454fa7eff51__gmail_create_draft",
+      "mcp__211f86be-24d9-4ad8-8c8e-2454fa7eff51__gmail_search_messages",
+      "mcp__211f86be-24d9-4ad8-8c8e-2454fa7eff51__gmail_read_message",
+      "mcp__211f86be-24d9-4ad8-8c8e-2454fa7eff51__gmail_read_thread",
+      "mcp__dfb7f7c2-658a-476e-986c-8a792b7b8462__Bigin_getRecords",
+      "mcp__31d796c5-eab3-42ed-9b65-c97a6c06c7dd__list_estimates",
+      "mcp__nanobanana__generate_image",
+      "mcp__claude_ai_Bigin__Bigin_getRecordsUsingCoqlQuery",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.linkedin.com)",
+      "Skill(schedule)",
+      "Skill(schedule:*)",
+      "WebFetch(domain:offers.hubspot.com)",
+      "mcp__31d796c5-eab3-42ed-9b65-c97a6c06c7dd__create_contact",
+      "mcp__31d796c5-eab3-42ed-9b65-c97a6c06c7dd__create_estimate",
+      "mcp__31d796c5-eab3-42ed-9b65-c97a6c06c7dd__update_estimate",
+      "mcp__31d796c5-eab3-42ed-9b65-c97a6c06c7dd__list_taxes"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [],
+  "channelsEnabled": true
 }

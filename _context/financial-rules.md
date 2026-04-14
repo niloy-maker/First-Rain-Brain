@@ -17,19 +17,23 @@
 - RUNWAY ALERT: Operating cash below ₹76,50,000 (3 months at ₹25.5L)
 
 ## Current cash position (update weekly)
-- Operating cash: ₹22,64,418 — CRITICAL (0.89 months)
+**Source: Sonal's Weekly Finance Report — Google Drive → FirstRain-Weekly-Reports/Finance**
+**Template: _outputs/Sonal-Weekly-Finance-Report-Template.xlsx**
+**Cadence: Sonal uploads every Monday by 10am. Claude reads before /monday.**
+
+- Operating cash: ₹22,64,418 — CRITICAL (0.89 months) [last updated: 9 Apr 2026]
 - Treasury: ₹1,38,26,443 — real buffer
 - OD Facility: ₹1,21,00,000
 - Total receivables: ₹60,88,186
 
-## Receivables priority (update weekly)
+## Receivables priority (update weekly — from Sonal's report)
 | Client          | Amount       | Status                          |
 |-----------------|-------------|----------------------------------|
-| Amaara Vitafoods | ₹34,00,000 | #1 URGENT — doubles operating cash |
-| Elliott Ebara   | ₹10,23,016  | #2 — expected 2–7 May 2026      |
-| Secure BES      | ₹6,30,948   | #3 — chase active               |
-| Messung         | ₹3,93,139   | #4 — April                      |
-| Mosil           | ₹1,50,000   | #5 — April                      |
+| Amaara Vitafoods | ₹14,00,000 | #1 — ₹20L received 14 Apr. ₹14L outstanding. |
+| Messung         | ₹3,93,139   | #2 — April                      |
+| Mosil           | ₹1,50,000   | #3 — April                      |
+| Elliott Ebara   | ₹0          | Cleared 14 Apr 2026 ✓           |
+| Secure BES      | ₹0          | Cleared 14 Apr 2026 ✓           |
 
 ## Quote checklist (all 4 must pass)
 1. SP − CP above 33% of SP?
@@ -75,3 +79,79 @@ Implications:
 - Confirmed pipeline SP: ₹3.92 Cr
 - At 40.4% CM: contribution ~₹1.58 Cr vs ₹3.06 Cr burn = ₹1.48 Cr deficit
 - Secure Meters: 52.5% of pipeline — DOUBLE breach of 25% ceiling
+
+## Bigin pipeline sync — SINGLE SOURCE OF TRUTH for FY26-27 revenue
+**Sub-Pipeline: "Sales Pipeline 26-27" | 9 stages only**
+**Check Bigin before every /monday and /production. Last pulled: 11 Apr 2026.**
+**Note: Sub_Pipeline filter not supported in COQL — filter by the 4 unique stages + deal name prefix (CK-/DS-/SP-/ND-) to isolate 26-27 records.**
+
+### Stage 1 — Closed Won 26-27 (6 deals | ₹66.57L confirmed SP)
+| Deal | Client | SP | Show Date |
+|------|--------|----|-----------|
+| Vitafoods Europe | Amaara | ₹34.0L | ~5 May 2026 |
+| Analytica Lab India | Labguard | ₹13.6L | 22–24 Apr 2026 |
+| Smart Home Expo JWCC | Messung | ₹6.3L | 28–30 Apr 2026 |
+| RenewX'26 Chennai | Secure Meters | ₹9.35L | Mar 2026 ✓ |
+| BME Conclave 2026 | Carl Bechem | ₹1.82L | 8–9 Apr 2026 ✓ |
+| IDMC Lucknow | Mosil | ₹1.5L | 23–24 Apr 2026 |
+
+### Stage 2 — Existing Confirmed (17 deals | ₹2.35 Cr pipeline)
+| Client | Key Shows | SP |
+|--------|-----------|----|
+| Christie Digital | Infocomm'26 (₹41.17L) + BigCineExpo'26 (₹14.4L) | ₹55.57L |
+| Amaara | Supply Side Global (₹38.21L) + Bangkok (₹16.28L) | ₹54.49L |
+| Elliott Ebara | IEW'27 Goa | ₹30.7L |
+| Carl Bechem | IMTEX'27+Wire India+ITME+Pune (4 shows) | ₹26.64L |
+| Iberchem | Cosmohome'26 (₹18L) + HPCI'27 (₹7L) | ₹25.0L |
+| Swarn Shilp | DJGF'26 Pragati Maidan | ₹11.0L |
+| Mosil | UBEiNX + Bauma'26 | ₹11.13L |
+| Molygraph | UBEiNX New Delhi | ₹6.3L |
+| Spectrum Filtration | Pmec India'26 | ₹6.12L |
+| Enzyme Bioscience | Vitafoods'27 JWCC | ₹7.78L |
+
+### Stage 3 — Design (10 deals | ~₹2.42 Cr — Secure heavy)
+| Deal | Client | SP | Closing Date |
+|------|---------|----|-------------|
+| 81sqm Enlit Europe'26, Vienna | Secure Meters | ₹76.95L | 10 Aug 2026 |
+| 67.5sqm Housing'26, Manchester | Secure Meters | ₹63.17L | 23 Apr 2026 |
+| 42sqm Installer'26, Birmingham | Secure Meters | ₹39.31L | 23 Apr 2026 |
+| 24sqm Utility Week'26, Birmingham | Secure Meters | ₹22.46L | 26 Mar 2026 |
+| 130sqm Windergy'26, Chennai | Nordex Energy | ₹23.46L | 16 Jul 2026 |
+| 60sqm Pharma Pro & Pack | Klenzaids | ₹10.0L | 21 May 2026 |
+| 36sqm ELAsia BIEC | GIC | ₹7.2L | — |
+| ⚠️ Duplicate/old records for Installer'26 + Housing'26 — verify with Chinmay | | | |
+
+### Stage 4 — Price Quote (2 deals | ₹27.4L)
+| Deal | Client | SP | Closing Date |
+|------|---------|----|-------------|
+| 30sqm MEE'26 Dubai | Secure Meters | ₹18.5L | 23 Jul 2026 |
+| 56sqm Pharma Pro & Pack | ZETA GmbH | ₹8.9L | — |
+
+### Stage 5 — BBANNTI Qualified (6 deals | amounts TBC)
+| Deal | Client | Closing Date |
+|------|--------|-------------|
+| EPR Vietnam (Ho Chi Minh) | Secure Meters | 20 Aug 2026 |
+| EPR Indonesia / Enlit Asia | Secure Meters | 16 Jul 2026 |
+| African Energy Week, Cape Town | Secure Meters | 13 Aug 2026 |
+| CIGRE, Paris | Secure Meters | 14 May 2026 |
+| Elecrama 2027, Greater Noida | Secure Meters | 1 Dec 2026 |
+| Bharat Mobility Show'27 | Carl Bechem | 7 Dec 2026 |
+
+### Stage 6 — New Leads & Enquiries (13 deals | no amounts)
+Klenzaids (Pmec'26), Christie Digital duplicates, Anish Pharma (×2), Truetzschler, ATE Enterprises, Axis Electricals, Platinum Industries, SBEE Cables, Snowbell, Moleculez, PCM Railone, Disha Foods, protectt.ai
+
+### Stage 7 — Requirement Gathering (3 deals)
+Amaara Vitafoods Europe ₹22.95L (older version — superseded by Closed Won), Amaara Vitafoods Asia (no amount), Electro Crimp/IEEE Chicago (no amount)
+
+### Stage 8 — Not Qualified | Stage 9 — Closed Lost
+200+ old records from 2022–2025 Sales Pipeline — ignore for FY27 planning.
+
+### Secure Meters concentration in 26-27 pipeline (live breach)
+| Stage | SP |
+|-------|----|
+| Closed Won 26-27 | ₹9.35L |
+| Design | ~₹2.02 Cr (4 confirmed shows) |
+| Price Quote | ₹18.5L |
+| BBANNTI Qualified | TBC (5 shows) |
+| **Total Secure in pipeline** | **~₹2.49 Cr** |
+**Concentration alert: Secure is ~43% of all deals with known amounts. 25% ceiling = live breach.**

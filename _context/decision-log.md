@@ -5,11 +5,14 @@
 
 | Date        | Decision                                      | Rationale                        | Owner | Status  |
 |-------------|-----------------------------------------------|----------------------------------|-------|---------|
+| 14 Apr 2026 | Telegram delivery: MCP plugin only (@FirstRainOS1_bot). No Python/HTTP API. | Old bot @FirstRainOS_bot inactive. MCP plugin is live channel. | System | Done |
+| 14 Apr 2026 | daily-updates.md created as live receivables log. /close + /end prompt for updates. | Briefings were showing stale data — receivables cleared days ago still showing as outstanding. | Niloy | Active |
 | 1 Apr 2026  | Labguard Analytica Closed Won ₹13.6L at 47% CM| ICP match, good brief quality    | Niloy | Done    |
 | 1 Apr 2026  | Amaara CM 17.6% — strategic exception granted | ₹34L receivable urgency. Blend 33% across FY27 | Niloy | Active |
 | 2 Apr 2026  | GH Display selected for Utility Week Birmingham| Quote GH10918/3 £16,319.75. ESSA Tier 5. | Niloy | Active |
 | 2 Apr 2026  | Burn rate confirmed ₹25.5L/month FY27        | Sonal verified actuals           | Sonal | Confirmed |
 | 8 Apr 2026  | Two sales hunters approved                    | Domestic ₹6-8L base + International ₹7-9L base | Niloy | To hire |
+| 13 Apr 2026 | /proposal-maker skill built — Zoho Books integration live | Automates Proforma Invoice creation with T&C, tax, currency | Niloy | Active |
 | 8 Apr 2026  | Obsidian vault upgraded to v6.1              | Eliminated duplication. Hooks + _context/ system | Niloy | In Progress |
 | 8 Apr 2026  | FirstRain-Intel wiki built on Karpathy pattern| CPhI China 252 contacts ingested | Niloy | Live    |
 | 8 Apr 2026  | Vault v6.1 fully operational                 | 14 context files, 15 skills, hooks, 238 show pages, 2 competitor profiles | Niloy | Done |
@@ -25,3 +28,6 @@
 | 11 Apr 2026 | Dhruv removed from all campaign responsibilities. Pankaj (CrossNibble) = sole campaign owner. Bigin pipeline management = Niloy only. | Dhruv is PM-focused; campaign work belongs with the agency. Clean ownership. | Niloy | Done |
 | 11 Apr 2026 | /schedule skill created: Pankaj report ingest + FirstRain-Intel show analysis (90–120 days) + ICP picks + Telegram + Gmail draft to niloy@firstrain.co.in | Weekly campaign intelligence automated. monday-sync also runs this every Monday. | Niloy | Live |
 | 11 Apr 2026 | ABM sector list expanded from 5 to 13 sectors. Groups 1–3 populated (39 accounts). Groups 4–13 pending. | Active client base revealed 8 uncovered sectors. Seed list now reflects actual pipeline. | Niloy | In Progress |
+| 13 Apr 2026 | Nanobanana (Gemini Pro Image, 4K) adopted as LinkedIn visual content tool. Whiteboard sketchnote style = standard format. | Quality verified — all elements render correctly (text, highlights, icons, sketches). Default path: _outputs/linkedin-content/images/ | Niloy | Live |
+| 13 Apr 2026 | Amaara ₹20L advance received (Vitafoods Europe ₹34L SP). T02 marked ✓ in Notion. Balance ₹14L outstanding. | #1 cash priority partially cleared. Remaining receivable to be chased before show (5 May 2026). | Niloy | Active |
+| 13 Apr 2026 | Labguard ₹6,76,200 advance received (Analytica India ₹13.6L SP). ~50% advance. Balance ₹6,83,800 outstanding. Show 22–24 Apr. | T02 ✓. 9 days to show. | Niloy | Active |

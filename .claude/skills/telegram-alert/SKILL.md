@@ -28,27 +28,27 @@ Load from `_context/telegram-config.md` — never hardcode in outputs.
 | Shilpa assigned field task (system blocked it) | ⚠️ Same day |
 | Weekly report compiled and ready | ✅ Informational |
 | Messung brief gaps still outstanding | ⚠️ Same day |
+| Pankaj report not found in Crossnibble folder when /schedule runs | ⚠️ Same day |
+| Target show within 90 days with no ABM outreach started | ⚠️ Same day |
 
-## Message rules
+## Message rules — INSTANT ALERTS ONLY
 - Under 300 characters
 - Lead with emoji: 🔴 urgent / ⚠️ warning / ✅ informational
 - Include: what, which client/project, what action needed
 - Never include SP/CP/margin numbers in plain text (internal only)
+- This 300-character rule applies to instant alerts only — NOT to /monday or /schedule briefings
 
 ## How to send
 
-```python
-import urllib.request, urllib.parse, json
+Use the `mcp__plugin_telegram_telegram__reply` MCP tool directly:
 
-token = '[from telegram-config.md]'
-chat_id = '8770250893'
-message = '[your alert text]'
-
-url = f'https://api.telegram.org/bot{token}/sendMessage'
-data = urllib.parse.urlencode({'chat_id': chat_id, 'text': message}).encode()
-with urllib.request.urlopen(url, data) as r:
-    result = json.loads(r.read())
 ```
+chat_id: "8770250893"
+text: "[your alert text]"
+format: "text"
+```
+
+IMPORTANT: Always use this MCP tool. Never use a Python script or the Telegram HTTP API — the bot token in telegram-config.md is for an old bot (@FirstRainOS_bot) that is no longer active. The MCP plugin uses @FirstRainOS1_bot which is the live channel.
 
 ## Standard alert templates
 
@@ -75,6 +75,16 @@ with urllib.request.urlopen(url, data) as r:
 ### Concept blocked
 ```
 ⚠️ DESIGN BLOCKED — [Client] concept waiting Mangesh review. [Show date] approaching.
+```
+
+### Pankaj report missing
+```
+⚠️ NO PANKAJ REPORT — Crossnibble folder empty. Chase Pankaj to upload weekly report.
+```
+
+### Show approaching, no outreach
+```
+📅 SHOW ALERT — [Show name] in [N] days. No ABM outreach started. Run /schedule.
 ```
 
 ## Guardrails
