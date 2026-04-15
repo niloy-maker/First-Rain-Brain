@@ -5,6 +5,7 @@
 # Last consolidated: 9 April 2026
 
 ## Verified client facts
+- GIC India (gicindia.com): New target account. Electrical automation sector. GSTIN 27AAACG6241J1ZM, MIDC Bhosari Pune. Multi-show commitment: ELAsia Bangalore 36sqm + Automation India Mumbai 46sqm + Elecrama 2027 Gr. Noida 110sqm. Bundle pricing: ₹34.83L at 36.8% CM (5% loyalty). EST-26-27-03 sent for ELAsia (₹7.94L incl. IGST). Zoho contact created 15 Apr 2026.
 - Secure Meters: 52.5% of FY27 pipeline. Ceiling 25%. Live breach.
   MEE ₹18.95L on hold. RenewX ₹9.4L awaiting PO (floor ₹7.24L).
   Utility Week: GH Display selected, GH10918/3 £16,319.75. PO required first.
@@ -56,6 +57,10 @@
 - Telegram message rules: instant alerts ≤300 chars. /monday and /schedule briefings = full format, no character limit. New triggers: Pankaj report missing + show within 90 days no outreach started.
 - monday-sync task updated (11 Apr): 9 steps — Notion + Bigin + Sonal report + Zoho Books + Pankaj report + show calendar Intel analysis (90-120 days) + update active-projects.md + Telegram + Gmail draft.
 - Team update 11 Apr: Sonal = Commercial Manager. Santosh = Sr Production Manager. Shilpa = Sr Project Executive (promoted). Komal = left. Chinmay = leaving for MBA ~1 year — succession in progress.
+
+## Verified system facts (continued)
+- /proposal-maker v1.3 (15 Apr): IGST applied via tax_id on main line item only — never a separate tax line item. tax_id IGST18 (1389751000000365081) for inter-state. Default design option = "Exhibition Stall Design & Build as per submitted design". EST-26-27-03 is the reference for correct format.
+- Zoho Books EST numbering: EST-26-27-01 (Amaara), EST-26-27-02 (Coats India test), EST-26-27-03 (GIC ELAsia).
 
 ## Flagged for Niloy review
 - Git identity still Monica Debnath — run: git config --global user.name "Niloy Debnath"

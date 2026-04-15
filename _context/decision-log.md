@@ -5,6 +5,8 @@
 
 | Date        | Decision                                      | Rationale                        | Owner | Status  |
 |-------------|-----------------------------------------------|----------------------------------|-------|---------|
+| 15 Apr 2026 | GIC India approved as multi-show target — 3 shows (ELAsia 36sqm, Automation India 46sqm, Elecrama 2027 110sqm), ₹34.83L at 36.8% CM (5% loyalty). EST-26-27-03 created. | New enterprise account, reduces Secure concentration, supports Rock #1 + #2. | Niloy | Active |
+| 15 Apr 2026 | /proposal-maker corrected — IGST applied via tax_id on main line item only. Default design option = "Exhibition Stall Design & Build as per submitted design". | EST-26-27-01 format audit revealed wrong two-line-item approach. Fixed in skill + applied to EST-26-27-03. | System | Done |
 | 14 Apr 2026 | Telegram delivery: MCP plugin only (@FirstRainOS1_bot). No Python/HTTP API. | Old bot @FirstRainOS_bot inactive. MCP plugin is live channel. | System | Done |
 | 14 Apr 2026 | daily-updates.md created as live receivables log. /close + /end prompt for updates. | Briefings were showing stale data — receivables cleared days ago still showing as outstanding. | Niloy | Active |
 | 1 Apr 2026  | Labguard Analytica Closed Won ₹13.6L at 47% CM| ICP match, good brief quality    | Niloy | Done    |
