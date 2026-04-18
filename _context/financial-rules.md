@@ -21,19 +21,20 @@
 **Template: _outputs/Sonal-Weekly-Finance-Report-Template.xlsx**
 **Cadence: Sonal uploads every Monday by 10am. Claude reads before /monday.**
 
-- Operating cash: ₹22,64,418 — CRITICAL (0.89 months) [last updated: 9 Apr 2026]
-- Treasury: ₹1,38,26,443 — real buffer
+- Operating cash: ₹24,56,438 — CRITICAL (1.0 months) [last updated: 18 Apr 2026 — Sonal's sheet]
+- Treasury: ₹1,39,97,287 — real buffer
 - OD Facility: ₹1,21,00,000
-- Total receivables: ₹60,88,186
+- Total receivables: ₹26,70,705
 
 ## Receivables priority (update weekly — from Sonal's report)
 | Client          | Amount       | Status                          |
 |-----------------|-------------|----------------------------------|
-| Amaara Vitafoods | ₹14,00,000 | #1 — ₹20L received 14 Apr. ₹14L outstanding. |
-| Messung         | ₹3,93,139   | #2 — April                      |
-| Mosil           | ₹1,50,000   | #3 — April                      |
-| Elliott Ebara   | ₹0          | Cleared 14 Apr 2026 ✓           |
-| Secure BES      | ₹0          | Cleared 14 Apr 2026 ✓           |
+| Amaara Vitafoods | ₹14,00,000 | #1 — ₹20L received 14 Apr. ₹14L outstanding. Chase before 5 May (90% rule). |
+| Messung         | ₹4,63,905   | #2 — April. Show 28-30 Apr.     |
+| Elliott Ebara   | ₹93,800     | #3 — Small residual per Sonal's sheet (daily-updates shows cleared 14 Apr — verify with Sonal) |
+| Secure BES      | ₹6,50,000   | #4 — Sonal's sheet 18 Apr shows ₹6.5L outstanding. daily-updates logged cleared 14 Apr — DISCREPANCY. Verify with Sonal. |
+| Mosil           | ₹63,000     | #5 — April. Show 23 Apr.        |
+| Carl Bechem     | ₹0          | ₹1,16,800 received 15 Apr ✓ (NEFT AXISP00788721946). BME Conclave wrap pending (T23–T31). |
 
 ## Quote checklist (all 4 must pass)
 1. SP − CP above 33% of SP?
