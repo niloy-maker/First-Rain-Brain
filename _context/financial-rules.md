@@ -32,7 +32,7 @@
 | Amaara Vitafoods | ₹14,00,000 | #1 — ₹20L received 14 Apr. ₹14L outstanding. Chase before 5 May (90% rule). |
 | Messung         | ₹4,63,905   | #2 — April. Show 28-30 Apr.     |
 | Elliott Ebara   | ₹93,800     | #3 — Small residual per Sonal's sheet (daily-updates shows cleared 14 Apr — verify with Sonal) |
-| Secure BES      | ₹6,50,000   | #4 — Sonal's sheet 18 Apr shows ₹6.5L outstanding. daily-updates logged cleared 14 Apr — DISCREPANCY. Verify with Sonal. |
+| Secure BES      | ₹6,50,000   | #4 — ₹6.5L outstanding per Sonal's sheet (18 Apr). Source of truth. |
 | Mosil           | ₹63,000     | #5 — April. Show 23 Apr.        |
 | Carl Bechem     | ₹0          | ₹1,16,800 received 15 Apr ✓ (NEFT AXISP00788721946). BME Conclave wrap pending (T23–T31). |
 
