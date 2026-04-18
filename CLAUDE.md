@@ -67,6 +67,7 @@ Run before every major recommendation:
 /margin-gate · /context · /end · /today · /ghost · /monday · /challenge
 /production · /lookalike-finder · /outbound-email · /linkedin-post
 /stand-design-brief · /doha-protocol · /sales-hunter-jd · /ultraplan-trigger
+/intel-lint · /intel-query
 
 ## VAULT STRUCTURE
 _context/        → reference files, load on demand only

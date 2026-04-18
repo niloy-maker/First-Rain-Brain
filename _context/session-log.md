@@ -2,6 +2,35 @@
 # Append-only. Never delete entries.
 
 ---
+Date: 18 April 2026
+Key decisions:
+- /intel-lint skill built and tested — wiki health check covering broken links, past shows, stale accounts, ingest recency. Saves report to _outputs/intel-lint-[date].md
+- Obsidian Web Clipper configured — vault: Andrej_Karpathy_Obsidian_FirstRain_Brain, folder: FirstRain-Intel/raw, name: {{date}}-{{title}}. Pankaj can now clip directly from browser
+- /intel-query skill built and tested — Pankaj/Dhruv can self-serve wiki questions without Niloy. Read-only, wiki-only, cites sources. 3 tests passed
+- Monthly /intel-lint scheduled via CCR — runs 1st of every month 9am IST, commits report to GitHub (trig_01HkfGSFvetumRYc3T9mcDRD)
+- Amaara Vitafoods Europe — graphics sent to fabricator
+Open items:
+- 16 past shows (Feb + Mar 2026) in wiki not yet archived
+- 125 High ICP Jun-Aug shows on disk not individually wiki-linked — future ingest pass needed
+- Send Pankaj the Web Clipper 3-sentence workflow message
+Next action: Send Pankaj the Web Clipper workflow message.
+---
+---
+Date: 15 April 2026 (close sync)
+Key decisions:
+- GIC ELAsia confirmed Closed Won ₹6.50L (corrected from ₹6.73L estimate) — added to executing table. Total active SP ₹71.25L.
+- Notion production tracker: GIC column added, all milestones ✗ — T01 PI not yet issued.
+- Production status unchanged: Labguard 7d 🔴, Mosil 8d 🔴, Messung 13d ⚠️, Secure 12d 🔴
+- Finance sheet empty — Sonal to populate urgently.
+Open items:
+- GIC: Issue T01 PI immediately, tick in Notion tracker
+- Labguard + Mosil: T21 installation unconfirmed — chase Chinmay today
+- Secure RenewX: T02 advance still not received
+- Amaara: ₹14L outstanding before Vitafoods on-site
+- Sonal: populate finance sheet
+Next action: Issue GIC T01 PI. Chase Chinmay on Labguard + Mosil T21.
+---
+---
 Date: 15 April 2026
 Key decisions:
 - GIC India (gicindia.com) confirmed as multi-show target account — ELAsia Bangalore 36sqm + Automation India Mumbai 46sqm + Elecrama 2027 Greater Noida 110sqm
@@ -2648,3 +2677,599 @@ Next action: Write proposal-maker SKILL.md. Chase T21 for Labguard (Chinmay) and
 [HOOK] Wed Apr 15 13:24:48 IST 2026 — session active[HOOK] Wed Apr 15 13:25:00 IST 2026 — session active
 [HOOK] Wed Apr 15 13:25:05 IST 2026 — session active
 [HOOK] Wed Apr 15 13:25:10 IST 2026 — session active
+[HOOK] Wed Apr 15 13:25:23 IST 2026 — session active
+[HOOK] Wed Apr 15 13:31:51 IST 2026 — session active
+[HOOK] Wed Apr 15 13:53:22 IST 2026 — session active
+[HOOK] Wed Apr 15 13:53:27 IST 2026 — session active
+[HOOK] Wed Apr 15 13:53:28 IST 2026 — session active
+[HOOK] Wed Apr 15 13:53:35 IST 2026 — session active
+[HOOK] Wed Apr 15 13:53:35 IST 2026 — session active
+[HOOK] Wed Apr 15 13:53:41 IST 2026 — session active
+[HOOK] Wed Apr 15 14:20:36 IST 2026 — session active
+[HOOK] Wed Apr 15 14:20:46 IST 2026 — session active
+[HOOK] Wed Apr 15 14:20:50 IST 2026 — session active
+[HOOK] Wed Apr 15 14:21:22 IST 2026 — session active
+[HOOK] Wed Apr 15 14:21:25 IST 2026 — session active
+[HOOK] Wed Apr 15 14:21:35 IST 2026 — session active
+[HOOK] Wed Apr 15 14:28:49 IST 2026 — session active
+[HOOK] Wed Apr 15 14:30:13 IST 2026 — session active
+[HOOK] Wed Apr 15 14:30:42 IST 2026 — session active
+[HOOK] Wed Apr 15 14:30:42 IST 2026 — session active
+[HOOK] Wed Apr 15 14:30:52 IST 2026 — session active
+[HOOK] Wed Apr 15 18:36:06 IST 2026 — session active
+[HOOK] Wed Apr 15 18:36:10 IST 2026 — session active
+[HOOK] Wed Apr 15 18:36:11 IST 2026 — session active
+[HOOK] Wed Apr 15 18:36:34 IST 2026 — session active
+[HOOK] Wed Apr 15 18:36:35 IST 2026 — session active
+[HOOK] Wed Apr 15 18:36:38 IST 2026 — session active
+[HOOK] Wed Apr 15 18:36:58 IST 2026 — session active
+[HOOK] Wed Apr 15 18:36:59 IST 2026 — session active
+[HOOK] Wed Apr 15 18:37:34 IST 2026 — session active
+[HOOK] Wed Apr 15 18:37:35 IST 2026 — session active
+[HOOK] Wed Apr 15 18:37:46 IST 2026 — session active
+[HOOK] Wed Apr 15 18:38:26 IST 2026 — session active
+[HOOK] Wed Apr 15 18:38:29 IST 2026 — session active
+[HOOK] Wed Apr 15 18:42:30 IST 2026 — session active
+[HOOK] Wed Apr 15 18:42:53 IST 2026 — session active
+[HOOK] Wed Apr 15 18:45:02 IST 2026 — session active
+[HOOK] Wed Apr 15 18:45:12 IST 2026 — session active
+[HOOK] Wed Apr 15 18:45:12 IST 2026 — session active
+[HOOK] Wed Apr 15 18:45:14 IST 2026 — session active
+[HOOK] Wed Apr 15 18:45:14 IST 2026 — session active
+[HOOK] Wed Apr 15 18:45:27 IST 2026 — session active
+[HOOK] Wed Apr 15 18:45:27 IST 2026 — session active
+[HOOK] Wed Apr 15 18:45:34 IST 2026 — session active
+[HOOK] Wed Apr 15 18:45:35 IST 2026 — session active
+[HOOK] Wed Apr 15 18:45:38 IST 2026 — session active
+[HOOK] Wed Apr 15 18:46:03 IST 2026 — session active
+[HOOK] Wed Apr 15 18:46:05 IST 2026 — session active
+[HOOK] Wed Apr 15 18:46:13 IST 2026 — session active
+[HOOK] Wed Apr 15 18:46:18 IST 2026 — session active
+[HOOK] Wed Apr 15 18:48:02 IST 2026 — session active
+[HOOK] Wed Apr 15 18:48:32 IST 2026 — session active
+[HOOK] Wed Apr 15 18:49:10 IST 2026 — session active
+[HOOK] Wed Apr 15 18:49:21 IST 2026 — session active
+[HOOK] Wed Apr 15 18:49:32 IST 2026 — session active
+[HOOK] Wed Apr 15 18:49:43 IST 2026 — session active
+[HOOK] Wed Apr 15 18:54:58 IST 2026 — session active
+[HOOK] Wed Apr 15 18:55:19 IST 2026 — session active
+[HOOK] Wed Apr 15 18:55:20 IST 2026 — session active
+[HOOK] Wed Apr 15 18:55:25 IST 2026 — session active
+[HOOK] Wed Apr 15 19:14:00 IST 2026 — session active
+[HOOK] Wed Apr 15 19:14:05 IST 2026 — session active
+[HOOK] Wed Apr 15 19:14:13 IST 2026 — session active
+[HOOK] Wed Apr 15 19:14:52 IST 2026 — session active
+[HOOK] Wed Apr 15 19:18:46 IST 2026 — session active
+[HOOK] Wed Apr 15 19:19:20 IST 2026 — session active
+[HOOK] Wed Apr 15 19:19:29 IST 2026 — session active
+[HOOK] Wed Apr 15 19:19:34 IST 2026 — session active
+[HOOK] Wed Apr 15 19:23:50 IST 2026 — session active
+[HOOK] Wed Apr 15 19:25:17 IST 2026 — session active
+[HOOK] Wed Apr 15 19:25:23 IST 2026 — session active
+[HOOK] Wed Apr 15 19:25:23 IST 2026 — session active
+[HOOK] Wed Apr 15 19:38:49 IST 2026 — session active
+[HOOK] Wed Apr 15 19:39:32 IST 2026 — session active
+[HOOK] Wed Apr 15 19:41:16 IST 2026 — session active
+[HOOK] Wed Apr 15 19:41:38 IST 2026 — session active
+[HOOK] Wed Apr 15 19:41:58 IST 2026 — session active
+[HOOK] Wed Apr 15 19:44:41 IST 2026 — session active
+[HOOK] Wed Apr 15 19:45:02 IST 2026 — session active
+[HOOK] Wed Apr 15 19:46:26 IST 2026 — session active
+[HOOK] Wed Apr 15 19:46:36 IST 2026 — session active
+[HOOK] Wed Apr 15 19:54:02 IST 2026 — session active
+[HOOK] Wed Apr 15 19:54:07 IST 2026 — session active
+[HOOK] Wed Apr 15 19:54:07 IST 2026 — session active
+[HOOK] Wed Apr 15 19:54:08 IST 2026 — session active
+[HOOK] Wed Apr 15 19:54:14 IST 2026 — session active
+[HOOK] Wed Apr 15 19:54:22 IST 2026 — session active
+[HOOK] Wed Apr 15 19:54:28 IST 2026 — session active
+[HOOK] Wed Apr 15 19:54:35 IST 2026 — session active
+[HOOK] Wed Apr 15 19:54:52 IST 2026 — session active
+[HOOK] Wed Apr 15 19:54:57 IST 2026 — session active
+[HOOK] Wed Apr 15 19:54:59 IST 2026 — session active
+[HOOK] Wed Apr 15 19:55:04 IST 2026 — session active
+[HOOK] Wed Apr 15 19:55:13 IST 2026 — session active
+[HOOK] Wed Apr 15 19:55:23 IST 2026 — session active
+[HOOK] Wed Apr 15 19:55:26 IST 2026 — session active
+[HOOK] Wed Apr 15 19:55:30 IST 2026 — session active
+[HOOK] Wed Apr 15 19:55:39 IST 2026 — session active
+[HOOK] Wed Apr 15 19:55:39 IST 2026 — session active
+[HOOK] Wed Apr 15 19:55:46 IST 2026 — session active
+[HOOK] Wed Apr 15 19:56:00 IST 2026 — session active
+[HOOK] Wed Apr 15 19:56:04 IST 2026 — session active
+[HOOK] Wed Apr 15 19:56:06 IST 2026 — session active
+[HOOK] Wed Apr 15 19:56:10 IST 2026 — session active
+[HOOK] Wed Apr 15 19:56:13 IST 2026 — session active
+[HOOK] Wed Apr 15 19:56:15 IST 2026 — session active
+[HOOK] Wed Apr 15 19:56:23 IST 2026 — session active
+[HOOK] Wed Apr 15 19:56:26 IST 2026 — session active
+[HOOK] Wed Apr 15 19:56:28 IST 2026 — session active
+[HOOK] Wed Apr 15 19:56:31 IST 2026 — session active
+[HOOK] Wed Apr 15 19:56:34 IST 2026 — session active
+[HOOK] Wed Apr 15 19:56:36 IST 2026 — session active
+[HOOK] Wed Apr 15 19:56:43 IST 2026 — session active
+[HOOK] Wed Apr 15 19:56:46 IST 2026 — session active
+[HOOK] Wed Apr 15 19:56:48 IST 2026 — session active
+[HOOK] Wed Apr 15 19:56:51 IST 2026 — session active
+[HOOK] Wed Apr 15 19:56:54 IST 2026 — session active
+[HOOK] Wed Apr 15 19:56:57 IST 2026 — session active
+[HOOK] Wed Apr 15 19:57:00 IST 2026 — session active
+[HOOK] Wed Apr 15 19:58:27 IST 2026 — session active
+[HOOK] Wed Apr 15 19:58:36 IST 2026 — session active
+[HOOK] Wed Apr 15 19:58:44 IST 2026 — session active
+[HOOK] Wed Apr 15 19:59:00 IST 2026 — session active
+[HOOK] Wed Apr 15 19:59:30 IST 2026 — session active
+[HOOK] Wed Apr 15 19:59:40 IST 2026 — session active
+[HOOK] Wed Apr 15 19:59:47 IST 2026 — session active
+[HOOK] Wed Apr 15 20:00:54 IST 2026 — session active
+[HOOK] Wed Apr 15 20:03:26 IST 2026 — session active
+[HOOK] Wed Apr 15 20:03:32 IST 2026 — session active
+[HOOK] Wed Apr 15 20:03:42 IST 2026 — session active
+[HOOK] Wed Apr 15 20:03:47 IST 2026 — session active
+[HOOK] Wed Apr 15 20:03:57 IST 2026 — session active
+[HOOK] Wed Apr 15 20:04:01 IST 2026 — session active
+[HOOK] Wed Apr 15 20:04:10 IST 2026 — session active
+[HOOK] Wed Apr 15 20:04:14 IST 2026 — session active
+[HOOK] Wed Apr 15 20:04:59 IST 2026 — session active
+[HOOK] Wed Apr 15 20:05:32 IST 2026 — session active
+[HOOK] Wed Apr 15 20:05:42 IST 2026 — session active
+[HOOK] Wed Apr 15 20:06:06 IST 2026 — session active
+[HOOK] Wed Apr 15 20:06:21 IST 2026 — session active
+[HOOK] Wed Apr 15 20:06:29 IST 2026 — session active
+[HOOK] Wed Apr 15 20:06:35 IST 2026 — session active
+[HOOK] Thu Apr 16 08:24:26 IST 2026 — session active
+[HOOK] Thu Apr 16 08:25:08 IST 2026 — session active
+[HOOK] Thu Apr 16 08:25:16 IST 2026 — session active
+[HOOK] Thu Apr 16 08:27:38 IST 2026 — session active
+[HOOK] Thu Apr 16 08:28:41 IST 2026 — session active
+[HOOK] Thu Apr 16 08:28:44 IST 2026 — session active
+[HOOK] Thu Apr 16 08:28:46 IST 2026 — session active
+[HOOK] Thu Apr 16 08:28:51 IST 2026 — session active
+[HOOK] Thu Apr 16 08:28:54 IST 2026 — session active
+[HOOK] Thu Apr 16 08:29:18 IST 2026 — session active
+[HOOK] Thu Apr 16 08:29:22 IST 2026 — session active
+[HOOK] Thu Apr 16 08:29:28 IST 2026 — session active
+[HOOK] Thu Apr 16 08:29:36 IST 2026 — session active
+[HOOK] Thu Apr 16 08:29:43 IST 2026 — session active
+[HOOK] Thu Apr 16 08:29:49 IST 2026 — session active
+[HOOK] Thu Apr 16 08:29:56 IST 2026 — session active
+[HOOK] Thu Apr 16 08:29:58 IST 2026 — session active
+[HOOK] Thu Apr 16 08:30:01 IST 2026 — session active
+[HOOK] Thu Apr 16 08:30:55 IST 2026 — session active
+[HOOK] Thu Apr 16 09:07:55 IST 2026 — session active
+[HOOK] Thu Apr 16 09:08:15 IST 2026 — session active
+[HOOK] Thu Apr 16 09:08:15 IST 2026 — session active
+[HOOK] Thu Apr 16 09:08:15 IST 2026 — session active
+[HOOK] Thu Apr 16 09:08:21 IST 2026 — session active
+[HOOK] Thu Apr 16 09:08:22 IST 2026 — session active
+[HOOK] Thu Apr 16 09:08:22 IST 2026 — session active
+[HOOK] Thu Apr 16 09:08:29 IST 2026 — session active
+[HOOK] Thu Apr 16 09:08:29 IST 2026 — session active
+[HOOK] Thu Apr 16 09:08:33 IST 2026 — session active
+[HOOK] Thu Apr 16 09:08:38 IST 2026 — session active
+[HOOK] Thu Apr 16 09:08:50 IST 2026 — session active
+[HOOK] Thu Apr 16 09:08:56 IST 2026 — session active
+[HOOK] Thu Apr 16 09:09:01 IST 2026 — session active
+[HOOK] Thu Apr 16 09:09:08 IST 2026 — session active
+[HOOK] Thu Apr 16 09:09:12 IST 2026 — session active
+[HOOK] Thu Apr 16 09:09:18 IST 2026 — session active
+[HOOK] Thu Apr 16 09:09:24 IST 2026 — session active
+[HOOK] Thu Apr 16 09:09:42 IST 2026 — session active
+[HOOK] Thu Apr 16 09:09:42 IST 2026 — session active
+[HOOK] Thu Apr 16 09:09:48 IST 2026 — session active
+[HOOK] Thu Apr 16 09:09:52 IST 2026 — session active
+[HOOK] Thu Apr 16 09:09:59 IST 2026 — session active
+[HOOK] Thu Apr 16 09:10:40 IST 2026 — session active
+[HOOK] Thu Apr 16 09:11:16 IST 2026 — session active
+[HOOK] Thu Apr 16 09:11:55 IST 2026 — session active
+[HOOK] Thu Apr 16 09:21:08 IST 2026 — session active
+[HOOK] Thu Apr 16 09:21:13 IST 2026 — session active
+[HOOK] Thu Apr 16 09:21:28 IST 2026 — session active
+[HOOK] Thu Apr 16 09:22:21 IST 2026 — session active
+[HOOK] Thu Apr 16 09:22:26 IST 2026 — session active
+[HOOK] Thu Apr 16 09:22:38 IST 2026 — session active
+[HOOK] Thu Apr 16 09:22:42 IST 2026 — session active
+[HOOK] Thu Apr 16 09:23:06 IST 2026 — session active
+[HOOK] Thu Apr 16 09:23:11 IST 2026 — session active
+[HOOK] Thu Apr 16 09:25:10 IST 2026 — session active
+[HOOK] Thu Apr 16 09:25:12 IST 2026 — session active
+[HOOK] Thu Apr 16 09:25:23 IST 2026 — session active
+[HOOK] Thu Apr 16 09:25:39 IST 2026 — session active
+[HOOK] Thu Apr 16 09:25:46 IST 2026 — session active
+[HOOK] Thu Apr 16 09:25:57 IST 2026 — session active
+[HOOK] Thu Apr 16 09:39:09 IST 2026 — session active
+[HOOK] Thu Apr 16 09:40:32 IST 2026 — session active
+[HOOK] Thu Apr 16 09:40:39 IST 2026 — session active
+[HOOK] Thu Apr 16 09:41:36 IST 2026 — session active
+[HOOK] Thu Apr 16 09:41:48 IST 2026 — session active
+[HOOK] Fri Apr 17 00:18:32 IST 2026 — session active
+[HOOK] Fri Apr 17 00:18:34 IST 2026 — session active
+[HOOK] Fri Apr 17 00:18:35 IST 2026 — session active
+[HOOK] Fri Apr 17 00:18:46 IST 2026 — session active
+[HOOK] Fri Apr 17 00:18:51 IST 2026 — session active
+[HOOK] Fri Apr 17 00:18:56 IST 2026 — session active
+[HOOK] Fri Apr 17 00:19:12 IST 2026 — session active
+[HOOK] Fri Apr 17 00:19:14 IST 2026 — session active
+[HOOK] Fri Apr 17 00:19:21 IST 2026 — session active
+[HOOK] Fri Apr 17 00:19:25 IST 2026 — session active
+[HOOK] Fri Apr 17 00:19:33 IST 2026 — session active
+[HOOK] Fri Apr 17 00:19:34 IST 2026 — session active
+[HOOK] Fri Apr 17 00:19:35 IST 2026 — session active
+[HOOK] Fri Apr 17 00:19:36 IST 2026 — session active
+[HOOK] Fri Apr 17 00:19:59 IST 2026 — session active
+[HOOK] Fri Apr 17 00:20:07 IST 2026 — session active
+[HOOK] Fri Apr 17 00:21:00 IST 2026 — session active
+[HOOK] Fri Apr 17 00:21:04 IST 2026 — session active
+[HOOK] Fri Apr 17 00:21:11 IST 2026 — session active
+[HOOK] Fri Apr 17 00:22:53 IST 2026 — session active
+[HOOK] Fri Apr 17 00:23:08 IST 2026 — session active
+[HOOK] Fri Apr 17 00:23:14 IST 2026 — session active
+[HOOK] Fri Apr 17 00:24:24 IST 2026 — session active
+[HOOK] Fri Apr 17 00:24:33 IST 2026 — session active
+[HOOK] Fri Apr 17 00:24:52 IST 2026 — session active
+[HOOK] Fri Apr 17 00:24:52 IST 2026 — session active
+[HOOK] Fri Apr 17 00:25:11 IST 2026 — session active
+
+---
+Date: 16 April 2026 (session — daily briefing automation + IBA SIBOS)
+Key decisions:
+- Daily briefing (first-rain-monday-sync) ran successfully end-to-end: finance sheet → Gmail → Telegram → Gmail draft. All 6 steps confirmed working.
+- Write + Edit permissions added to .claude/settings.local.json — scheduled task now runs fully unattended at 9am IST, zero prompts.
+- SKILL.md updated: Gmail client list expanded (Mosil, Messung, GIC, Bechem, Christie, Iberchem added; TOTO removed). Output filename changed to briefing-YYYY-MM-DD.md.
+- LLM Council launch agents removed: com.firstrain.llmcouncil + com.firstrain.llmcouncil-chrome deleted from ~/Library/LaunchAgents/. Telegram bridge untouched.
+- Carl Bechem ₹1,16,800 received 15 Apr via NEFT (AXISP00788721946). BME Conclave post-show payment.
+- Finance sheet live — operating cash updated to ₹18,74,960 (0.7 months). Elliott ₹93,800 + Secure BES ₹4,24,228 residuals per Sonal's sheet — flagged for verification (daily-updates shows cleared 14 Apr).
+- IBA SIBOS Miami 2026 captured — 192 sqm, Miami Beach Convention Centre, 28 Sept–1 Oct 2026. First pitch 24 April. Themes: "India: Resilient by Design" / "India: Leading the Fiscal Future". Rock #1 opportunity. Pitch prep deferred.
+Open items:
+- IBA SIBOS pitch prep — 24 April. /stand-design-brief + /spatial-concept needed before 22 Apr.
+- Labguard security deposit (T12) — Santosh's payment request awaiting approval. 6 days to show.
+- Secure RenewX T02 advance — still not received. 11 days to show. Escalate Rahul.
+- Amaara ₹14L balance — chase Karandeep. 90% before ~5 May on-site.
+- Elliott + Secure BES residual amounts — verify with Sonal (discrepancy vs daily-updates).
+- GIC T01 — tick in Notion.
+Next action: IBA pitch prep — run /stand-design-brief for SIBOS Miami tomorrow.
+---
+[HOOK] Fri Apr 17 00:25:26 IST 2026 — session active
+[HOOK] Fri Apr 17 00:25:34 IST 2026 — session active
+[HOOK] Fri Apr 17 00:25:39 IST 2026 — session active
+[HOOK] Fri Apr 17 09:08:31 IST 2026 — session active
+[HOOK] Fri Apr 17 09:08:36 IST 2026 — session active
+[HOOK] Fri Apr 17 09:08:37 IST 2026 — session active
+[HOOK] Fri Apr 17 09:08:37 IST 2026 — session active
+[HOOK] Fri Apr 17 09:08:41 IST 2026 — session active
+[HOOK] Fri Apr 17 09:08:41 IST 2026 — session active
+[HOOK] Fri Apr 17 09:08:41 IST 2026 — session active
+[HOOK] Fri Apr 17 09:08:46 IST 2026 — session active
+[HOOK] Fri Apr 17 09:08:46 IST 2026 — session active
+[HOOK] Fri Apr 17 09:08:51 IST 2026 — session active
+[HOOK] Fri Apr 17 09:09:02 IST 2026 — session active
+[HOOK] Fri Apr 17 09:09:06 IST 2026 — session active
+[HOOK] Fri Apr 17 09:09:08 IST 2026 — session active
+[HOOK] Fri Apr 17 09:09:15 IST 2026 — session active
+[HOOK] Fri Apr 17 09:09:17 IST 2026 — session active
+[HOOK] Fri Apr 17 09:09:31 IST 2026 — session active
+[HOOK] Fri Apr 17 09:09:34 IST 2026 — session active
+[HOOK] Fri Apr 17 09:10:03 IST 2026 — session active
+[HOOK] Fri Apr 17 09:10:42 IST 2026 — session active
+[HOOK] Fri Apr 17 09:10:44 IST 2026 — session active
+[HOOK] Fri Apr 17 09:10:47 IST 2026 — session active
+[HOOK] Fri Apr 17 09:10:50 IST 2026 — session active
+[HOOK] Fri Apr 17 09:10:57 IST 2026 — session active
+[HOOK] Fri Apr 17 09:10:59 IST 2026 — session active
+[HOOK] Fri Apr 17 09:11:34 IST 2026 — session active
+[HOOK] Fri Apr 17 09:11:42 IST 2026 — session active
+[HOOK] Fri Apr 17 09:25:10 IST 2026 — session active
+[HOOK] Fri Apr 17 09:25:16 IST 2026 — session active
+[HOOK] Fri Apr 17 09:25:56 IST 2026 — session active
+[HOOK] Fri Apr 17 09:26:01 IST 2026 — session active
+[HOOK] Fri Apr 17 09:28:23 IST 2026 — session active
+[HOOK] Fri Apr 17 09:28:44 IST 2026 — session active
+[HOOK] Fri Apr 17 09:32:44 IST 2026 — session active
+[HOOK] Fri Apr 17 09:32:44 IST 2026 — session active
+[HOOK] Fri Apr 17 09:32:48 IST 2026 — session active
+[HOOK] Fri Apr 17 09:32:48 IST 2026 — session active
+[HOOK] Fri Apr 17 10:10:57 IST 2026 — session active
+[HOOK] Fri Apr 17 10:10:59 IST 2026 — session active
+[HOOK] Fri Apr 17 10:11:03 IST 2026 — session active
+[HOOK] Fri Apr 17 12:55:21 IST 2026 — session active
+[HOOK] Fri Apr 17 12:55:25 IST 2026 — session active
+[HOOK] Fri Apr 17 14:32:16 IST 2026 — session active
+[HOOK] Fri Apr 17 14:32:16 IST 2026 — session active
+[HOOK] Fri Apr 17 14:37:39 IST 2026 — session active
+[HOOK] Fri Apr 17 16:33:04 IST 2026 — session active
+[HOOK] Fri Apr 17 16:33:05 IST 2026 — session active
+[HOOK] Fri Apr 17 16:33:05 IST 2026 — session active
+[HOOK] Fri Apr 17 16:33:17 IST 2026 — session active
+[HOOK] Fri Apr 17 16:33:18 IST 2026 — session active
+[HOOK] Fri Apr 17 16:33:19 IST 2026 — session active
+[HOOK] Fri Apr 17 16:34:37 IST 2026 — session active
+[HOOK] Fri Apr 17 16:36:45 IST 2026 — session active
+[HOOK] Fri Apr 17 16:36:50 IST 2026 — session active
+[HOOK] Fri Apr 17 16:39:16 IST 2026 — session active
+[HOOK] Fri Apr 17 16:39:32 IST 2026 — session active
+[HOOK] Fri Apr 17 16:40:36 IST 2026 — session active
+[HOOK] Fri Apr 17 16:40:46 IST 2026 — session active
+[HOOK] Fri Apr 17 16:42:05 IST 2026 — session active
+[HOOK] Fri Apr 17 16:42:10 IST 2026 — session active
+[HOOK] Fri Apr 17 16:42:13 IST 2026 — session active
+[HOOK] Fri Apr 17 16:42:16 IST 2026 — session active
+[HOOK] Fri Apr 17 16:42:27 IST 2026 — session active
+[HOOK] Fri Apr 17 16:42:38 IST 2026 — session active
+[HOOK] Fri Apr 17 16:42:47 IST 2026 — session active
+[HOOK] Fri Apr 17 16:43:49 IST 2026 — session active
+[HOOK] Fri Apr 17 16:45:23 IST 2026 — session active
+[HOOK] Fri Apr 17 16:45:38 IST 2026 — session active
+[HOOK] Fri Apr 17 16:45:49 IST 2026 — session active
+[HOOK] Fri Apr 17 16:47:00 IST 2026 — session active
+[HOOK] Fri Apr 17 16:48:17 IST 2026 — session active
+[HOOK] Fri Apr 17 16:51:12 IST 2026 — session active
+[HOOK] Fri Apr 17 16:52:59 IST 2026 — session active
+[HOOK] Fri Apr 17 16:53:05 IST 2026 — session active
+[HOOK] Fri Apr 17 16:53:10 IST 2026 — session active
+[HOOK] Fri Apr 17 16:54:02 IST 2026 — session active
+[HOOK] Fri Apr 17 16:54:06 IST 2026 — session active
+[HOOK] Fri Apr 17 16:57:16 IST 2026 — session active
+[HOOK] Fri Apr 17 16:59:07 IST 2026 — session active
+[HOOK] Fri Apr 17 17:00:08 IST 2026 — session active
+[HOOK] Fri Apr 17 17:01:48 IST 2026 — session active
+[HOOK] Fri Apr 17 17:01:57 IST 2026 — session active
+[HOOK] Fri Apr 17 17:03:12 IST 2026 — session active
+[HOOK] Fri Apr 17 17:03:22 IST 2026 — session active
+[HOOK] Fri Apr 17 17:03:25 IST 2026 — session active
+[HOOK] Fri Apr 17 17:03:26 IST 2026 — session active
+[HOOK] Fri Apr 17 17:03:47 IST 2026 — session active
+[HOOK] Fri Apr 17 17:03:47 IST 2026 — session active
+[HOOK] Fri Apr 17 17:03:59 IST 2026 — session active
+[HOOK] Fri Apr 17 17:04:11 IST 2026 — session active
+[HOOK] Fri Apr 17 17:04:17 IST 2026 — session active
+[HOOK] Fri Apr 17 17:05:04 IST 2026 — session active
+[HOOK] Fri Apr 17 17:18:16 IST 2026 — session active
+[HOOK] Fri Apr 17 17:19:36 IST 2026 — session active
+[HOOK] Fri Apr 17 17:21:24 IST 2026 — session active
+[HOOK] Fri Apr 17 17:23:08 IST 2026 — session active
+[HOOK] Fri Apr 17 17:26:08 IST 2026 — session active
+[HOOK] Fri Apr 17 17:29:42 IST 2026 — session active
+[HOOK] Fri Apr 17 17:35:45 IST 2026 — session active
+[HOOK] Fri Apr 17 17:39:57 IST 2026 — session active
+[HOOK] Fri Apr 17 17:40:00 IST 2026 — session active
+[HOOK] Fri Apr 17 17:40:03 IST 2026 — session active
+[HOOK] Fri Apr 17 17:40:06 IST 2026 — session active
+[HOOK] Fri Apr 17 17:40:09 IST 2026 — session active
+[HOOK] Fri Apr 17 17:45:13 IST 2026 — session active
+[HOOK] Fri Apr 17 17:45:14 IST 2026 — session active
+[HOOK] Fri Apr 17 17:45:16 IST 2026 — session active
+[HOOK] Fri Apr 17 17:46:37 IST 2026 — session active
+[HOOK] Fri Apr 17 17:46:42 IST 2026 — session active
+[HOOK] Fri Apr 17 17:52:18 IST 2026 — session active
+[HOOK] Fri Apr 17 17:58:06 IST 2026 — session active
+[HOOK] Fri Apr 17 17:58:12 IST 2026 — session active
+[HOOK] Fri Apr 17 17:58:15 IST 2026 — session active
+[HOOK] Fri Apr 17 17:58:17 IST 2026 — session active
+[HOOK] Fri Apr 17 17:58:18 IST 2026 — session active
+[HOOK] Fri Apr 17 17:59:19 IST 2026 — session active
+[HOOK] Fri Apr 17 17:59:20 IST 2026 — session active
+[HOOK] Fri Apr 17 17:59:22 IST 2026 — session active
+[HOOK] Fri Apr 17 17:59:28 IST 2026 — session active
+[HOOK] Fri Apr 17 17:59:41 IST 2026 — session active
+[HOOK] Fri Apr 17 17:59:43 IST 2026 — session active
+[HOOK] Fri Apr 17 17:59:45 IST 2026 — session active
+[HOOK] Fri Apr 17 17:59:56 IST 2026 — session active
+[HOOK] Fri Apr 17 17:59:57 IST 2026 — session active
+[HOOK] Fri Apr 17 17:59:58 IST 2026 — session active
+[HOOK] Fri Apr 17 18:00:16 IST 2026 — session active
+[HOOK] Fri Apr 17 18:00:19 IST 2026 — session active
+[HOOK] Fri Apr 17 18:00:20 IST 2026 — session active
+[HOOK] Fri Apr 17 18:00:36 IST 2026 — session active
+[HOOK] Fri Apr 17 18:00:37 IST 2026 — session active
+[HOOK] Fri Apr 17 18:00:39 IST 2026 — session active
+[HOOK] Fri Apr 17 18:00:40 IST 2026 — session active
+[HOOK] Fri Apr 17 18:01:08 IST 2026 — session active
+[HOOK] Fri Apr 17 18:01:13 IST 2026 — session active
+[HOOK] Fri Apr 17 18:01:19 IST 2026 — session active
+[HOOK] Fri Apr 17 18:01:22 IST 2026 — session active
+[HOOK] Fri Apr 17 18:01:28 IST 2026 — session active
+[HOOK] Fri Apr 17 18:03:07 IST 2026 — session active
+[HOOK] Fri Apr 17 18:03:07 IST 2026 — session active
+[HOOK] Fri Apr 17 18:03:13 IST 2026 — session active
+[HOOK] Fri Apr 17 18:03:14 IST 2026 — session active
+[HOOK] Fri Apr 17 18:03:27 IST 2026 — session active
+[HOOK] Fri Apr 17 18:03:37 IST 2026 — session active
+[HOOK] Fri Apr 17 18:03:46 IST 2026 — session active
+[HOOK] Fri Apr 17 18:04:19 IST 2026 — session active
+[HOOK] Fri Apr 17 18:04:32 IST 2026 — session active
+[HOOK] Fri Apr 17 18:10:00 IST 2026 — session active
+[HOOK] Fri Apr 17 18:10:17 IST 2026 — session active
+[HOOK] Fri Apr 17 18:10:52 IST 2026 — session active
+[HOOK] Fri Apr 17 18:10:55 IST 2026 — session active
+[HOOK] Fri Apr 17 18:12:41 IST 2026 — session active
+[HOOK] Fri Apr 17 18:14:07 IST 2026 — session active
+[HOOK] Fri Apr 17 18:14:14 IST 2026 — session active
+[HOOK] Fri Apr 17 18:15:59 IST 2026 — session active
+[HOOK] Fri Apr 17 18:16:05 IST 2026 — session active
+[HOOK] Fri Apr 17 18:16:06 IST 2026 — session active
+[HOOK] Fri Apr 17 18:16:23 IST 2026 — session active
+[HOOK] Fri Apr 17 18:16:26 IST 2026 — session active
+[HOOK] Fri Apr 17 18:16:29 IST 2026 — session active
+[HOOK] Fri Apr 17 18:16:48 IST 2026 — session active
+[HOOK] Fri Apr 17 18:17:28 IST 2026 — session active
+[HOOK] Fri Apr 17 18:18:16 IST 2026 — session active
+[HOOK] Fri Apr 17 18:18:20 IST 2026 — session active
+[HOOK] Fri Apr 17 18:18:34 IST 2026 — session active
+[HOOK] Fri Apr 17 18:19:00 IST 2026 — session active
+[HOOK] Fri Apr 17 18:19:33 IST 2026 — session active
+[HOOK] Fri Apr 17 18:19:47 IST 2026 — session active
+[HOOK] Fri Apr 17 18:19:59 IST 2026 — session active
+[HOOK] Fri Apr 17 18:20:21 IST 2026 — session active
+[HOOK] Fri Apr 17 18:21:28 IST 2026 — session active
+[HOOK] Fri Apr 17 18:21:29 IST 2026 — session active
+[HOOK] Fri Apr 17 18:21:47 IST 2026 — session active
+[HOOK] Fri Apr 17 18:21:54 IST 2026 — session active
+[HOOK] Fri Apr 17 18:21:57 IST 2026 — session active
+[HOOK] Fri Apr 17 18:22:04 IST 2026 — session active
+
+---
+Date: 17 April 2026
+Key decisions:
+- Sales call scripts finalised — all permission openers changed to "30 seconds" (Founder + SDR, all 3 segments)
+- Inbound BBANTI script built — B=brief quality, B=₹15L account floor, A=correct DM, I=messenger/buyer/skin-in-game test
+- Monday sync verified live — Telegram + Gmail draft confirmed for 9:07am IST 18 Apr
+- Finance sheet fetch fixed — WebFetch replaced with curl -L in monday + close SKILL.md
+- Brief Studio wired into daily briefing — Step 2B fetches First Rain Design Briefs sheet, outputs summary + synopsis (current data is test)
+- GIC T01 PI Sent ✓ (Notion pull 17 Apr)
+Open items:
+- Positioning statement selection not confirmed
+- Day 2 bootcamp notes — tomorrow after 2pm IST
+- Parantap Brief — after Day 3
+- Labguard T21 not ticked — show 22 Apr 🔴
+- Secure T02 advance not received — show 27 Apr 🔴
+- GIC T02 advance pending
+Next action: Day 2 bootcamp notes tomorrow. Chase Labguard T21 + Secure T02.
+---
+[HOOK] Fri Apr 17 18:22:16 IST 2026 — session active
+
+---
+Date: 17 April 2026
+Key decisions:
+- Sales call scripts finalised — all permission openers changed to "30 seconds" (Founder + SDR, all 3 segments)
+- Inbound BBANTI script built — B=brief quality, B=Rs15L account floor, A=correct DM, I=messenger/buyer/skin-in-game test
+- Monday sync verified live — Telegram + Gmail draft confirmed for 9:07am IST 18 Apr
+- Finance sheet fetch fixed — WebFetch replaced with curl -L in monday + close SKILL.md
+- Brief Studio wired into daily briefing — Step 2B fetches First Rain Design Briefs sheet, outputs summary + synopsis (current data is test)
+- GIC T01 PI Sent (Notion pull 17 Apr)
+Open items:
+- Positioning statement selection not confirmed
+- Day 2 bootcamp notes — tomorrow after 2pm IST
+- Parantap Brief — after Day 3
+- Labguard T21 not ticked — show 22 Apr
+- Secure T02 advance not received — show 27 Apr
+- GIC T02 advance pending
+Next action: Day 2 bootcamp notes tomorrow. Chase Labguard T21 + Secure T02.
+---
+[HOOK] Fri Apr 17 18:22:31 IST 2026 — session active
+[HOOK] Fri Apr 17 18:22:36 IST 2026 — session active
+[HOOK] Fri Apr 17 18:22:39 IST 2026 — session active
+[HOOK] Fri Apr 17 18:22:51 IST 2026 — session active
+[HOOK] Fri Apr 17 18:22:56 IST 2026 — session active
+[HOOK] Fri Apr 17 18:23:06 IST 2026 — session active
+[HOOK] Fri Apr 17 18:23:11 IST 2026 — session active
+[HOOK] Fri Apr 17 18:55:51 IST 2026 — session active
+[HOOK] Fri Apr 17 18:55:52 IST 2026 — session active
+[HOOK] Fri Apr 17 18:56:07 IST 2026 — session active
+[HOOK] Fri Apr 17 18:56:30 IST 2026 — session active
+[HOOK] Fri Apr 17 18:56:31 IST 2026 — session active
+[HOOK] Fri Apr 17 18:56:40 IST 2026 — session active
+[HOOK] Fri Apr 17 18:56:41 IST 2026 — session active
+[HOOK] Fri Apr 17 18:56:41 IST 2026 — session active
+[HOOK] Fri Apr 17 18:56:41 IST 2026 — session active
+[HOOK] Fri Apr 17 18:56:45 IST 2026 — session active
+[HOOK] Fri Apr 17 18:56:49 IST 2026 — session active
+[HOOK] Fri Apr 17 18:57:01 IST 2026 — session active
+[HOOK] Fri Apr 17 18:57:02 IST 2026 — session active
+[HOOK] Fri Apr 17 18:57:02 IST 2026 — session active
+[HOOK] Fri Apr 17 18:57:03 IST 2026 — session active
+[HOOK] Fri Apr 17 18:57:13 IST 2026 — session active
+[HOOK] Fri Apr 17 18:57:19 IST 2026 — session active
+[HOOK] Fri Apr 17 18:57:20 IST 2026 — session active
+[HOOK] Fri Apr 17 18:57:20 IST 2026 — session active
+[HOOK] Fri Apr 17 18:57:20 IST 2026 — session active
+[HOOK] Fri Apr 17 18:57:21 IST 2026 — session active
+[HOOK] Fri Apr 17 18:57:21 IST 2026 — session active
+[HOOK] Fri Apr 17 18:58:29 IST 2026 — session active
+[HOOK] Fri Apr 17 18:58:40 IST 2026 — session active
+[HOOK] Fri Apr 17 18:58:53 IST 2026 — session active
+[HOOK] Fri Apr 17 18:59:01 IST 2026 — session active
+[HOOK] Fri Apr 17 18:59:10 IST 2026 — session active
+[HOOK] Fri Apr 17 18:59:13 IST 2026 — session active
+[HOOK] Fri Apr 17 18:59:18 IST 2026 — session active
+[HOOK] Fri Apr 17 18:59:22 IST 2026 — session active
+[HOOK] Fri Apr 17 18:59:26 IST 2026 — session active
+[HOOK] Fri Apr 17 19:39:14 IST 2026 — session active
+[HOOK] Fri Apr 17 19:39:15 IST 2026 — session active
+[HOOK] Fri Apr 17 21:42:27 IST 2026 — session active
+[HOOK] Fri Apr 17 21:42:30 IST 2026 — session active
+[HOOK] Fri Apr 17 21:42:31 IST 2026 — session active
+[HOOK] Fri Apr 17 21:42:34 IST 2026 — session active
+[HOOK] Fri Apr 17 21:42:35 IST 2026 — session active
+[HOOK] Fri Apr 17 21:43:00 IST 2026 — session active
+[HOOK] Fri Apr 17 21:45:01 IST 2026 — session active
+[HOOK] Fri Apr 17 21:45:08 IST 2026 — session active
+[HOOK] Fri Apr 17 21:45:52 IST 2026 — session active
+[HOOK] Fri Apr 17 21:51:13 IST 2026 — session active
+[HOOK] Fri Apr 17 21:51:48 IST 2026 — session active
+[HOOK] Sat Apr 18 09:08:35 IST 2026 — session active
+[HOOK] Sat Apr 18 09:08:37 IST 2026 — session active
+[HOOK] Sat Apr 18 09:08:38 IST 2026 — session active
+[HOOK] Sat Apr 18 09:08:38 IST 2026 — session active
+[HOOK] Sat Apr 18 09:08:41 IST 2026 — session active
+[HOOK] Sat Apr 18 09:08:42 IST 2026 — session active
+[HOOK] Sat Apr 18 09:08:42 IST 2026 — session active
+[HOOK] Sat Apr 18 09:08:50 IST 2026 — session active
+[HOOK] Sat Apr 18 09:08:51 IST 2026 — session active
+[HOOK] Sat Apr 18 09:08:51 IST 2026 — session active
+[HOOK] Sat Apr 18 09:08:52 IST 2026 — session active
+[HOOK] Sat Apr 18 09:09:07 IST 2026 — session active
+[HOOK] Sat Apr 18 09:09:19 IST 2026 — session active
+[HOOK] Sat Apr 18 09:09:25 IST 2026 — session active
+[HOOK] Sat Apr 18 09:42:25 IST 2026 — session active
+[HOOK] Sat Apr 18 09:43:27 IST 2026 — session active
+[HOOK] Sat Apr 18 09:44:31 IST 2026 — session active
+[HOOK] Sat Apr 18 09:45:08 IST 2026 — session active
+[HOOK] Sat Apr 18 09:45:43 IST 2026 — session active
+[HOOK] Sat Apr 18 09:46:02 IST 2026 — session active
+[HOOK] Sat Apr 18 09:46:07 IST 2026 — session active
+[HOOK] Sat Apr 18 09:46:12 IST 2026 — session active
+[HOOK] Sat Apr 18 09:52:34 IST 2026 — session active
+[HOOK] Sat Apr 18 09:53:30 IST 2026 — session active
+[HOOK] Sat Apr 18 09:53:38 IST 2026 — session active
+[HOOK] Sat Apr 18 09:55:47 IST 2026 — session active
+[HOOK] Sat Apr 18 09:55:49 IST 2026 — session active
+[HOOK] Sat Apr 18 09:55:50 IST 2026 — session active
+[HOOK] Sat Apr 18 09:55:50 IST 2026 — session active
+[HOOK] Sat Apr 18 09:55:54 IST 2026 — session active
+[HOOK] Sat Apr 18 09:55:56 IST 2026 — session active
+[HOOK] Sat Apr 18 09:56:01 IST 2026 — session active
+[HOOK] Sat Apr 18 09:56:04 IST 2026 — session active
+[HOOK] Sat Apr 18 09:56:20 IST 2026 — session active
+[HOOK] Sat Apr 18 09:56:23 IST 2026 — session active
+[HOOK] Sat Apr 18 09:56:24 IST 2026 — session active
+[HOOK] Sat Apr 18 09:56:28 IST 2026 — session active
+[HOOK] Sat Apr 18 09:56:29 IST 2026 — session active
+[HOOK] Sat Apr 18 09:56:33 IST 2026 — session active
+[HOOK] Sat Apr 18 09:56:34 IST 2026 — session active
+[HOOK] Sat Apr 18 09:56:57 IST 2026 — session active
+[HOOK] Sat Apr 18 09:57:34 IST 2026 — session active
+[HOOK] Sat Apr 18 09:57:42 IST 2026 — session active
+[HOOK] Sat Apr 18 09:57:49 IST 2026 — session active
+[HOOK] Sat Apr 18 09:57:51 IST 2026 — session active
+[HOOK] Sat Apr 18 09:57:55 IST 2026 — session active
+[HOOK] Sat Apr 18 09:58:51 IST 2026 — session active
+[HOOK] Sat Apr 18 09:58:52 IST 2026 — session active
+[HOOK] Sat Apr 18 09:58:52 IST 2026 — session active
+[HOOK] Sat Apr 18 09:58:56 IST 2026 — session active
+[HOOK] Sat Apr 18 09:59:15 IST 2026 — session active
+[HOOK] Sat Apr 18 09:59:17 IST 2026 — session active
+[HOOK] Sat Apr 18 10:00:32 IST 2026 — session active
+[HOOK] Sat Apr 18 10:00:34 IST 2026 — session active
+[HOOK] Sat Apr 18 10:01:16 IST 2026 — session active
+[HOOK] Sat Apr 18 10:01:45 IST 2026 — session active
+[HOOK] Sat Apr 18 10:02:04 IST 2026 — session active
+[HOOK] Sat Apr 18 10:26:48 IST 2026 — session active
+[HOOK] Sat Apr 18 10:26:57 IST 2026 — session active
+[HOOK] Sat Apr 18 10:27:25 IST 2026 — session active
+[HOOK] Sat Apr 18 10:27:30 IST 2026 — session active
+[HOOK] Sat Apr 18 10:27:34 IST 2026 — session active
+[HOOK] Sat Apr 18 10:27:43 IST 2026 — session active
+[HOOK] Sat Apr 18 10:27:47 IST 2026 — session active
+[HOOK] Sat Apr 18 10:29:05 IST 2026 — session active
+[HOOK] Sat Apr 18 10:30:24 IST 2026 — session active
+[HOOK] Sat Apr 18 10:30:47 IST 2026 — session active
+[HOOK] Sat Apr 18 10:31:33 IST 2026 — session active
+[HOOK] Sat Apr 18 10:31:37 IST 2026 — session active
+[HOOK] Sat Apr 18 10:54:51 IST 2026 — session active
+[HOOK] Sat Apr 18 10:54:52 IST 2026 — session active
+[HOOK] Sat Apr 18 10:55:04 IST 2026 — session active
+[HOOK] Sat Apr 18 10:55:11 IST 2026 — session active
+[HOOK] Sat Apr 18 10:55:15 IST 2026 — session active
+[HOOK] Sat Apr 18 10:55:31 IST 2026 — session active
+[HOOK] Sat Apr 18 10:55:49 IST 2026 — session active
+[HOOK] Sat Apr 18 10:55:57 IST 2026 — session active
