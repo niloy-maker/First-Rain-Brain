@@ -23,8 +23,6 @@ Enforced by Hooks (100% deterministic). Do not override.
 - Margin floor: 33% India / 38% International
 - Concentration: Secure Meters above 25% = live breach (currently 52.5%)
 - Runway: Operating cash below ₹76,50,000 = escalate immediately
-- Shilpa: async only — no field tasks, no outbound, ever
-- Elliott Ebara: PO required before Closed Won. Verbal ≠ revenue. Always.
 - All Claude output → _outputs/ folder only
 - Only Niloy writes vault files
 - FirstRain-Intel/CLAUDE.md is a separate file — never overwrite it
@@ -49,10 +47,10 @@ Enforced by Hooks (100% deterministic). Do not override.
 ## 6 DEPARTMENTS
 1. Growth — Niloy + Pankaj/CrossNibble
 2. Client Delivery — Chinmay + Shilpa + Dhruv
-3. Design — Mangesh + Komal
+3. Design — Monica + Mangesh + Ganesh + Deepak
 4. Finance — Sonal + Ravindra
 5. People — Niloy (acting)
-6. Strategy — Niloy
+6. Strategy — Niloy + Monica
 
 ## DECISION STANDARD
 Run before every major recommendation:

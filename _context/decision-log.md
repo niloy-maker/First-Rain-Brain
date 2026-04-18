@@ -5,6 +5,7 @@
 
 | Date        | Decision                                      | Rationale                        | Owner | Status  |
 |-------------|-----------------------------------------------|----------------------------------|-------|---------|
+| 18 Apr 2026 | Design team updated in CLAUDE.md — Monica + Mangesh + Ganesh + Deepak (replaces Mangesh + Komal). Strategy now Niloy + Monica. | Komal gone. Monica leading design. Deepak confirmed on interiors. Ganesh added. | Niloy | Done |
 | 17 Apr 2026 | Brief Studio (First Rain Design Briefs sheet) wired into daily 9am briefing — Step 2B fetches via curl -L, outputs summary table + synopsis | New process for capturing and reviewing design briefs daily | Niloy | Active |
 | 17 Apr 2026 | Finance sheet fetch method changed — WebFetch → curl -L in both monday sync and /close skill | WebFetch could not follow Google Sheets 307 redirect before URL expired; curl -L handles in one call | System | Done |
 | 17 Apr 2026 | Inbound BBANTI call script created — B=brief quality, B=₹15L account-level floor, A=correct DM, I=messenger/buyer/skin test | Formalises qualification framework for all inbound enquiries before design time invested | Niloy | Active |
