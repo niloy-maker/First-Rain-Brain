@@ -5,6 +5,10 @@
 
 | Date        | Decision                                      | Rationale                        | Owner | Status  |
 |-------------|-----------------------------------------------|----------------------------------|-------|---------|
+| 22 Apr 2026 | Live Bigin fetch wired into /finance — claude_bigin_client.py (Zoho REST OAuth) created; build_cashflow_json.py always attempts live fetch on every render before falling back to cache | Non-dependence on cached data: dashboard always reflects current Bigin state when .env credentials are configured | Niloy | Pending .env setup |
+| 21 Apr 2026 | bypassPermissions defaultMode set in .claude/settings.json for First Rain Brain project | Eliminates MCP tool permission prompts — all tools (Bigin, Notion, Gmail, Telegram) run without interruption in this project. Scoped to project only. | Niloy | Active |
+| 19 Apr 2026 | BYSS Platinum enrolled — ₹1,59,999 + GST. Parantap Chowdhury 1:1 Done-For-You Sales Coaching, 12 weeks. Custom GPTs, no team size limit. | Below-market for 1:1 + custom playbook. Mayartha Productions deliverable quality verified live. Bootcamp participant rate. | Niloy | Active |
+| 19 Apr 2026 | Lead gen channel strategy from Day 3 — Niloy must cold call (Parantap explicit instruction, circled in notes). Primary: Cold Calls + Warm Outreach (past clients). | Can't build on referrals — not predictable. Cold calls = infinitely scaleable volume game for B2B India. | Niloy | To action |
 | 18 Apr 2026 | Design team updated in CLAUDE.md — Monica + Mangesh + Ganesh + Deepak (replaces Mangesh + Komal). Strategy now Niloy + Monica. | Komal gone. Monica leading design. Deepak confirmed on interiors. Ganesh added. | Niloy | Done |
 | 17 Apr 2026 | Brief Studio (First Rain Design Briefs sheet) wired into daily 9am briefing — Step 2B fetches via curl -L, outputs summary table + synopsis | New process for capturing and reviewing design briefs daily | Niloy | Active |
 | 17 Apr 2026 | Finance sheet fetch method changed — WebFetch → curl -L in both monday sync and /close skill | WebFetch could not follow Google Sheets 307 redirect before URL expired; curl -L handles in one call | System | Done |

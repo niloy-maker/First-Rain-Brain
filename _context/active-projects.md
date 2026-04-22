@@ -1,16 +1,17 @@
 # First Rain — Active Projects and Pipeline
 # Auto-updated when Claude reads Bigin (triggered by /close).
-# Last updated: 14 April 2026
+# Last updated: 22 April 2026
 
 ## Closed Won FY26-27 — Executing now
 | Client         | Show              | Date          | SP      | Exec    | Flag             |
 |----------------|-------------------|---------------|---------|---------|------------------|
-| Labguard       | Analytica India   | 22–24 Apr 2026| ₹13.6L  | Shilpa  | 10 days 🔴       |
-| Mosil          | IDMC Lucknow      | 23–24 Apr 2026| ₹1.5L   | Dhruv   | 11 days 🔴       |
-| Messung        | Smart Home Expo   | 28–30 Apr 2026| ₹6.3L   | Shilpa  | 16 days ⚠️       |
-| Amaara         | Vitafoods Europe  | ~5 May 2026   | ₹34L    | Shilpa  | CM% — confirm with Sonal's report |
-| Secure Meters  | RenewX Chennai    | 27 Apr 2026   | ₹9.35L  | TBC     | 15 days ⚠️       |
-Total active SP: ₹64.75L
+| Labguard       | Analytica India   | 22–24 Apr 2026| ₹13.6L  | Shilpa  | 🔴 ON SITE TODAY — T21 ✓ Day 1 of 3 |
+| Mosil          | IDMC Lucknow      | 23–24 Apr 2026| ₹1.5L   | Dhruv   | 🔴 TOMORROW — T21 NOT ticked. Chase Dhruv urgently. |
+| Messung        | Smart Home Expo   | 28–30 Apr 2026| ₹6.3L   | Shilpa  | ⚠️ 7 days — T14 ✓, T21 NOT ticked |
+| Amaara         | Vitafoods Europe  | ~5 May 2026   | ₹34L    | Shilpa  | 14 days — T18 ✓. Chase 90% payment ₹14L. |
+| Secure Meters  | RenewX Chennai    | 27 Apr 2026   | ₹9.35L  | Chinmay | 🔴 6 days — T02 ✓. T07–T21 all pending. Escalate. |
+| GIC            | ELAsia Bangalore  | 14–17 May 2026| ₹6.50L  | Shilpa  | 24 days — T02 advance NOT received (vendor reg in progress). |
+Total active SP: ₹71.25L
 
 ## Delivered FY26-27 (closed and invoiced)
 | Client | Show | Date | SP |
@@ -19,32 +20,45 @@ Total active SP: ₹64.75L
 
 ## Production Status — from Notion ⚡ FR Production Tracker FY27
 **Source: https://www.notion.so/firstraingroup/ac84c676ad7249d2a79732d842f71d62**
-**Auto-updated every /close. Last pulled: 14 Apr 2026**
+**Auto-updated every /close. Last pulled: 22 Apr 2026**
 
-| Milestone                    | Labguard | Mosil | Messung | Amaara | Bechem |
-|------------------------------|----------|-------|---------|--------|--------|
-| T01–T04 (PI → Fab Final)     | ✓ | ✓ | ✓ | ✓ | ✓ |
-| T05 Advance to Fabricator    | ✓ | ✗ | ✓ | ✗ | ✓ |
-| T06 Internal Exec Meeting    | ✓ | ✓ | ✓ | ✗ | ✓ |
-| T07 Technical Drawing        | ✓ | ✓ | ✓ | ✗ | ✓ |
-| T08 Fabricator Meeting       | ✓ | ✓ | ✓ | ✗ | ✓ |
-| T09 Submission Drawings      | ✓ | ✓ | ✓ | ✓ | ✓ |
-| T10 Design Approval          | ✓ | ✓ | ✓ | ✓ | ✓ |
-| T11 Organiser Form Subs      | ✓ | ✓ | ✓ | ✓ | ✓ |
-| T12 Security Deposit         | ✗ | ✗ | ✓ | ✗ | ✓ |
-| T14 Mock Up                  | ✗ | ✗ | ✗ | ✗ | ✓ |
-| T21 Installation Started     | ✗ | ✗ | ✗ | ✗ | ✓ |
-| T22 Handover Pics            | ✗ | ✗ | ✗ | ✗ | ✓ |
-| T27 Final Invoice            | ✗ | ✗ | ✗ | ✗ | ✗ |
+| Milestone                    | Labguard | Mosil | Messung | Amaara | Secure | Bechem | GIC |
+|------------------------------|----------|-------|---------|--------|--------|--------|-----|
+| T01 PI Sent                  | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| T02 Advance Received         | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ |
+| T03 Costing Drawing          | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ |
+| T04 Fabricator Finalisation  | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ |
+| T05 Advance to Fabricator    | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ |
+| T06 Internal Exec Meeting    | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ |
+| T07 Technical Drawing        | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ | ✗ |
+| T08 Fabricator Meeting       | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ | ✗ |
+| T09 Submission Drawings      | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ | ✗ |
+| T10 Design Approval          | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ | ✗ |
+| T11 Organiser Form Subs      | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ | ✗ |
+| T12 Security Deposit         | ✓ | ✗ | ✓ | ✓ | ✗ | ✓ | ✗ |
+| T13 Material Approval        | ✓ | ✗ | ✗ | ✓ | ✗ | ✓ | ✗ |
+| T14 Mock Up                  | ✓ | ✗ | ✓ | ✗ | ✗ | ✓ | ✗ |
+| T15 Onsite Schedule          | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ |
+| T18 Graphics Check           | ✗ | ✗ | ✗ | ✓ | ✗ | ✓ | ✗ |
+| T20 Possession Pics          | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ |
+| T21 Installation Started     | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ |
+| T22 Handover Pics            | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ |
+| T23 Dismantling Pics         | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ |
+| T27 Final Invoice            | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ |
+| T28 Final Payment            | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ |
+| T31 Fabricator Final Meeting | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ |
 
-**Last milestone reached:**
-- Bechem BME26: T22 Handover Pics — show delivered 8–9 Apr ✓. T23–T31 post-show wrap pending.
-- Labguard Anacon26: T11 Organiser Form Submissions — show 22–24 Apr 🔴 **9 days — T21 NOT ticked**
-- Mosil IDMC26: T11 Organiser Form Submissions — show 23–24 Apr 🔴 **10 days — T21 NOT ticked**
-- Messung SHE26: T12 Security Deposit — show 28–30 Apr ⚠️ 15 days — T21 NOT ticked
-- Amaara Vitafoods26: T11 Organiser Form Submissions — show ~5 May 22 days (T05 advance to fab pending)
+**Last milestone reached (updated 21 Apr 2026):**
+- Bechem BME26: FULLY COMPLETE ✓
+- Labguard Anacon26: T21 Installation Started ✓ + T20 Possession Pics ✓ — show 22–24 Apr 🔴 **TOMORROW. On site.**
+- Mosil IDMC26: T11 Organiser Form Submissions ✓ — show 23–24 Apr 🔴 **2 days — T21 NOT ticked. Chase Dhruv.**
+- Messung SHE26: T14 Mock Up ✓ — show 28–30 Apr ⚠️ 7 days — T21 NOT ticked
+- Amaara Vitafoods26: T13 Material Approval ✓ + T18 Graphics Check ✓ — show ~5 May. Chase 90% payment.
+- Secure RenewX: T02 Advance Received ✓ — show 27 Apr 🔴 **6 days — T07–T21 all pending. Escalate.**
+- GIC ELAsia26: T01 PI Sent ✓. T02 advance NOT received — GIC vendor reg in progress. Show 14–17 May.
+- **New Bigin entries (19 Apr):** BharatTex'26 300sqm — Requirement gathering (large new prospect). Multiple new leads: Thaifex, H+H Americas Chicago, SMM Hamburg'26, Caltron CPhI China — qualify next session.
 
-## Active quotes — from Bigin "Sales Pipeline 26-27" (11 Apr 2026)
+## Active quotes — from Bigin "Sales Pipeline 26-27" (21 Apr 2026)
 **This section is now sourced from Bigin. Check before every /monday.**
 
 ### Price Quote stage
@@ -55,15 +69,18 @@ Total active SP: ₹64.75L
 ### Design stage (quotes being worked)
 | Deal | Client | SP | Closing Date |
 |------|---------|----|-------------|
+| 300sqm BharatTex'26 | NEW ACCOUNT | ₹40.0L | 29 May 2026 |
 | 81sqm Enlit Europe'26, Vienna | Secure Meters | ₹76.95L | 10 Aug 2026 |
-| 67.5sqm Housing'26, Manchester | Secure Meters | ₹63.17L | 23 Apr 2026 |
-| 42sqm Installer'26, NEC Birmingham | Secure Meters | ₹39.31L | 23 Apr 2026 |
+| 67.5sqm Housing'26, Manchester | Secure Meters | ₹63.17L | ⚠️ 23 Apr 2026 — OVERDUE. CK to advise. |
+| 42sqm Installer'26, NEC Birmingham | Secure Meters | ₹39.31L | ⚠️ 23 Apr 2026 — OVERDUE. CK to advise. |
 | 24sqm Utility Week'26, NEC Birmingham | Secure Meters | ₹22.46L | 26 Mar 2026 |
 | 130sqm Windergy'26, Chennai | Nordex Energy | ₹23.46L | 16 Jul 2026 |
 | 60sqm Pharma Pro & Pack, Hyderabad | Klenzaids | ₹10.0L | 21 May 2026 |
-| 36sqm ELAsia, BIEC Bengaluru | GIC | ₹7.2L | — |
+| 192sqm IBA @ SIBOS Miami | IBA | TBC | First pitch 24 Apr |
+| 9sqm BNI'26, Novotel Jaipur | Mosil | ₹1.5L | 17 May 2026 |
+| 40sqm EM Power'26, Munich | Secure Meters | TBC | 5 May 2026 — NEW (22 Apr) |
 
-## Existing Confirmed pipeline — from Bigin (17 deals | ₹2.35 Cr)
+## Existing Confirmed pipeline — from Bigin (21 deals | ₹2.72 Cr)
 | Deal | Client | SP | Show Date |
 |------|---------|----|----------|
 | 187sqm Infocomm'26, JWCC | Christie Digital | ₹41.17L | 9 Jul 2026 |
@@ -83,6 +100,9 @@ Total active SP: ₹64.75L
 | 36sqm Pmec India'26 | Spectrum Filtration | ₹6.12L | 30 Sep 2026 |
 | 35sqm UBEiNX, New Delhi | Mosil | ₹7.35L | 10 Jul 2026 |
 | 18sqm Bauma'26, Greater Noida | Mosil | ₹3.78L | 10 Jul 2026 |
+| 9sqm BNI'26, Novotel Jaipur | Mosil | ₹1.5L | 16 May 2026 |
+| 46sqm Automation 2026 | GIC | ₹8.3L | — |
+| 130sqm ELECRAMA 2027, Greater Noida | GIC | ₹23.47L | Feb 2027 |
 
 ## Q1 FY27 Rocks (EOS)
 | # | Rock                                          | Status      |
