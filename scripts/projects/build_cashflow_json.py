@@ -130,7 +130,7 @@ def _load_finance():
         st = json.loads(STATUTORY_JSON.read_text())
         finance["statutory"] = st.get("obligations", [])
 
-    # --- Notes: CONFIG entries + monthly revenue/outflow overrides ---
+    # --- Notes: CONFIG entries + monthly revenue/burn overrides ---
     if NOTES_JSON.exists():
         notes = json.loads(NOTES_JSON.read_text())
         for entry in notes.get("entries", []):
@@ -143,9 +143,10 @@ def _load_finance():
                     pass
             elif cat == "CONFIG_WEEK_ENDING" and val:
                 finance["weekEnding"] = val
-        # Monthly revenue/outflow from Notes (manual overrides for Bigin auto-values)
+        # Monthly revenue overrides (Notes wins over Bigin for that month)
         finance["notesMonthlyRevenue"] = notes.get("monthlyRevenue", {})
-        finance["notesMonthlyVendorOutflow"] = notes.get("monthlyVendorOutflow", {})
+        # Per-month burn overrides: CONFIG_MONTHLY_BURN_YYYY-MM rows
+        finance["notesMonthlyBurn"] = notes.get("monthlyBurn", {})
 
     return finance
 
@@ -253,11 +254,15 @@ _REGION_NAME_MAP = {
 # Payable flexibility values from the sheet → CSS class names the template expects.
 _FLEX_MAP = {
     "flexible":          "can-delay-30d",
-    "can-delay-30d":     "can-delay-30d",
     "can-delay-7d":      "can-delay-7d",
+    "can-delay-30d":     "can-delay-30d",
+    "can-delay-45d":     "can-delay-45d",
+    "can-delay-60d":     "can-delay-60d",
+    "can-delay-90d":     "can-delay-90d",
     "negotiate":         "can-delay-7d",
     "negotiable":        "can-delay-7d",
     "inflexible":        "must-pay",
+    "rigid":             "must-pay",   # sheet dropdown alias
     "must-pay":          "must-pay",
     "must pay":          "must-pay",
     "fixed":             "must-pay",
@@ -534,7 +539,8 @@ def _compute_levers(receivables: list, payables: list,
                 pass
 
     # Lever 4 — vendor stretch
-    must_pay = can_7d = can_30d = 0.0
+    # Buckets: must-pay | can-delay-7d | can-delay-30d | can-delay-45d | can-delay-60d | can-delay-90d
+    must_pay = can_7d = can_30d = can_45d = can_60d = can_90d = 0.0
     for p in payables:
         if p.get("status", "").lower() == "paid":
             continue
@@ -544,8 +550,19 @@ def _compute_levers(receivables: list, payables: list,
             must_pay += amt
         elif flex == "can-delay-7d":
             can_7d += amt
-        else:
+        elif flex == "can-delay-30d":
             can_30d += amt
+        elif flex == "can-delay-45d":
+            can_45d += amt
+        elif flex == "can-delay-60d":
+            can_60d += amt
+        elif flex == "can-delay-90d":
+            can_90d += amt
+        else:
+            can_7d += amt  # unknown → conservative default
+
+    # Rollup: total deferrable = everything except must-pay
+    can_defer_total = can_7d + can_30d + can_45d + can_60d + can_90d
 
     return {
         "receivablesReachable": {
@@ -576,6 +593,10 @@ def _compute_levers(receivables: list, payables: list,
             "mustPayOnTime": must_pay,
             "canStretch7d": can_7d,
             "canStretch30d": can_30d,
+            "canStretch45d": can_45d,
+            "canStretch60d": can_60d,
+            "canStretch90d": can_90d,
+            "canDeferTotal": can_defer_total,
             "bestFor": "Buy time without cash. Use sparingly — goodwill erosion compounds.",
         },
     }
@@ -630,6 +651,7 @@ def _compute_cashflow(
     payroll_monthly: float,
     op_cash: float,
     receivables: list,
+    monthly_burn_overrides: dict | None = None,
 ) -> tuple[dict, list, list, dict]:
     """
     Compute 12-month cash flow projection for FY 2026-27.
@@ -645,7 +667,8 @@ def _compute_cashflow(
             mk = str(expected)[:7]
             recv_expected[mk] = recv_expected.get(mk, 0) + float(r.get("balance", 0) or 0)
 
-    payroll = payroll_monthly or 2_550_000
+    burn_overrides = monthly_burn_overrides or {}
+    default_payroll = payroll_monthly or 2_550_000
 
     cashflow_months = []
     running_cash = op_cash
@@ -662,15 +685,14 @@ def _compute_cashflow(
         in_pipeline = float(monthly_revenue.get(mk, 0) or 0)
         in_recv = float(recv_expected.get(mk, 0) or 0)
 
-        # Vendor outflow: Notes override → Bigin-pct → floor
+        # Vendor outflow: Projects CP (auto) → floor for months with no projects
         if mk in monthly_vendor_outflow and monthly_vendor_outflow[mk]:
             out_vendors = float(monthly_vendor_outflow[mk])
-        elif in_pipeline > 0:
-            out_vendors = in_pipeline * _VENDOR_PCT
         else:
             out_vendors = _VENDOR_FLOOR
 
-        out_payroll = payroll
+        # Payroll: per-month CONFIG_MONTHLY_BURN_YYYY-MM override → global fallback
+        out_payroll = burn_overrides.get(mk) or default_payroll
         out_statutory = _STATUTORY_MONTHLY
 
         total_in = in_pipeline + in_recv
@@ -760,6 +782,50 @@ REVENUE_STAGES = {"closed won 26-27", "existing confirmed"}
 # Cash flow covers FY 2026-27 only: April 2026 – March 2027.
 _FY27_START = "2026-04"
 _FY27_END   = "2027-03"
+
+
+_MONTH_ABBR = {
+    "jan": "01", "feb": "02", "mar": "03", "apr": "04", "may": "05", "jun": "06",
+    "jul": "07", "aug": "08", "sep": "09", "oct": "10", "nov": "11", "dec": "12",
+}
+
+def _parse_delivery_month(raw: str) -> str | None:
+    """
+    Convert a delivery_month string to 'YYYY-MM'.
+    Handles: 'YYYY-MM', 'Apr 2026', 'April 2026', 'Apr-26', 'Apr-2026'.
+    Returns None if unparseable.
+    """
+    s = raw.strip()
+    if not s:
+        return None
+    # Already YYYY-MM
+    if len(s) == 7 and s[4] == "-":
+        return s
+    # Try "Mon YYYY" or "Month YYYY"
+    parts = s.replace("-", " ").split()
+    if len(parts) == 2:
+        mon_raw, yr_raw = parts[0].lower()[:3], parts[1]
+        mon = _MONTH_ABBR.get(mon_raw)
+        if mon:
+            yr = yr_raw if len(yr_raw) == 4 else f"20{yr_raw}"
+            return f"{yr}-{mon}"
+    return None
+
+
+def _monthly_vendor_from_projects(projects: list) -> dict:
+    """
+    Sum variable_cost_cp by delivery month from the Projects sheet tab.
+    Returns {YYYY-MM: total_cp} covering only FY 2026-27.
+    This replaces the manual Monthly_Vendor_Outflow_YYYY-MM Notes entries.
+    """
+    monthly: dict[str, float] = {}
+    for p in projects:
+        mk = _parse_delivery_month(_clean(p.get("delivery_month", "")))
+        if not mk or mk < _FY27_START or mk > _FY27_END:
+            continue
+        cp = float(p.get("variable_cost_cp", p.get("variableCost", 0)) or 0)
+        monthly[mk] = monthly.get(mk, 0.0) + cp
+    return monthly
 
 
 def _monthly_revenue_from_bigin(deals):
@@ -947,7 +1013,7 @@ def _build_sources(bigin, sheet, finance, bank_txn) -> list:
     recv_count = len(finance.get("receivables", []))
     pay_count = len(finance.get("payables", []))
     proj_count = len(sheet.get("projects", []))
-    sheet_tabs = 8  # Cash_Position, Treasury, Receivables, Payables, Invoices, Statutory, Notes, Projects
+    sheet_tabs = 7  # Cash_Position, Treasury, Receivables, Payables, Statutory, Notes, Projects
     sheet_ok = recv_count > 0 or pay_count > 0 or proj_count > 0
     sheet_detail = f"{sheet_tabs} tabs read, {recv_count} receivables + {pay_count} payables + {proj_count} projects"
     sources.append({"name": "Google Sheet (FirstRain-Cashflow-Master)", "detail": sheet_detail, "ok": sheet_ok})
@@ -1001,8 +1067,8 @@ def _compose_cashflow(bigin, sheet, momentum, drift):
     notes_overrides = finance.get("notesMonthlyRevenue", {})
     monthly_revenue = {**bigin_monthly_revenue, **notes_overrides}  # Notes wins on conflict
 
-    # Monthly vendor outflow from Notes (manual until Payables automation is wired)
-    monthly_vendor_outflow = finance.get("notesMonthlyVendorOutflow", {})
+    # Monthly vendor outflow: auto from Projects variable_cost_cp (no manual entry needed)
+    monthly_vendor_outflow = _monthly_vendor_from_projects(sheet.get("projects", []))
 
     # Bank transactions (auto-parsed from HDFC emails by parse_hdfc_emails.py)
     bank_txn = {}
@@ -1031,7 +1097,8 @@ def _compose_cashflow(bigin, sheet, momentum, drift):
 
     # ── 12-month cash flow projection ─────────────────────────────────────
     cf_annual, cf_months, cf_quarters, cf_extrapolation = _compute_cashflow(
-        monthly_revenue, monthly_vendor_outflow, monthly_burn, op_cash, norm_receivables
+        monthly_revenue, monthly_vendor_outflow, monthly_burn, op_cash, norm_receivables,
+        monthly_burn_overrides=finance.get("notesMonthlyBurn", {}),
     )
 
     return {
