@@ -23,6 +23,7 @@ import json
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 # Add scripts/projects to path so sub-module imports work
 sys.path.insert(0, str(Path(__file__).parent))
@@ -651,7 +652,7 @@ def _compute_cashflow(
     payroll_monthly: float,
     op_cash: float,
     receivables: list,
-    monthly_burn_overrides: dict | None = None,
+    monthly_burn_overrides: Optional[dict] = None,
 ) -> tuple[dict, list, list, dict]:
     """
     Compute 12-month cash flow projection for FY 2026-27.
@@ -789,7 +790,7 @@ _MONTH_ABBR = {
     "jul": "07", "aug": "08", "sep": "09", "oct": "10", "nov": "11", "dec": "12",
 }
 
-def _parse_delivery_month(raw: str) -> str | None:
+def _parse_delivery_month(raw: str) -> Optional[str]:
     """
     Convert a delivery_month string to 'YYYY-MM'.
     Handles: 'YYYY-MM', 'Apr 2026', 'April 2026', 'Apr-26', 'Apr-2026'.
@@ -820,7 +821,7 @@ def _monthly_vendor_from_projects(projects: list) -> dict:
     """
     monthly: dict[str, float] = {}
     for p in projects:
-        mk = _parse_delivery_month(_clean(p.get("delivery_month", "")))
+        mk = _parse_delivery_month(str(p.get("delivery_month") or "").strip())
         if not mk or mk < _FY27_START or mk > _FY27_END:
             continue
         cp = float(p.get("variable_cost_cp", p.get("variableCost", 0)) or 0)
@@ -1188,7 +1189,7 @@ def _compose_cashflow(bigin, sheet, momentum, drift):
             "today": datetime.now().strftime("%d %b %Y"),
             "generated_at": datetime.now().astimezone().isoformat(),
             "extrapolation": cf_extrapolation,
-            "lastRefresh": datetime.now().strftime("%d %b %Y") + " · 08:00 IST",
+            "lastRefresh": datetime.now().strftime("%d %b %Y · %H:%M IST"),
             "sources": _build_sources(bigin, sheet, finance, bank_txn),
         }
     }
