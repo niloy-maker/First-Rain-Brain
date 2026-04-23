@@ -101,6 +101,16 @@
 - PCM Railone brief: RailTrans 2026 Pragati Maidan, possession 26 Apr, 36sqm Bold & Graphic. Status New, no exec. URGENT.
 - bypassPermissions set: .claude/settings.json defaultMode = bypassPermissions for this project (21 Apr).
 
+## Verified facts (23 Apr 2026)
+- FirstRain-Cashflow-Master 7-tab audit complete. Dead columns deleted. Invoices_Raised tab deleted. Bigin_Deal_ID removed from Projects. Vendor outflow now auto-computed from Projects CP. CONFIG_MONTHLY_BURN_YYYY-MM pattern live in Notes parser.
+- /close skill 0C: no longer fetches CSV. Reads data/projects/sheet_cash_position.json from last /finance run.
+- Secure Utility Week CLOSED WON 22 Apr: ₹47.95L (CK). Was Design at ₹22.46L. Show 19 May NEC Birmingham. Notion column exists. T01-T06 milestones to set up.
+- Messung SHE26: T22 Handover Pics ✓ (22 Apr). Stall delivered ahead of 28-30 Apr show.
+- Labguard Anacon26: T21 ✓, T22 ✗ — show Day 2 of 3 (ends today 23 Apr).
+- Mosil IDMC26: Show TODAY (23 Apr). T21 status unknown — Dhruv to confirm.
+- Cash_Position tab showing Rs61,526 (wrong — likely Sonal hasn't populated new tab post-restructure). Do not use. Last known operating cash Rs11,54,623 (21 Apr).
+- Code commit 62d6a91: drift_check.py soft-match only; build_cashflow_json.py vendor outflow from Projects; read_cashflow_xlsx.py 7 tabs (was 8).
+
 ## Verified facts (22 Apr 2026)
 - CFO OS Dashboard v3 live: Cash Flow tab shows ₹3.64Cr FY27 inPipeline (Apr 2026–Mar 2027 only). Projects/Alerts/Data tabs all fixed and matching demo. Committed 1fad572.
 - claude_bigin_client.py created: Zoho REST OAuth client. Reads BIGIN_CLIENT_ID, BIGIN_CLIENT_SECRET, BIGIN_REFRESH_TOKEN from .env. build_cashflow_json.py calls live Bigin on every render — falls back to cache if .env absent. .env.example at repo root with setup instructions.

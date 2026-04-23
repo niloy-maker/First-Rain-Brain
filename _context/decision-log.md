@@ -5,6 +5,8 @@
 
 | Date        | Decision                                      | Rationale                        | Owner | Status  |
 |-------------|-----------------------------------------------|----------------------------------|-------|---------|
+| 23 Apr 2026 | /close skill 0C rewired: reads sheet_cash_position.json instead of Google Sheets CSV publish URL | CSV publish links break silently every ~7 days; JSON file is always fresh from last /finance run — no external dependency | System | Done |
+| 23 Apr 2026 | FirstRain-Cashflow-Master 7-tab audit complete — Invoices_Raised tab deleted, Bigin_Deal_ID removed from Projects, vendor outflow auto-computed from Projects CP, CONFIG_MONTHLY_BURN_YYYY-MM pattern added | Removed all columns Sonal doesn't need to maintain; eliminated fragile manual entries; drift_check now soft-match only | Niloy | Done |
 | 22 Apr 2026 | Live Bigin fetch wired into /finance — claude_bigin_client.py (Zoho REST OAuth) created; build_cashflow_json.py always attempts live fetch on every render before falling back to cache | Non-dependence on cached data: dashboard always reflects current Bigin state when .env credentials are configured | Niloy | Pending .env setup |
 | 21 Apr 2026 | bypassPermissions defaultMode set in .claude/settings.json for First Rain Brain project | Eliminates MCP tool permission prompts — all tools (Bigin, Notion, Gmail, Telegram) run without interruption in this project. Scoped to project only. | Niloy | Active |
 | 19 Apr 2026 | BYSS Platinum enrolled — ₹1,59,999 + GST. Parantap Chowdhury 1:1 Done-For-You Sales Coaching, 12 weeks. Custom GPTs, no team size limit. | Below-market for 1:1 + custom playbook. Mayartha Productions deliverable quality verified live. Bootcamp participant rate. | Niloy | Active |

@@ -1,17 +1,18 @@
 # First Rain — Active Projects and Pipeline
 # Auto-updated when Claude reads Bigin (triggered by /close).
-# Last updated: 22 April 2026
+# Last updated: 23 April 2026
 
 ## Closed Won FY26-27 — Executing now
 | Client         | Show              | Date          | SP      | Exec    | Flag             |
 |----------------|-------------------|---------------|---------|---------|------------------|
-| Labguard       | Analytica India   | 22–24 Apr 2026| ₹13.6L  | Shilpa  | 🔴 ON SITE TODAY — T21 ✓ Day 1 of 3 |
-| Mosil          | IDMC Lucknow      | 23–24 Apr 2026| ₹1.5L   | Dhruv   | 🔴 TOMORROW — T21 NOT ticked. Chase Dhruv urgently. |
-| Messung        | Smart Home Expo   | 28–30 Apr 2026| ₹6.3L   | Shilpa  | ⚠️ 7 days — T14 ✓, T21 NOT ticked |
-| Amaara         | Vitafoods Europe  | ~5 May 2026   | ₹34L    | Shilpa  | 14 days — T18 ✓. Chase 90% payment ₹14L. |
-| Secure Meters  | RenewX Chennai    | 27 Apr 2026   | ₹9.35L  | Chinmay | 🔴 6 days — T02 ✓. T07–T21 all pending. Escalate. |
-| GIC            | ELAsia Bangalore  | 14–17 May 2026| ₹6.50L  | Shilpa  | 24 days — T02 advance NOT received (vendor reg in progress). |
-Total active SP: ₹71.25L
+| Labguard       | Analytica India   | 22–24 Apr 2026| ₹13.6L  | Shilpa  | 🔴 ON SITE Day 2 — T21 ✓. Chase T22/T23 today. |
+| Mosil          | IDMC Lucknow      | 23–24 Apr 2026| ₹1.5L   | Dhruv   | 🔴 TODAY — T21 status unknown. Chase Dhruv. |
+| Messung        | Smart Home Expo   | 28–30 Apr 2026| ₹6.3L   | Shilpa  | ✅ T22 ✓ (22 Apr) — stall handed over, show in 5 days |
+| Amaara         | Vitafoods Europe  | ~5 May 2026   | ₹34L    | Shilpa  | 12 days — T18 ✓. Chase ₹14L balance. |
+| Secure Meters  | RenewX Chennai    | 27 Apr 2026   | ₹9.35L  | Chinmay | 🔴 4 days — T02 ✓. T07–T21 pending. Escalate. |
+| Secure Meters  | Utility Week Birmingham | 19 May 2026 | ₹47.95L | CK | 🆕 CLOSED WON 22 Apr — T01–T06 milestones to set up |
+| GIC            | ELAsia Bangalore  | 14–17 May 2026| ₹6.50L  | Shilpa  | 21 days — T02 advance NOT received. |
+Total active SP: ₹1,19.20L
 
 ## Delivered FY26-27 (closed and invoiced)
 | Client | Show | Date | SP |
@@ -22,40 +23,41 @@ Total active SP: ₹71.25L
 **Source: https://www.notion.so/firstraingroup/ac84c676ad7249d2a79732d842f71d62**
 **Auto-updated every /close. Last pulled: 22 Apr 2026**
 
-| Milestone                    | Labguard | Mosil | Messung | Amaara | Secure | Bechem | GIC |
-|------------------------------|----------|-------|---------|--------|--------|--------|-----|
-| T01 PI Sent                  | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| T02 Advance Received         | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ |
-| T03 Costing Drawing          | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ |
-| T04 Fabricator Finalisation  | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ |
-| T05 Advance to Fabricator    | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ |
-| T06 Internal Exec Meeting    | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ |
-| T07 Technical Drawing        | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ | ✗ |
-| T08 Fabricator Meeting       | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ | ✗ |
-| T09 Submission Drawings      | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ | ✗ |
-| T10 Design Approval          | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ | ✗ |
-| T11 Organiser Form Subs      | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ | ✗ |
-| T12 Security Deposit         | ✓ | ✗ | ✓ | ✓ | ✗ | ✓ | ✗ |
-| T13 Material Approval        | ✓ | ✗ | ✗ | ✓ | ✗ | ✓ | ✗ |
-| T14 Mock Up                  | ✓ | ✗ | ✓ | ✗ | ✗ | ✓ | ✗ |
-| T15 Onsite Schedule          | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ |
-| T18 Graphics Check           | ✗ | ✗ | ✗ | ✓ | ✗ | ✓ | ✗ |
-| T20 Possession Pics          | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ |
-| T21 Installation Started     | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ |
-| T22 Handover Pics            | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ |
-| T23 Dismantling Pics         | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ |
-| T27 Final Invoice            | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ |
-| T28 Final Payment            | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ |
-| T31 Fabricator Final Meeting | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ |
+| Milestone                    | Labguard | Mosil | Messung | Amaara | Secure RenewX | Bechem | GIC | Secure UW |
+|------------------------------|----------|-------|---------|--------|--------|--------|-----|-----------|
+| T01 PI Sent                  | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ |
+| T02 Advance Received         | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ |
+| T03 Costing Drawing          | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ |
+| T04 Fabricator Finalisation  | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ |
+| T05 Advance to Fabricator    | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ |
+| T06 Internal Exec Meeting    | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ |
+| T07 Technical Drawing        | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ | ✗ | ✗ |
+| T08 Fabricator Meeting       | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ | ✗ | ✗ |
+| T09 Submission Drawings      | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ | ✗ | ✗ |
+| T10 Design Approval          | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ | ✗ | ✗ |
+| T11 Organiser Form Subs      | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ | ✗ | ✗ |
+| T12 Security Deposit         | ✓ | ✗ | ✓ | ✓ | ✗ | ✓ | ✗ | ✗ |
+| T13 Material Approval        | ✓ | ✗ | ✗ | ✓ | ✗ | ✓ | ✗ | ✗ |
+| T14 Mock Up                  | ✓ | ✗ | ✓ | ✗ | ✗ | ✓ | ✗ | ✗ |
+| T15 Onsite Schedule          | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ | ✗ |
+| T18 Graphics Check           | ✗ | ✗ | ✗ | ✓ | ✗ | ✓ | ✗ | ✗ |
+| T20 Possession Pics          | ✓ | ✗ | ✓ | ✗ | ✗ | ✓ | ✗ | ✗ |
+| T21 Installation Started     | ✓ | ✗ | ✓ | ✗ | ✗ | ✓ | ✗ | ✗ |
+| T22 Handover Pics            | ✗ | ✗ | ✓ | ✗ | ✗ | ✓ | ✗ | ✗ |
+| T23 Dismantling Pics         | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ | ✗ |
+| T27 Final Invoice            | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ | ✗ |
+| T28 Final Payment            | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ | ✗ |
+| T31 Fabricator Final Meeting | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ | ✗ |
 
-**Last milestone reached (updated 21 Apr 2026):**
+**Last milestone reached (updated 23 Apr 2026):**
 - Bechem BME26: FULLY COMPLETE ✓
-- Labguard Anacon26: T21 Installation Started ✓ + T20 Possession Pics ✓ — show 22–24 Apr 🔴 **TOMORROW. On site.**
-- Mosil IDMC26: T11 Organiser Form Submissions ✓ — show 23–24 Apr 🔴 **2 days — T21 NOT ticked. Chase Dhruv.**
-- Messung SHE26: T14 Mock Up ✓ — show 28–30 Apr ⚠️ 7 days — T21 NOT ticked
-- Amaara Vitafoods26: T13 Material Approval ✓ + T18 Graphics Check ✓ — show ~5 May. Chase 90% payment.
-- Secure RenewX: T02 Advance Received ✓ — show 27 Apr 🔴 **6 days — T07–T21 all pending. Escalate.**
-- GIC ELAsia26: T01 PI Sent ✓. T02 advance NOT received — GIC vendor reg in progress. Show 14–17 May.
+- Labguard Anacon26: T21 ✓ + T20 ✓ — show ongoing Day 2 of 3 (22–24 Apr). Chase T22/T23 today.
+- Mosil IDMC26: T11 ✓ — show TODAY (23 Apr). T21 status unknown — chase Dhruv urgently.
+- Messung SHE26: **T22 Handover Pics ✓ (22 Apr)** — stall delivered early. Show 28–30 Apr.
+- Amaara Vitafoods26: T18 Graphics Check ✓ — show ~5 May. Chase ₹14L balance.
+- Secure RenewX: T02 ✓ — show 27 Apr 🔴 4 days. T07–T21 all pending. Escalate.
+- GIC ELAsia26: T01 ✓. T02 NOT received. Show 14–17 May.
+- Secure Utility Week: 🆕 CLOSED WON 22 Apr ₹47.95L — T01–T06 milestones to set up in Notion. Show 19 May Birmingham.
 - **New Bigin entries (19 Apr):** BharatTex'26 300sqm — Requirement gathering (large new prospect). Multiple new leads: Thaifex, H+H Americas Chicago, SMM Hamburg'26, Caltron CPhI China — qualify next session.
 
 ## Active quotes — from Bigin "Sales Pipeline 26-27" (21 Apr 2026)
