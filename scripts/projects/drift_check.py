@@ -92,7 +92,7 @@ def _build_sheet_soft_index(sheet_rows):
         except ValueError:
             dm_date = None
         index.append({
-            "projectNo": r.get("projectNo"),
+            "company": r.get("company"),
             "norm_name": _normalize_name(r.get("company")),
             "delivery_date": dm_date,
         })
@@ -110,7 +110,7 @@ def _check_bigin_wins_missing_from_sheet(bigin_wins, sheet_rows, today):
         norm_name = _normalize_name(win.get("account_name"))
 
         matches = [
-            e["projectNo"] for e in soft_index
+            e["company"] for e in soft_index
             if e["norm_name"] == norm_name and _month_close(close_date, e["delivery_date"])
         ]
 
@@ -159,8 +159,8 @@ def _check_sheet_unmatched(sheet_rows, bigin_wins):
             issues.append({
                 "severity": "WARNING",
                 "type": "sheet_row_no_bigin_match",
-                "message": f"Projects row {row.get('projectNo')} ({row.get('company')}) has no matching Bigin Closed Won deal. Historic project or stale row?",
-                "projectNo": row.get("projectNo"),
+                "message": f"Projects row ({row.get('company')}) has no matching Bigin Closed Won deal. Historic project or stale row?",
+                "company": row.get("company"),
             })
     return issues
 

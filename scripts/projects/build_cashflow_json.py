@@ -1087,6 +1087,13 @@ def _compose_cashflow(bigin, sheet, momentum, drift):
     od_facility = cash.get("odLimit", cash.get("odFacility", 0)) or 0
     od_utilized = cash.get("odUtilized", 0) or 0
     monthly_burn = finance.get("monthlyBurn") or cash.get("monthlyBurn") or 0
+    # Fallback: if no plain CONFIG_MONTHLY_BURN entry, derive from per-month overrides
+    if not monthly_burn:
+        _notes_burn = finance.get("notesMonthlyBurn") or {}
+        if _notes_burn:
+            from datetime import date as _date
+            _cur_mk = _date.today().strftime("%Y-%m")
+            monthly_burn = _notes_burn.get(_cur_mk) or next(iter(_notes_burn.values()), 0)
 
     sweep_config, treasury_sweep = _compute_sweep(
         op_cash, monthly_burn, od_facility, od_utilized

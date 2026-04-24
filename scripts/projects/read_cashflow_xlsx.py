@@ -472,8 +472,8 @@ def parse_projects(wb) -> dict:
 
     for row in rows:
         d = _row_dict(headers, row)
-        proj_no = _clean(d.get("projectno"))
-        if not proj_no or proj_no.upper() == "TOTAL":
+        company = _clean(d.get("company"))
+        if not company or company.upper() == "TOTAL":
             continue
         sp = _to_float(d.get("sales_sp"))
         cp = _to_float(d.get("variable_cost_cp"))
@@ -492,8 +492,7 @@ def parse_projects(wb) -> dict:
         below_floor = contrib_pct < floor
 
         projects.append({
-            "projectNo": proj_no,
-            "company": _clean(d.get("company")),
+            "company": company,
             "project": _clean(d.get("project")),
             "delivery_month": _clean(d.get("delivery_month")),
             "sizeSqm": _to_float(d.get("sizesqm")),
