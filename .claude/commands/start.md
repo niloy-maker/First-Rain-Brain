@@ -4,6 +4,12 @@ Read these three files in order:
 2. `_context/decision-log.md` 
 3. `_context/session-log.md` (last 3 entries only)
 
+## Step 0b — Telegram Inbox check
+If `_context/telegram-inbox.md` exists and has entries beyond the header lines:
+- Display each message with timestamp as: 📱 [time] "[message]"
+- Then delete or clear the file contents (keep the 2-header lines only)
+- Say: "📱 [N] Telegram message(s) received while session was closed."
+
 ## Step 1 — Summarise in 5 bullets
 1. 🔴 Active alerts (from financial-rules.md: cash, concentration, margin breaches)
 2. 🔴 Receivables — top 3 by amount (from active-projects.md or financial-rules.md)

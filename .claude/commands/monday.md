@@ -3,6 +3,12 @@
 
 Execute the following steps in order. Do not use more than 6 tool calls total.
 
+## STEP 0 — Finance Sync (run before everything else)
+Run the `finance-sync` skill:
+- Read `_context/sonal-finance-config.md` for the sheet URL
+- If configured: fetch CSV via WebFetch, update financial-rules.md and daily-updates.md
+- If not configured or sheet date >7 days old: flag it, continue with existing data
+
 ## STEP 1 — Load Daily Updates (read THIS first — most current data)
 Read `_context/daily-updates.md` completely.
 Any entry here OVERRIDES stale data in financial-rules.md.
