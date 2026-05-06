@@ -1,6 +1,10 @@
 # /finance — First Rain Cash & Projects Dashboard · Daily Build
 # Architecture A: Claude calls MCP (Bigin + Google Drive + Gmail) → writes JSON → runs Python → renders HTML.
 # Runs daily at 08:00 IST. Pipeline + project economics + cash position + bank flow.
+#
+# ⚠️ ALL Python scripts MUST run from the vault root:
+#    cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain
+# Never run scripts from a worktree (e.g. .claude/worktrees/...) — paths will be wrong.
 
 ## Data source ownership
 | Source | Owns | Output file |
@@ -16,17 +20,16 @@
 
 ## Step 1 — Fetch Bigin pipeline (MCP)
 
-Use `mcp__claude_ai_Bigin__Bigin_getRecordsUsingCoqlQuery` with this query:
+Use `mcp__dfb7f7c2-658a-476e-986c-8a792b7b8462__Bigin_getRecordsUsingCoqlQuery` (the Bigin-specific MCP — NOT the Zoho CRM one). First try with `Region`:
 
 ```sql
-SELECT id, Deal_Name, Account_Name.id, Account_Name.Account_Name, Amount, Closing_Date, Stage, Pipeline, Probability, Created_Time, Modified_Time, Region, Owner.id, Owner.name FROM Pipelines WHERE Pipeline = 'Sales Pipeline 26-27'
+SELECT id, Deal_Name, Account_Name.id, Account_Name.Account_Name, Amount, Closing_Date, Stage, Pipeline, Probability, Created_Time, Modified_Time, Region, Owner.id FROM Pipelines WHERE Pipeline = 'Sales Pipeline 26-27'
 ```
 
-If the query errors on `Region` (field not yet configured in Bigin admin), retry without it:
-
-```sql
-SELECT id, Deal_Name, Account_Name.id, Account_Name.Account_Name, Amount, Closing_Date, Stage, Pipeline, Probability, Created_Time, Modified_Time, Owner.id, Owner.name FROM Pipelines WHERE Pipeline = 'Sales Pipeline 26-27'
-```
+**Known quirks:**
+- `Owner.name` errors in COQL — always omit it. Use `Owner.id` only.
+- The COQL `WHERE Pipeline = 'Sales Pipeline 26-27'` filter may return all pipeline records if the pipeline name doesn't match exactly. In that case, use `mcp__dfb7f7c2-658a-476e-986c-8a792b7b8462__Bigin_getRecords` with `module_api_name=Pipelines`, `sort_by=Created_Time`, `sort_order=desc`, `per_page=200`, and filter in Python to `Created_Time >= '2026-03-01'` excluding stages `{Projections 25-26, Closed Won 25-26, Closed Won 24-25, Closed Won 23-24, Closed Won 22-23}`.
+- If `Region` errors, retry without it — `classify_pipeline.py` applies regex fallback.
 
 Then collect unique account_ids from the results and query Accounts for Industry:
 
@@ -36,23 +39,31 @@ SELECT id, Account_Name, Industry FROM Accounts WHERE id IN (<comma-separated ac
 
 If Industry errors, retry without it and proceed — `classify_pipeline.py` applies regex fallback.
 
-Normalize each deal using this mapping (from `scripts/projects/fetch_bigin_pipeline.py`):
+Normalize each deal using this mapping:
 
 ```python
+import re
+
+# Owner name not available in COQL — extract exec from deal name prefix
+def extract_exec(deal_name):
+    m = re.match(r'^(CK|DS|SP|ND)\s*[-–]', deal_name or '')
+    return m.group(1) if m else None
+
 owner_map = {"chinmay": "CK", "shilpa": "SP", "dhruv": "DS", "niloy": "ND"}
-exec_code = next((v for k, v in owner_map.items() if k in owner_name.lower()), None)
+# Try owner name first (if available), else fall back to deal name prefix
+exec_code = next((v for k, v in owner_map.items() if k in owner_name.lower()), None) or extract_exec(deal_name)
 
 normalized_deal = {
     "id": row["id"],
     "deal": row["Deal_Name"],
     "account": account_id,           # from Account_Name.id
     "account_name": account_name,    # from Account_Name.Account_Name
-    "amount": float(row["Amount"] or 0),
-    "prob": float(row["Probability"] or 0),
-    "stage": row["Stage"],
-    "close": row["Closing_Date"],
-    "created": row["Created_Time"],
-    "modified": row["Modified_Time"],
+    "amount": float(row.get("Amount") or 0),
+    "prob": float(row.get("Probability") or 0),
+    "stage": row.get("Stage"),
+    "close": row.get("Closing_Date"),
+    "created": row.get("Created_Time"),
+    "modified": row.get("Modified_Time"),
     "industry": account_index.get(account_id, {}).get("Industry"),  # None if field absent
     "region": row.get("Region"),     # None if field absent
     "exec": exec_code,
@@ -65,8 +76,8 @@ Write the normalized result to `data/projects/bigin_pipeline_raw.json`:
 {
   "deals": [ /* list of normalized deals */ ],
   "meta": {
-    "region_available": true,
-    "industry_available": true,
+    "region_available": false,
+    "industry_available": false,
     "fetched_at": "<ISO8601 timestamp>",
     "count": <N>
   }
@@ -99,10 +110,21 @@ The MCP returns a JSON tool result containing `{content: [{embeddedResource: {co
 
 Then decode to the cache:
 ```bash
-python3 scripts/projects/decode_drive_blob_to_cache.py <path_from_mcp_message>
+cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain && python3 scripts/projects/decode_drive_blob_to_cache.py <path_from_mcp_message>
 ```
 
 This writes `data/projects/_cache/cashflow_master.xlsx` (~50 KB).
+
+**Alternative if `decode_drive_blob_to_cache.py` is missing:** The Drive MCP returns `{content: "<base64>", ...}` saved to a tool-results file. Decode inline:
+```bash
+cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain && python3 -c "
+import json, base64, os
+with open('<path_from_mcp_message>') as f: d = json.loads(f.read())
+os.makedirs('data/projects/_cache', exist_ok=True)
+open('data/projects/_cache/cashflow_master.xlsx', 'wb').write(base64.b64decode(d['content']))
+print('done', os.path.getsize('data/projects/_cache/cashflow_master.xlsx'), 'bytes')
+"
+```
 
 ---
 
@@ -148,7 +170,7 @@ If `nextPageToken` is present in the response, fetch a second page with `pageTok
 ## Step 6 — Parse HDFC emails (Python)
 
 ```bash
-python3 scripts/projects/parse_hdfc_emails.py data/projects/_cache/hdfc_emails.json
+cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain && python3 scripts/projects/parse_hdfc_emails.py data/projects/_cache/hdfc_emails.json
 ```
 
 Reads the cached threads → writes `data/projects/sheet_bank_transactions.json` with:
@@ -165,7 +187,7 @@ If `unparseableCount > 0`: HDFC has changed an alert template. Inspect `meta.war
 ## Step 7 — Compute momentum (Python)
 
 ```bash
-python3 scripts/projects/compute_momentum.py
+cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain && python3 scripts/projects/compute_momentum.py
 ```
 
 Reads `bigin_pipeline_classified.json` → writes `momentum.json` + appends daily snapshot to `data/projects/snapshots/YYYY-MM-DD.json`.
@@ -177,7 +199,7 @@ First run will produce `mode: "snapshot_only"` — this is expected. Upgrades to
 ## Step 8 — Drift check (Python)
 
 ```bash
-python3 scripts/projects/drift_check.py
+cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain && python3 scripts/projects/drift_check.py
 ```
 
 Reads `bigin_pipeline_classified.json` + `sheet_projects.json` → writes `drift_report.json`.
@@ -187,7 +209,7 @@ Reads `bigin_pipeline_classified.json` + `sheet_projects.json` → writes `drift
 ## Step 9 — Render dashboard (Python)
 
 ```bash
-python3 scripts/projects/build_cashflow_json.py --from-files
+cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain && python3 scripts/projects/build_cashflow_json.py --from-files
 ```
 
 Reads all 10 JSON files (`bigin_pipeline_classified.json`, 8× `sheet_*.json`, `sheet_bank_transactions.json`) → writes `data/projects/cashflow.json` → renders `dashboards/dashboard.html`.
@@ -208,15 +230,25 @@ Validation checklist (required before declaring success):
 
 ---
 
-## Step 11 — Open dashboard in browser
+## Step 11 — Open + publish dashboard
 
-Once Step 10 validation passes:
+Once Step 10 validation passes, do BOTH:
 
+1. **Open locally for Niloy** (instant view, no auth):
 ```bash
-open dashboards/dashboard.html
+cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain && open dashboards/dashboard.html
 ```
 
-Do this **after** validation, never before — don't open a broken dashboard.
+2. **Publish to Cloudflare Pages for Sonal + remote access**:
+```bash
+cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain && cp dashboards/dashboard.html dashboards/index.html && wrangler pages deploy dashboards --project-name=firstrain-dashboard --branch=main --commit-dirty=true
+```
+
+The Cloudflare URL is `https://firstrain-dashboard.pages.dev` — gated by HTTP Basic Auth via `dashboards/_worker.js`. Password is in the Pages env var `DASHBOARD_PASSWORD` (set in Cloudflare dashboard → Pages → firstrain-dashboard → Settings → Variables and Secrets, encrypted). Sonal has the password.
+
+If the wrangler step fails, log the failure but DON'T abort — local view is still good. Telegram an alert: *"Cloudflare deploy failed at [time] — Sonal dashboard stale."*
+
+Do both **after** validation. Never publish a broken dashboard.
 
 ---
 
@@ -230,7 +262,7 @@ Sheet: 8 tabs parsed (cash ₹X.XL · treasury ₹Y.YL · [N] receivables · [N]
 HDFC: [N] txns over 60d  Credits ₹X.XL  Debits ₹Y.YL  Net ₹Z.ZL  LatestBal ₹B.BL (acct NNNN)
 Drift: [N] ALERT · [N] WARNING · [N] INFO
 Momentum: [mode] ([N] snapshots)
-Dashboard: dashboards/dashboard.html ✓ (opened in browser)
+Dashboard: dashboards/dashboard.html ✓ (opened locally) · https://firstrain-dashboard.pages.dev ✓ (published)
 ```
 
 If drift ALERT count > 0 OR `operatingCash` below floor: send Telegram message to chat_id `8770250893` listing each issue (use `mcp__plugin_telegram_telegram__reply`).
