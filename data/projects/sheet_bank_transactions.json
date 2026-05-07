@@ -1,0 +1,62 @@
+{
+  "transactions": [
+    {
+      "type": "FCY_INWARD",
+      "date": "2026-04-04",
+      "amount": 0.0,
+      "direction": "credit",
+      "account": "0247",
+      "counterparty": "",
+      "reference": "020426I049932741",
+      "purpose": "FCY inward remittance \u2014 open thread for amount",
+      "subject": "50200003890247   INW 020426I049932741 Debit Cum Credit Advice For FCY Inward Remittance",
+      "_sender": "inward.remittances@hdfcbank.bank.in",
+      "_needsThreadFetch": true
+    }
+  ],
+  "totals": {
+    "credits": 0,
+    "debits": 0,
+    "net": 0,
+    "transactionCount": 0,
+    "fcyPendingCount": 1
+  },
+  "fcyPending": [
+    {
+      "type": "FCY_INWARD",
+      "date": "2026-04-04",
+      "amount": 0.0,
+      "direction": "credit",
+      "account": "0247",
+      "counterparty": "",
+      "reference": "020426I049932741",
+      "purpose": "FCY inward remittance \u2014 open thread for amount",
+      "subject": "50200003890247   INW 020426I049932741 Debit Cum Credit Advice For FCY Inward Remittance",
+      "_sender": "inward.remittances@hdfcbank.bank.in",
+      "_needsThreadFetch": true
+    }
+  ],
+  "latestBalance": null,
+  "meta": {
+    "count": 1,
+    "allowedAccounts": [
+      "0241",
+      "0247"
+    ],
+    "filteredWrongAccount": 28,
+    "rawDuplicatesRemoved": 0,
+    "nachAchPairsCollapsed": 0,
+    "skippedNonTransactional": 0,
+    "unparseableCount": 1,
+    "read_at": "2026-05-07T09:21:27.887376+05:30",
+    "warnings": [
+      {
+        "id": "19dfc9b36f959855",
+        "sender": "alerts@hdfcbank.bank.in",
+        "subject": "View: Account update for your HDFC Bank A/c",
+        "snippet": "Dear Customer, Thank you for banking with HDFC Bank. Rs. 5900.00 has been deducted from your HDFC Bank account ending in",
+        "reason": "no_pattern_matched"
+      }
+    ]
+  }
+}

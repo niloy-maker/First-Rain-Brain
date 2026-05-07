@@ -1,0 +1,64 @@
+{
+  "cash": {
+    "date": "2026-05-05",
+    "operatingCash": 1258919.0,
+    "hdfcLast4": "0247",
+    "treasury": 13995068.0,
+    "treasuryLastRefreshed": "2026-05-05",
+    "odUtilized": 0.0,
+    "odLimit": 12100000.0,
+    "totalReceivables": 0.0,
+    "totalPayables": 0.0,
+    "updatedBy": "Sonal",
+    "notes": "Live Data"
+  },
+  "history": [
+    {
+      "date": "2026-05-05",
+      "operatingCash": 1258919.0,
+      "hdfcLast4": "0247",
+      "treasury": 13995068.0,
+      "treasuryLastRefreshed": "2026-05-05",
+      "odUtilized": 0.0,
+      "odLimit": 12100000.0,
+      "totalReceivables": 0.0,
+      "totalPayables": 0.0,
+      "updatedBy": "Sonal",
+      "notes": "Live Data"
+    },
+    {
+      "date": "2026-04-24",
+      "operatingCash": 3586209.0,
+      "hdfcLast4": "0247",
+      "treasury": 13997249.0,
+      "treasuryLastRefreshed": "2026-04-24",
+      "odUtilized": 0.0,
+      "odLimit": 12100000.0,
+      "totalReceivables": 0.0,
+      "totalPayables": 0.0,
+      "updatedBy": "Sonal",
+      "notes": "Live Data"
+    },
+    {
+      "date": "2026-04-22",
+      "operatingCash": 61526.0,
+      "hdfcLast4": "0247",
+      "treasury": 14007663.0,
+      "treasuryLastRefreshed": "2026-04-22",
+      "odUtilized": 433902.0,
+      "odLimit": 12100000.0,
+      "totalReceivables": 0.0,
+      "totalPayables": 0.0,
+      "updatedBy": "Niloy",
+      "notes": "Demo Data"
+    }
+  ],
+  "alerts": [
+    "OPERATING_CASH_BELOW_FLOOR: \u20b91,258,919 < \u20b976,50,000"
+  ],
+  "meta": {
+    "count": 3,
+    "read_at": "2026-05-07T09:17:50.720047+05:30",
+    "warnings": []
+  }
+}

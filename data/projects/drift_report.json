@@ -1,76 +1,26 @@
 {
-  "checked_at": "2026-04-22T20:16:02.189874+05:30",
+  "checked_at": "2026-05-07T09:21:27.972500+05:30",
   "bigin_won_count": 8,
-  "sheet_row_count": 1,
+  "sheet_row_count": 8,
   "issues": [
     {
       "severity": "ALERT",
       "type": "bigin_won_not_in_sheet",
-      "message": "Bigin deal 4996576000005161161 (Secure Meters Pvt Ltd) closed 20 business days ago but no Sheet row. Sonal: add project.",
-      "bigin_deal_id": "4996576000005161161",
-      "close_date": "2026-03-26"
-    },
-    {
-      "severity": "ALERT",
-      "type": "bigin_won_not_in_sheet",
-      "message": "Bigin deal 4996576000005161175 (Secure Meters Pvt Ltd) closed 22 business days ago but no Sheet row. Sonal: add project.",
-      "bigin_deal_id": "4996576000005161175",
-      "close_date": "2026-03-24"
-    },
-    {
-      "severity": "ALERT",
-      "type": "bigin_won_not_in_sheet",
-      "message": "Bigin deal 4996576000005169232 (MOSIL LUBRICANTS PRIVATE LIMITED) closed 28 business days ago but no Sheet row. Sonal: add project.",
-      "bigin_deal_id": "4996576000005169232",
-      "close_date": "2026-03-16"
-    },
-    {
-      "severity": "ALERT",
-      "type": "bigin_won_not_in_sheet",
-      "message": "Bigin deal 4996576000005170014 (MESSUNG SYSTEMS PRIVATE LIMITED) closed 24 business days ago but no Sheet row. Sonal: add project.",
-      "bigin_deal_id": "4996576000005170014",
-      "close_date": "2026-03-20"
-    },
-    {
-      "severity": "ALERT",
-      "type": "bigin_won_not_in_sheet",
-      "message": "Bigin deal 4996576000005170031 (Labguard India Pvt Ltd) closed 16 business days ago but no Sheet row. Sonal: add project.",
-      "bigin_deal_id": "4996576000005170031",
-      "close_date": "2026-04-01"
-    },
-    {
-      "severity": "ALERT",
-      "type": "bigin_won_not_in_sheet",
-      "message": "Bigin deal 4996576000005170099 (GIC) closed 6 business days ago but no Sheet row. Sonal: add project.",
+      "message": "GIC (Bigin 4996576000005170099) closed 22 biz days ago \u2014 no Projects row found. Sonal: add project.",
       "bigin_deal_id": "4996576000005170099",
-      "close_date": "2026-04-15"
+      "close_date": "2026-04-08"
     },
     {
-      "severity": "ALERT",
-      "type": "bigin_won_not_in_sheet",
-      "message": "Bigin deal 4996576000005170127 (Amaara Ayurveda) closed 17 business days ago but no Sheet row. Sonal: add project.",
-      "bigin_deal_id": "4996576000005170127",
-      "close_date": "2026-03-31"
-    },
-    {
-      "severity": "ALERT",
-      "type": "bigin_won_not_in_sheet",
-      "message": "Bigin deal 4996576000005205016 (CARL BECHEM LUBRICANTS INDIA PRIVATE LIMITED) closed 53 business days ago but no Sheet row. Sonal: add project.",
-      "bigin_deal_id": "4996576000005205016",
-      "close_date": "2026-02-07"
-    },
-    {
-      "severity": "ALERT",
-      "type": "orphan_sheet_row",
-      "message": "Sheet row FR-2526-041 has bigin_deal_id 7025687000001893026 but no matching Bigin record. Stale ID?",
-      "projectNo": "FR-2526-041",
-      "bigin_deal_id": "7025687000001893026"
+      "severity": "WARNING",
+      "type": "sheet_row_no_bigin_match",
+      "message": "Projects row (GENERAL INDUSTRIAL CONTROLS PVT LTD) has no matching Bigin Closed Won deal. Historic project or stale row?",
+      "company": "GENERAL INDUSTRIAL CONTROLS PVT LTD"
     }
   ],
   "counts": {
-    "ALERT": 9,
-    "WARNING": 0,
+    "ALERT": 1,
+    "WARNING": 1,
     "INFO": 0
   },
-  "wip_gap": 9
+  "wip_gap": 1
 }

@@ -1,0 +1,119 @@
+{
+  "holdings": [
+    {
+      "instrument": "Bandhan Short Duration Fund Reg (G) [5426194/55]",
+      "investmentType": "debt_short",
+      "folio": "5426194/55",
+      "amc": "HDFC AMC",
+      "units": 55224.151,
+      "nav": 59.5258,
+      "currentValue": 3287261.768,
+      "investedValue": 2999999.98,
+      "unrealizedGain": 0.0,
+      "exitLoadPct": 1.0,
+      "exitLoadValidUntil": "2026-04-22",
+      "lockInUntil": null,
+      "ltcgApplicable": true,
+      "lastStatementDate": "2026-05-05",
+      "notes": "Live Data"
+    },
+    {
+      "instrument": "DSP Short Term Fund Reg (G) [9722363/35]",
+      "investmentType": "debt_short",
+      "folio": "9722363/35",
+      "amc": "",
+      "units": 67579.475,
+      "nav": 48.2181,
+      "currentValue": 3258553.883,
+      "investedValue": 2999999.98,
+      "unrealizedGain": 0.0,
+      "exitLoadPct": 0.0,
+      "exitLoadValidUntil": null,
+      "lockInUntil": null,
+      "ltcgApplicable": true,
+      "lastStatementDate": "2026-05-05",
+      "notes": "Live Data"
+    },
+    {
+      "instrument": "Kotak Bond STP (G) [15966212]",
+      "investmentType": "debt_short",
+      "folio": "15966212",
+      "amc": "",
+      "units": 59597.861,
+      "nav": 54.0813,
+      "currentValue": 3223129.8,
+      "investedValue": 3104488.81,
+      "unrealizedGain": 0.0,
+      "exitLoadPct": 0.0,
+      "exitLoadValidUntil": null,
+      "lockInUntil": null,
+      "ltcgApplicable": true,
+      "lastStatementDate": "2026-05-05",
+      "notes": "Live Data"
+    },
+    {
+      "instrument": "Bandhan Liquid Fund Reg (G) [5426194/55]",
+      "investmentType": "liquid",
+      "folio": "5426194/55",
+      "amc": "",
+      "units": 953.857,
+      "nav": 3315.0043,
+      "currentValue": 3162040.057,
+      "investedValue": 3055622.79,
+      "unrealizedGain": 0.0,
+      "exitLoadPct": 0.0,
+      "exitLoadValidUntil": null,
+      "lockInUntil": null,
+      "ltcgApplicable": false,
+      "lastStatementDate": "2026-05-05",
+      "notes": "Live Data"
+    },
+    {
+      "instrument": "Bandhan Arbitrage Fund Reg (G) [5426194/55]",
+      "investmentType": "hybrid",
+      "folio": "5426194/55",
+      "amc": "",
+      "units": 13582.578,
+      "nav": 33.9478,
+      "currentValue": 461098.6414,
+      "investedValue": 449999.99,
+      "unrealizedGain": 0.0,
+      "exitLoadPct": 0.0,
+      "exitLoadValidUntil": null,
+      "lockInUntil": null,
+      "ltcgApplicable": true,
+      "lastStatementDate": "2026-05-05",
+      "notes": "Live Data"
+    },
+    {
+      "instrument": "Kotak Arbitrage Fund (G) [15966212]",
+      "investmentType": "hybrid",
+      "folio": "15966212",
+      "amc": "",
+      "units": 15336.788,
+      "nav": 39.3162,
+      "currentValue": 602984.2244,
+      "investedValue": 575999.97,
+      "unrealizedGain": 0.0,
+      "exitLoadPct": 0.0,
+      "exitLoadValidUntil": null,
+      "lockInUntil": null,
+      "ltcgApplicable": true,
+      "lastStatementDate": "2026-05-05",
+      "notes": "Live Data"
+    }
+  ],
+  "totals": {
+    "total": 13995068.373800002,
+    "byType": {
+      "debt_short": 9768945.451000001,
+      "liquid": 3162040.057,
+      "hybrid": 1064082.8658
+    }
+  },
+  "meta": {
+    "count": 6,
+    "read_at": "2026-05-07T09:17:50.728632+05:30",
+    "warnings": []
+  }
+}
