@@ -1,4 +1,4 @@
-import json, sys, time, unittest, tempfile
+import json, shutil, sys, time, unittest, tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "projects"))
@@ -8,6 +8,9 @@ import pipeline_health as ph
 class TestValidityAndFreshness(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
 
     def test_is_nonempty(self):
         empty = self.tmp / "empty.txt"; empty.write_text("")
@@ -34,6 +37,12 @@ class TestValidityAndFreshness(unittest.TestCase):
         os.utime(p, (old, old))
         self.assertEqual(ph.freshness(p, 24, now=now), "stale")
         self.assertEqual(ph.freshness(self.tmp / "gone.json", 24, now=now), "failed")
+
+    def test_worst_severity(self):
+        self.assertEqual(ph.worst("fresh", "stale", "failed"), "failed")
+        self.assertEqual(ph.worst("fresh", "stale"), "stale")
+        self.assertEqual(ph.worst("fresh"), "fresh")
+        self.assertEqual(ph.worst(), "fresh")  # empty -> fresh
 
 
 if __name__ == "__main__":

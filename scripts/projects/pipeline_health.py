@@ -46,6 +46,8 @@ def file_age_hours(path, now=None):
 def freshness(path, max_age_hours, now=None, validator=None) -> str:
     """Return 'fresh' | 'stale' | 'failed'.
     validator: callable(path)->bool deciding usability. Defaults to is_nonempty.
+    Boundary is exclusive: a file aged exactly max_age_hours is still 'fresh';
+    it becomes 'stale' only once age strictly exceeds the threshold.
     """
     validator = validator or is_nonempty
     if not validator(path):
@@ -53,9 +55,13 @@ def freshness(path, max_age_hours, now=None, validator=None) -> str:
     age = file_age_hours(path, now=now)
     if age is None:
         return "failed"
-    return "stale" if age > max_age_hours else "fresh"
+    return "stale" if age > max_age_hours else "fresh"  # exclusive: age == max_age_hours → "fresh"
 
 
 def worst(*statuses) -> str:
-    """Return the most severe status among the args (failed > stale > fresh)."""
+    """Return the most severe status among the args (failed > stale > fresh).
+    Empty input returns 'fresh'.
+    """
+    if not statuses:
+        return "fresh"
     return max(statuses, key=lambda s: _SEVERITY[s])
