@@ -65,3 +65,28 @@ def worst(*statuses) -> str:
     if not statuses:
         return "fresh"
     return max(statuses, key=lambda s: _SEVERITY[s])
+
+
+def snapshot_last_good(path, last_good_dir=LAST_GOOD_DIR, validator=None) -> bool:
+    """Copy path -> last_good_dir/<name> ONLY if it passes validator.
+    Prevents poisoning last_good with an empty/corrupt artifact. Returns True if copied.
+    """
+    validator = validator or is_nonempty
+    p = Path(path)
+    if not validator(p):
+        return False
+    lg = Path(last_good_dir)
+    lg.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(p, lg / p.name)
+    return True
+
+
+def restore_last_good(path, last_good_dir=LAST_GOOD_DIR) -> bool:
+    """Copy last_good_dir/<name> -> path if a snapshot exists. Returns True if restored."""
+    p = Path(path)
+    src = Path(last_good_dir) / p.name
+    if not src.exists():
+        return False
+    p.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(src, p)
+    return True

@@ -45,5 +45,34 @@ class TestValidityAndFreshness(unittest.TestCase):
         self.assertEqual(ph.worst(), "fresh")  # empty -> fresh
 
 
+class TestLastGood(unittest.TestCase):
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.lg = self.tmp / "last_good"
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def test_snapshot_only_when_valid(self):
+        good = self.tmp / "a.json"; good.write_text(json.dumps({"k": 1}))
+        empty = self.tmp / "b.json"; empty.write_text("")
+        self.assertTrue(ph.snapshot_last_good(good, self.lg))
+        self.assertTrue((self.lg / "a.json").exists())
+        # empty file must NOT be snapshotted (would poison last_good)
+        self.assertFalse(ph.snapshot_last_good(empty, self.lg))
+        self.assertFalse((self.lg / "b.json").exists())
+
+    def test_restore_returns_false_when_absent(self):
+        target = self.tmp / "c.json"
+        self.assertFalse(ph.restore_last_good(target, self.lg))
+
+    def test_restore_copies_back(self):
+        target = self.tmp / "d.json"; target.write_text(json.dumps({"v": "new-bad"}))
+        self.lg.mkdir(parents=True, exist_ok=True)
+        (self.lg / "d.json").write_text(json.dumps({"v": "old-good"}))
+        self.assertTrue(ph.restore_last_good(target, self.lg))
+        self.assertEqual(json.loads(target.read_text())["v"], "old-good")
+
+
 if __name__ == "__main__":
     unittest.main()
