@@ -98,8 +98,17 @@ def run_pipeline(stages, root=VAULT_ROOT, now=None):
     return report
 
 
-def dashboard_issues(html_path):
-    """Return a list of content problems in the rendered dashboard ([] = clean)."""
+def dashboard_issues(html_path, data_path=None):
+    """Return a list of content problems in the rendered dashboard ([] = clean).
+
+    We validate the rendered HTML for an unsubstituted template placeholder, and
+    validate the INJECTED DATA file (cashflow.json) for JSON-invalid tokens
+    (NaN / Infinity) that would break the dashboard's JSON.parse. We deliberately
+    do NOT scan the whole HTML for the words "NaN" / "undefined": the dashboard's
+    static JavaScript legitimately contains the `undefined` keyword (e.g.
+    `actualPct !== undefined`) and substrings like `isNaN`, so a raw text scan
+    produces a false "failed" on every render.
+    """
     import re
     p = Path(html_path)
     if not ph.is_nonempty(p):
@@ -108,12 +117,15 @@ def dashboard_issues(html_path):
     issues = []
     if "{{CASHFLOW_JSON}}" in html:
         issues.append("placeholder {{CASHFLOW_JSON}} not substituted")
-    n = html.count("NaN")
-    if n:
-        issues.append(f"NaN appears {n}x")
-    u = len(re.findall(r"\bundefined\b", html))
-    if u:
-        issues.append(f"undefined token {u}x")
+    if data_path is not None:
+        dp = Path(data_path)
+        if not ph.is_nonempty(dp):
+            issues.append("cashflow.json missing or empty")
+        else:
+            data_text = dp.read_text()
+            bad = re.findall(r"\b(?:NaN|-?Infinity)\b", data_text)
+            if bad:
+                issues.append(f"cashflow.json has {len(bad)} JSON-invalid token(s): {sorted(set(bad))}")
     return issues
 
 
@@ -152,7 +164,8 @@ def main(argv=None):
     report = run_pipeline(build_stages(), root=VAULT_ROOT)
 
     # Post-render dashboard content validation downgrades the dashboard source.
-    issues = dashboard_issues(VAULT_ROOT / "dashboards" / "dashboard.html")
+    issues = dashboard_issues(VAULT_ROOT / "dashboards" / "dashboard.html",
+                              data_path=VAULT_ROOT / "data" / "projects" / "cashflow.json")
     if issues:
         ph.set_source(report, "dashboard", "failed", detail="; ".join(issues))
         ph.finalize(report)

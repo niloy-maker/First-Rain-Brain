@@ -100,19 +100,38 @@ class TestDashboardValidation(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
 
-    def test_clean_html_has_no_issues(self):
-        h = self.tmp / "dashboard.html"
-        h.write_text("<html><body>cash 12.5L</body></html>")
-        self.assertEqual(rp.dashboard_issues(h), [])
+    def tearDown(self):
+        import shutil
+        shutil.rmtree(self.tmp, ignore_errors=True)
 
-    def test_detects_placeholder_nan_undefined(self):
+    def test_clean_html_and_data_has_no_issues(self):
         h = self.tmp / "dashboard.html"
-        h.write_text("<html>{{CASHFLOW_JSON}} NaN value undefined</html>")
-        issues = rp.dashboard_issues(h)
-        self.assertEqual(len(issues), 3)
+        # legit JS keyword `undefined` and `isNaN` must NOT be flagged
+        h.write_text("<html><script>var x = a !== undefined ? a : 0; isNaN(x);</script></html>")
+        d = self.tmp / "cashflow.json"
+        d.write_text(json.dumps({"cash": 12.5, "rows": []}))
+        self.assertEqual(rp.dashboard_issues(h, data_path=d), [])
+
+    def test_detects_unsubstituted_placeholder(self):
+        h = self.tmp / "dashboard.html"
+        h.write_text("<html>{{CASHFLOW_JSON}}</html>")
+        d = self.tmp / "cashflow.json"
+        d.write_text(json.dumps({"ok": True}))
+        issues = rp.dashboard_issues(h, data_path=d)
+        self.assertEqual(len(issues), 1)
         self.assertTrue(any("placeholder" in i for i in issues))
 
-    def test_missing_file_is_an_issue(self):
+    def test_detects_invalid_json_tokens_in_data(self):
+        h = self.tmp / "dashboard.html"
+        h.write_text("<html><body>ok</body></html>")
+        d = self.tmp / "cashflow.json"
+        # Python json.dump(allow_nan=True) can emit bare NaN/Infinity -> breaks JS JSON.parse
+        d.write_text('{"cash": NaN, "limit": Infinity}')
+        issues = rp.dashboard_issues(h, data_path=d)
+        self.assertEqual(len(issues), 1)
+        self.assertIn("JSON-invalid", issues[0])
+
+    def test_missing_html_is_an_issue(self):
         issues = rp.dashboard_issues(self.tmp / "gone.html")
         self.assertEqual(len(issues), 1)
 
