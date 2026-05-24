@@ -30,6 +30,11 @@ MANUAL_PATH = Path("data/projects/_manual/hdfc_sms_manual.txt")
 # has almost certainly stopped syncing from the iPhone (the phone receives OTPs,
 # promos, etc. constantly). Below threshold = 'live'; above = 'stale'.
 STALE_THRESHOLD_HOURS = 36
+# Bank-sender feed: HDFC transaction alerts normally arrive within ~a day on any
+# active business account. If the newest HDFC *bank-sender* SMS is older than this
+# while the phone feed is otherwise live, the bank route is likely being filtered or
+# iCloud sync is paused — even though promo/OTP SMS keep the overall feed "live".
+BANK_STALE_THRESHOLD_HOURS = 30
 # -----------------------------------------------------------------------------
 
 # Only these two accounts are business accounts (per decision-log 24 Apr 2026)
@@ -314,6 +319,35 @@ def cross_reference_with_gmail(transactions):
     return transactions
 
 
+def classify_feed(h_any, h_hdfc, threshold=STALE_THRESHOLD_HOURS,
+                  bank_threshold=BANK_STALE_THRESHOLD_HOURS):
+    """Pure decision: turn message ages into feed statuses. No I/O — unit-testable.
+
+    Returns (feed_status, bank_feed_status, bank_stale_but_phone_live):
+      - feed_status      : 'live'|'stale'|'unknown' — the OVERALL phone feed (any sender)
+      - bank_feed_status : 'live'|'stale'|'unknown' — the HDFC bank-sender feed specifically
+      - bank_stale_but_phone_live : True when the phone feed looks live but the bank feed
+        is stale/unknown — the false-confidence trap (filtering or paused sync). Thresholds
+        are exclusive: an age exactly equal to the threshold is still 'live'.
+    """
+    if h_any is None:
+        feed_status = 'unknown'
+    elif h_any > threshold:
+        feed_status = 'stale'
+    else:
+        feed_status = 'live'
+
+    if h_hdfc is None:
+        bank_feed_status = 'unknown'
+    elif h_hdfc > bank_threshold:
+        bank_feed_status = 'stale'
+    else:
+        bank_feed_status = 'live'
+
+    bank_stale_but_phone_live = (feed_status == 'live' and bank_feed_status in ('stale', 'unknown'))
+    return feed_status, bank_feed_status, bank_stale_but_phone_live
+
+
 def compute_feed_health():
     """
     Determine whether the local Messages DB is still syncing from the iPhone.
@@ -373,15 +407,13 @@ def compute_feed_health():
     h_any = hours_since(last_any)
     h_hdfc = hours_since(last_hdfc)
 
-    if h_any is None:
-        status = 'unknown'
-    elif h_any > STALE_THRESHOLD_HOURS:
-        status = 'stale'
-    else:
-        status = 'live'
+    status, bank_status, bank_stale_but_phone_live = classify_feed(h_any, h_hdfc)
 
     base.update({
         'feed_status': status,
+        'bank_feed_status': bank_status,
+        'bank_stale_but_phone_live': bank_stale_but_phone_live,
+        'bank_stale_threshold_hours': BANK_STALE_THRESHOLD_HOURS,
         'last_any_msg_date': last_any,
         'last_hdfc_sms_date': last_hdfc,
         'hours_since_any': h_any,
@@ -504,7 +536,9 @@ def main():
             'internal_transfer_count': len(transfers),
             'sms_only_count': len(sms_only_credits),
             # --- bypass instrumentation ---
-            'feed_status': feed['feed_status'],          # 'live' | 'stale' | 'unknown'
+            'feed_status': feed['feed_status'],          # 'live' | 'stale' | 'unknown' (overall phone feed)
+            'bank_feed_status': feed.get('bank_feed_status'),            # HDFC bank-sender feed specifically
+            'bank_stale_but_phone_live': feed.get('bank_stale_but_phone_live'),  # the false-confidence trap
             'feed_health': feed,
             'manual_entry_count': manual_count,
         },
@@ -526,6 +560,18 @@ def main():
     elif feed['feed_status'] == 'unknown':
         print(f"\n  ⚠ SMS feed health unknown ({feed.get('reason', 'no data')}). "
               f"Relying on Gmail HDFC alerts.")
+
+    # Selective-staleness trap: phone feed looks live (promos/OTPs flowing) but no
+    # HDFC bank-sender SMS has arrived in a while — the case that produced the false
+    # "feed LIVE, no new credit" signal. Surface it loudly so syncs cross-check Gmail.
+    if feed.get('bank_stale_but_phone_live'):
+        last_bank = feed.get('last_hdfc_sms_date') or 'never'
+        h_bank = feed.get('hours_since_hdfc')
+        print(f"\n  🏦📵 HDFC BANK-SMS FEED STALE — phone feed is live but the newest HDFC "
+              f"bank SMS is {h_bank}h old (last: {last_bank}, threshold {BANK_STALE_THRESHOLD_HOURS}h).")
+        print(f"     Likely cause: bank-sender filtering (Filter Unknown Senders) or paused "
+              f"iCloud sync (Low Power Mode). Do NOT read this as 'no new credit'.")
+        print(f"     CROSS-CHECK against Gmail HDFC alerts; paste any missing SMS into {MANUAL_PATH}.")
 
     # Actionable summary
     if sms_only_credits:
