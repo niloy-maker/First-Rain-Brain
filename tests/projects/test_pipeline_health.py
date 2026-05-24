@@ -74,5 +74,45 @@ class TestLastGood(unittest.TestCase):
         self.assertEqual(json.loads(target.read_text())["v"], "old-good")
 
 
+class TestHealthReport(unittest.TestCase):
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def test_overall_green_when_all_fresh(self):
+        r = ph.new_report(now=0)
+        ph.set_source(r, "bigin", "fresh", age_hours=0.5, detail="122 deals")
+        ph.set_source(r, "sheet", "fresh", age_hours=1.0)
+        ph.finalize(r)
+        self.assertEqual(r["overall"], "green")
+        self.assertEqual(r["sources"]["bigin"]["detail"], "122 deals")
+
+    def test_overall_degraded_when_any_stale(self):
+        r = ph.new_report(now=0)
+        ph.set_source(r, "bigin", "fresh")
+        ph.set_source(r, "sheet", "stale", detail="cached xlsx 2d old")
+        ph.finalize(r)
+        self.assertEqual(r["overall"], "degraded")
+
+    def test_overall_failed_when_any_failed(self):
+        r = ph.new_report(now=0)
+        ph.set_source(r, "sheet", "stale")
+        ph.set_source(r, "hdfc", "failed", detail="emails cache missing")
+        ph.finalize(r)
+        self.assertEqual(r["overall"], "failed")
+
+    def test_write_health_roundtrips(self):
+        r = ph.new_report(now=0)
+        ph.set_source(r, "bigin", "fresh")
+        ph.finalize(r)
+        out = self.tmp / "h.json"
+        ph.write_health(r, out)
+        back = json.loads(out.read_text())
+        self.assertEqual(back["overall"], "green")
+        self.assertIn("generated_at", back)
+
+
 if __name__ == "__main__":
     unittest.main()

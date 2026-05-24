@@ -90,3 +90,34 @@ def restore_last_good(path, last_good_dir=LAST_GOOD_DIR) -> bool:
     p.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(src, p)
     return True
+
+
+def new_report(now=None) -> dict:
+    ts = datetime.fromtimestamp(now, tz=timezone.utc) if now is not None else datetime.now(timezone.utc)
+    return {"generated_at": ts.isoformat(), "overall": "green", "sources": {}}
+
+
+def set_source(report, name, status, age_hours=None, detail="") -> dict:
+    report["sources"][name] = {
+        "status": status,
+        "age_hours": round(age_hours, 2) if isinstance(age_hours, (int, float)) else None,
+        "detail": detail,
+    }
+    return report
+
+
+def finalize(report) -> dict:
+    statuses = [s["status"] for s in report["sources"].values()]
+    if any(s == "failed" for s in statuses):
+        report["overall"] = "failed"
+    elif any(s == "stale" for s in statuses):
+        report["overall"] = "degraded"
+    else:
+        report["overall"] = "green"
+    return report
+
+
+def write_health(report, path=HEALTH_PATH) -> None:
+    out = Path(path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(report, indent=2, ensure_ascii=False))
