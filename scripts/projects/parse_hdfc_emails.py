@@ -305,7 +305,39 @@ def _is_admin_notice(subject: str, snippet: str) -> bool:
     return False
 
 
+def _is_internal_transfer(text: str) -> bool:
+    """True if the narration is an internal OD<->CA own-account fund transfer.
+
+    NARROW ON PURPOSE. Anchored on 'OD to CA' / 'CA to OD', or own name 'FIRST RAIN'
+    with a transfer phrase. NEVER triggers on a bare 'fund transfer' / 'FT-' alone —
+    clients pay by NEFT/RTGS fund transfer too and must stay classified as credits.
+    """
+    low = (text or "").lower()
+    if "od to ca" in low or "ca to od" in low:
+        return True
+    if "first rain" in low and ("fund trf" in low or "fund transfer" in low or "ft-" in low):
+        return True
+    return False
+
+
 def parse_hdfc_email(message: dict) -> dict | None:
+    """Parse a single Gmail message dict. Returns a transaction dict or None.
+
+    Thin wrapper over the template matcher: if the parsed credit/debit narration is
+    an internal OD<->CA own-account transfer, reclassify it so it is excluded from
+    Credits/Debits totals and never matched against client receivables/payables.
+    """
+    txn = _parse_hdfc_email_impl(message)
+    if txn and txn.get("direction") in ("credit", "debit"):
+        blob = f"{message.get('subject', '')} {message.get('snippet', '')}"
+        if _is_internal_transfer(blob):
+            txn["type"] = "INTERNAL_TRANSFER"
+            txn["direction"] = "internal_transfer"
+            txn["purpose"] = "Internal OD<->CA fund transfer (own account)"
+    return txn
+
+
+def _parse_hdfc_email_impl(message: dict) -> dict | None:
     """Parse a single Gmail message dict. Returns a transaction dict or None if non-txn."""
     sender = (message.get("sender") or "").lower()
     snippet = message.get("snippet") or ""
