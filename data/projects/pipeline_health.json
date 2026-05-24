@@ -1,0 +1,41 @@
+{
+  "generated_at": "2026-05-24T10:27:16.248550+00:00",
+  "overall": "failed",
+  "sources": {
+    "bigin": {
+      "status": "stale",
+      "age_hours": 0.0,
+      "detail": "input stale; [classify_pipeline] 122 deals classified · unknown region=41 · unknown industry=86"
+    },
+    "sheet": {
+      "status": "fresh",
+      "age_hours": 0.0,
+      "detail": "  ✓ Projects               10 rows · 0 warnings · sheet_projects.json"
+    },
+    "hdfc": {
+      "status": "stale",
+      "age_hours": 0.0,
+      "detail": "input stale; → data/projects/sheet_bank_transactions.json"
+    },
+    "hdfc_sms": {
+      "status": "fresh",
+      "age_hours": 0.0,
+      "detail": "    2026-04-28 16:01  ₹573,300  acc:0247  from:GENERAL INDUSTRIAL CONTROLS PRIVATE"
+    },
+    "momentum": {
+      "status": "fresh",
+      "age_hours": 0.0,
+      "detail": "[compute_momentum] mode=full · 21 snapshots · imminent=4 · slipping=6 · wins=0"
+    },
+    "drift": {
+      "status": "fresh",
+      "age_hours": 0.0,
+      "detail": "[drift_check] ALERT=0 · WARNING=0 · INFO=0"
+    },
+    "dashboard": {
+      "status": "failed",
+      "age_hours": null,
+      "detail": "undefined token 1x"
+    }
+  }
+}

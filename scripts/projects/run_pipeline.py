@@ -98,5 +98,74 @@ def run_pipeline(stages, root=VAULT_ROOT, now=None):
     return report
 
 
-if __name__ == "__main__":  # pragma: no cover - wired in Task 6
-    raise SystemExit("run_pipeline orchestration entrypoint added in Task 6")
+def dashboard_issues(html_path):
+    """Return a list of content problems in the rendered dashboard ([] = clean)."""
+    import re
+    p = Path(html_path)
+    if not ph.is_nonempty(p):
+        return ["dashboard.html missing or empty"]
+    html = p.read_text()
+    issues = []
+    if "{{CASHFLOW_JSON}}" in html:
+        issues.append("placeholder {{CASHFLOW_JSON}} not substituted")
+    n = html.count("NaN")
+    if n:
+        issues.append(f"NaN appears {n}x")
+    u = len(re.findall(r"\bundefined\b", html))
+    if u:
+        issues.append(f"undefined token {u}x")
+    return issues
+
+
+def build_stages():
+    """The real daily pipeline stages, in dependency order."""
+    return [
+        Stage("classify", "classify_pipeline.py",
+              "data/projects/bigin_pipeline_classified.json", "bigin",
+              input_path="data/projects/bigin_pipeline_raw.json", input_max_age=12.0,
+              input_required_keys=("deals", "meta")),
+        Stage("sheet", "read_cashflow_xlsx.py",
+              "data/projects/sheet_cash_position.json", "sheet",
+              input_path="data/projects/_cache/cashflow_master.xlsx", input_max_age=24.0),
+        Stage("hdfc_email", "parse_hdfc_emails.py",
+              "data/projects/sheet_bank_transactions.json", "hdfc",
+              args=["data/projects/_cache/hdfc_emails.json"],
+              input_path="data/projects/_cache/hdfc_emails.json", input_max_age=12.0,
+              input_required_keys=("threads",)),
+        Stage("hdfc_sms", "parse_hdfc_imessages.py",
+              "data/projects/_cache/hdfc_imessages.json", "hdfc_sms", snapshot=False),
+        Stage("momentum", "compute_momentum.py",
+              "data/projects/momentum.json", "momentum"),
+        Stage("drift", "drift_check.py",
+              "data/projects/drift_report.json", "drift"),
+        Stage("dashboard", "build_cashflow_json.py",
+              "dashboards/dashboard.html", "dashboard", args=["--from-files"]),
+    ]
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="First Rain daily pipeline orchestrator")
+    parser.add_argument("--require-fresh", action="store_true",
+                        help="exit 1 if overall status is not green (manual runs)")
+    args = parser.parse_args(argv)
+
+    report = run_pipeline(build_stages(), root=VAULT_ROOT)
+
+    # Post-render dashboard content validation downgrades the dashboard source.
+    issues = dashboard_issues(VAULT_ROOT / "dashboards" / "dashboard.html")
+    if issues:
+        ph.set_source(report, "dashboard", "failed", detail="; ".join(issues))
+        ph.finalize(report)
+        ph.write_health(report, VAULT_ROOT / "data" / "projects" / "pipeline_health.json")
+
+    print(f"pipeline overall={report['overall']}")
+    for name, s in report["sources"].items():
+        print(f"  {name}: {s['status']} ({s['detail']})")
+
+    if args.require_fresh and report["overall"] != "green":
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

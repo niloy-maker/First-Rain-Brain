@@ -96,5 +96,26 @@ class TestRunPipeline(unittest.TestCase):
         self.assertEqual(report["sources"]["bigin"]["status"], "stale")
 
 
+class TestDashboardValidation(unittest.TestCase):
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+
+    def test_clean_html_has_no_issues(self):
+        h = self.tmp / "dashboard.html"
+        h.write_text("<html><body>cash 12.5L</body></html>")
+        self.assertEqual(rp.dashboard_issues(h), [])
+
+    def test_detects_placeholder_nan_undefined(self):
+        h = self.tmp / "dashboard.html"
+        h.write_text("<html>{{CASHFLOW_JSON}} NaN value undefined</html>")
+        issues = rp.dashboard_issues(h)
+        self.assertEqual(len(issues), 3)
+        self.assertTrue(any("placeholder" in i for i in issues))
+
+    def test_missing_file_is_an_issue(self):
+        issues = rp.dashboard_issues(self.tmp / "gone.html")
+        self.assertEqual(len(issues), 1)
+
+
 if __name__ == "__main__":
     unittest.main()
