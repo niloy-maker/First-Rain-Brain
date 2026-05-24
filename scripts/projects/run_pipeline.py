@@ -62,5 +62,41 @@ def run_stage(stage, root=VAULT_ROOT, timeout=STAGE_TIMEOUT):
     return True, _last_line(proc.stdout) or "ok"
 
 
+def _input_status(stage, root, now):
+    """Freshness of the stage's declared raw input (if any). 'fresh' when no input declared."""
+    if not stage.input_path:
+        return "fresh"
+    path = Path(root) / stage.input_path
+    if stage.input_required_keys:
+        validator = lambda p: ph.is_valid_json(p, required_keys=stage.input_required_keys)
+    else:
+        validator = ph.is_nonempty
+    return ph.freshness(path, stage.input_max_age, now=now, validator=validator)
+
+
+def run_pipeline(stages, root=VAULT_ROOT, now=None):
+    """Run all stages, never abort, write pipeline_health.json, return the report."""
+    root = Path(root)
+    report = ph.new_report(now=now)
+    for stage in stages:
+        in_status = _input_status(stage, root, now)
+        ok, detail = run_stage(stage, root=root)
+        out_path = root / stage.output
+        if ok:
+            stage_status = "fresh"
+        elif ph.is_nonempty(out_path):
+            stage_status = "stale"   # failed but last-good restored a usable artifact
+        else:
+            stage_status = "failed"
+        status = ph.worst(in_status, stage_status)
+        age = ph.file_age_hours(out_path, now=now)
+        if in_status != "fresh" and stage_status == "fresh":
+            detail = f"input {in_status}; {detail}".strip()
+        ph.set_source(report, stage.source, status, age_hours=age, detail=detail)
+    ph.finalize(report)
+    ph.write_health(report, root / "data" / "projects" / "pipeline_health.json")
+    return report
+
+
 if __name__ == "__main__":  # pragma: no cover - wired in Task 6
     raise SystemExit("run_pipeline orchestration entrypoint added in Task 6")

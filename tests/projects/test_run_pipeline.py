@@ -50,5 +50,51 @@ class TestRunStage(unittest.TestCase):
         self.assertEqual(json.loads(good.read_text())["v"], "old-good")
 
 
+import time, os
+
+
+class TestRunPipeline(unittest.TestCase):
+    def setUp(self):
+        self.root = _fake_root(Path(tempfile.mkdtemp()))
+
+    def _ok_script(self, name, out_rel):
+        _write_stage_script(self.root, name, f"""
+            import json, pathlib
+            out = pathlib.Path({out_rel!r})
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(json.dumps({{"ok": True}}))
+            print("done")
+        """)
+
+    def test_one_failure_does_not_stop_others(self):
+        self._ok_script("s1.py", "data/projects/a.json")
+        _write_stage_script(self.root, "s2.py", "import sys; sys.exit(2)")
+        self._ok_script("s3.py", "data/projects/c.json")
+        stages = [
+            rp.Stage("s1", "s1.py", "data/projects/a.json", "bigin"),
+            rp.Stage("s2", "s2.py", "data/projects/b.json", "sheet"),
+            rp.Stage("s3", "s3.py", "data/projects/c.json", "drift"),
+        ]
+        report = rp.run_pipeline(stages, root=self.root, now=time.time())
+        self.assertEqual(report["sources"]["bigin"]["status"], "fresh")
+        self.assertEqual(report["sources"]["drift"]["status"], "fresh")  # ran despite s2 failing
+        self.assertEqual(report["sources"]["sheet"]["status"], "failed")
+        self.assertEqual(report["overall"], "failed")
+        self.assertTrue((self.root / "data/projects/pipeline_health.json").exists())
+
+    def test_stale_input_downgrades_fresh_stage(self):
+        self._ok_script("s.py", "data/projects/out.json")
+        inp = self.root / "data/projects/_cache/raw.json"
+        inp.parent.mkdir(parents=True, exist_ok=True)
+        inp.write_text(json.dumps({"deals": [], "meta": {}}))
+        old = time.time() - 48 * 3600
+        os.utime(inp, (old, old))
+        stage = rp.Stage("s", "s.py", "data/projects/out.json", "bigin",
+                         input_path="data/projects/_cache/raw.json", input_max_age=24.0,
+                         input_required_keys=("deals", "meta"))
+        report = rp.run_pipeline([stage], root=self.root, now=time.time())
+        self.assertEqual(report["sources"]["bigin"]["status"], "stale")
+
+
 if __name__ == "__main__":
     unittest.main()
