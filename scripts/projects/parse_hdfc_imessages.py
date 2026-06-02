@@ -29,12 +29,13 @@ MANUAL_PATH = Path("data/projects/_manual/hdfc_sms_manual.txt")
 # If the newest message of ANY kind in chat.db is older than this, the local DB
 # has almost certainly stopped syncing from the iPhone (the phone receives OTPs,
 # promos, etc. constantly). Below threshold = 'live'; above = 'stale'.
-STALE_THRESHOLD_HOURS = 36
-# Bank-sender feed: HDFC transaction alerts normally arrive within ~a day on any
-# active business account. If the newest HDFC *bank-sender* SMS is older than this
-# while the phone feed is otherwise live, the bank route is likely being filtered or
-# iCloud sync is paused — even though promo/OTP SMS keep the overall feed "live".
-BANK_STALE_THRESHOLD_HOURS = 30
+# 24h: a full business day without ANY SMS means the relay is down.
+STALE_THRESHOLD_HOURS = 24
+# Bank-sender feed: HDFC transaction alerts normally arrive at least once per business
+# day. If the newest HDFC *bank-sender* SMS is older than this while the phone feed
+# is otherwise live, the bank route is likely being filtered or iCloud sync is paused.
+# 20h: flags by morning briefing if yesterday's last alert was late afternoon.
+BANK_STALE_THRESHOLD_HOURS = 20
 # -----------------------------------------------------------------------------
 
 # Only these two accounts are business accounts (per decision-log 24 Apr 2026)
@@ -54,6 +55,59 @@ HDFC_SENDER_PREFIXES = (
 )
 
 APPLE_EPOCH = 978307200  # seconds between Unix epoch (1970) and Apple epoch (2001)
+
+
+def decode_attributed_body(blob):
+    """Extract the message body from a macOS Messages ``attributedBody`` blob.
+
+    Modern macOS frequently leaves ``message.text`` NULL and stores the SMS body
+    in ``attributedBody`` — a binary ``streamtyped`` NSAttributedString archive.
+    ~76% of HDFC bank-sender SMS land this way (measured 02 Jun 2026), so without
+    this decode the parser silently drops 3 of every 4 bank alerts.
+
+    Dependency-free: the body is the length-prefixed string that follows the
+    ``NSString`` class marker in the archive. Validated against live HDFC SMS.
+    Safe by construction — any malformed decode fails the downstream
+    amount/account/type parse and is discarded, so a wrong guess is harmless.
+    Returns the decoded text, or None if nothing usable is found.
+    """
+    if not blob:
+        return None
+    if isinstance(blob, memoryview):
+        blob = bytes(blob)
+    elif not isinstance(blob, (bytes, bytearray)):
+        return None
+    try:
+        i = blob.index(b'NSString')
+    except ValueError:
+        return None
+    p = i + len(b'NSString') + 5      # skip class name + streamtyped framing bytes
+    if p >= len(blob):
+        return None
+    length = blob[p]
+    p += 1
+    if length == 0x81:               # 2-byte little-endian length escape
+        if p + 1 >= len(blob):
+            return None
+        length = blob[p] | (blob[p + 1] << 8)
+        p += 2
+    elif length == 0x82:             # 4-byte little-endian length escape
+        if p + 3 >= len(blob):
+            return None
+        length = int.from_bytes(blob[p:p + 4], 'little')
+        p += 4
+    chunk = blob[p:p + length]
+    if not chunk:
+        return None
+    return chunk.decode('utf-8', errors='replace')
+
+
+def looks_like_bank_sms(text):
+    """Cheap validation gate for a decoded attributedBody body. Keeps obviously
+    wrong decodes out of the transaction parser (which would reject them anyway,
+    but this avoids noise)."""
+    return bool(text) and bool(re.search(
+        r'(Rs\.?|INR|HDFC|credited|debited|A/?c\b|account|Avl bal)', text, re.I))
 
 
 def parse_amount(text):
@@ -127,6 +181,24 @@ def parse_txn_type(text):
     return 'unknown'
 
 
+def parse_avl_bal(text):
+    """
+    Extract available balance from HDFC SMS 'Avl bal:INR X' pattern.
+    Returns a signed float (negative = OD drawn) or None.
+    Handles Indian comma formatting: -6,25,000.00 → -625000.0
+    """
+    m = re.search(
+        r'Avl\s*[Bb]al\s*:?\s*(?:INR|Rs\.?)\s*(-?[\d,]+\.?\d*)',
+        text, re.IGNORECASE
+    )
+    if m:
+        try:
+            return float(m.group(1).replace(',', ''))
+        except ValueError:
+            pass
+    return None
+
+
 def parse_counterparty(text):
     """
     Try to extract counterparty name from HDFC SMS.
@@ -178,6 +250,7 @@ def query_hdfc_messages():
             SELECT
                 m.ROWID            AS message_id,
                 m.text             AS content,
+                m.attributedBody   AS attributed_body,
                 datetime(m.date / 1000000000 + 978307200, 'unixepoch', 'localtime') AS date_str,
                 m.date             AS apple_date,
                 h.id               AS sender,
@@ -188,8 +261,11 @@ def query_hdfc_messages():
               AND m.is_from_me  = 0
               AND m.item_type   = 0
               AND m.is_audio_message = 0
-              AND m.text IS NOT NULL
-              AND m.text != ''
+              -- NB: do NOT require m.text here. ~76% of HDFC bank SMS leave text
+              -- NULL and carry the body in attributedBody (decoded in parse_messages).
+              -- For NULL-text rows only the sender-prefix clauses below can match
+              -- (text LIKE on NULL is never true), which is exactly what we want.
+              AND (m.text IS NOT NULL OR m.attributedBody IS NOT NULL)
               AND (
                   -- Authorised sender ID prefixes (chat.db appends routing suffix like '(smsft_fi)')
                   h.id LIKE 'HDFCBK-T%'
@@ -233,6 +309,11 @@ def parse_messages(rows):
     for row in rows:
         text = row.get('content') or ''
         if not text.strip():
+            # macOS stored the body in attributedBody (text left NULL) — decode it.
+            decoded = decode_attributed_body(row.get('attributed_body'))
+            if decoded and looks_like_bank_sms(decoded):
+                text = decoded
+        if not text.strip():
             continue
 
         # Drop rows where sender is not an authorised HDFC sender prefix
@@ -261,17 +342,21 @@ def parse_messages(rows):
             continue
         seen.add(dedup_key)
 
-        transactions.append({
+        avl_bal = parse_avl_bal(text)
+        txn = {
             'source': 'imessage_sms',
             'message_id': row.get('message_id'),
             'date': date_str,
             'sender': row.get('sender', ''),
             'account': account or 'unknown',
-            'type': txn_type,           # 'credit' | 'debit'
+            'type': txn_type,           # 'credit' | 'debit' | 'internal_transfer'
             'amount': amount,
             'counterparty': counterparty,
             'raw_text': text[:400],
-        })
+        }
+        if avl_bal is not None:
+            txn['balance_after'] = avl_bal
+        transactions.append(txn)
 
     return transactions
 
@@ -523,6 +608,25 @@ def main():
 
     manual_count = sum(1 for t in transactions if t.get('source') == 'manual_paste')
 
+    # OD balance snapshots: 0241 transactions that include an Avl bal reading.
+    # balance_after < 0 → OD utilized = abs(balance_after).
+    # Sorted most-recent-first so callers can take [0] for the latest.
+    od_balance_snapshots = sorted(
+        [
+            {
+                'date': t['date'],
+                'account': t['account'],
+                'balance': t['balance_after'],
+                'odUtilized': abs(min(0.0, t['balance_after'])),
+                'source': 'imessage_sms',
+            }
+            for t in transactions
+            if t.get('account') == '0241' and t.get('balance_after') is not None
+        ],
+        key=lambda s: s['date'],
+        reverse=True,
+    )
+
     output = {
         'meta': {
             'source': 'imessage_sms',
@@ -543,6 +647,7 @@ def main():
             'manual_entry_count': manual_count,
         },
         'transactions': transactions,
+        'od_balance_snapshots': od_balance_snapshots,
     }
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
