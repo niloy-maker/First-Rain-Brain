@@ -20,15 +20,16 @@
 
 ## Step 1 — Fetch Bigin pipeline (MCP)
 
-Use `mcp__dfb7f7c2-658a-476e-986c-8a792b7b8462__Bigin_getRecordsUsingCoqlQuery` (the Bigin-specific MCP — NOT the Zoho CRM one). First try with `Region`:
+Use `mcp__bigin__Bigin_getRecordsUsingCoqlQuery` (the Bigin-specific MCP — NOT the Zoho CRM one). First try with `Region`:
 
 ```sql
 SELECT id, Deal_Name, Account_Name.id, Account_Name.Account_Name, Amount, Closing_Date, Stage, Pipeline, Probability, Created_Time, Modified_Time, Region, Owner.id FROM Pipelines WHERE Pipeline = 'Sales Pipeline 26-27'
 ```
 
 **Known quirks:**
+- **Result exceeds the tool-output token limit (expected — ~125 deals ≈ 53k chars).** The COQL result will NOT fit in main context; the MCP auto-saves it to a `tool-results/…txt` file and returns the path. Do NOT try to read it inline. Either (a) dispatch the whole of Step 1 (COQL → Accounts industry query → normalize → write `bigin_pipeline_raw.json`) to a subagent with the Agent tool, or (b) process the saved file with `jq`/`python` directly. The subagent path is preferred — it keeps the 125-deal dump out of the orchestrator context. The `WHERE id IN (...)` Accounts query is capped at ~50 ids and may need quoting around numeric ids; split into batches of ≤50 if it errors.
 - `Owner.name` errors in COQL — always omit it. Use `Owner.id` only.
-- The COQL `WHERE Pipeline = 'Sales Pipeline 26-27'` filter may return all pipeline records if the pipeline name doesn't match exactly. In that case, use `mcp__dfb7f7c2-658a-476e-986c-8a792b7b8462__Bigin_getRecords` with `module_api_name=Pipelines`, `sort_by=Created_Time`, `sort_order=desc`, `per_page=200`, and filter in Python to `Created_Time >= '2026-03-01'` excluding stages `{Projections 25-26, Closed Won 25-26, Closed Won 24-25, Closed Won 23-24, Closed Won 22-23}`.
+- The COQL `WHERE Pipeline = 'Sales Pipeline 26-27'` filter may return all pipeline records if the pipeline name doesn't match exactly. In that case, use `mcp__bigin__Bigin_getRecords` with `module_api_name=Pipelines`, `sort_by=Created_Time`, `sort_order=desc`, `per_page=200`, and filter in Python to `Created_Time >= '2026-03-01'` excluding stages `{Projections 25-26, Closed Won 25-26, Closed Won 24-25, Closed Won 23-24, Closed Won 22-23}`.
 - If `Region` errors, retry without it — `classify_pipeline.py` applies regex fallback.
 
 Then collect unique account_ids from the results and query Accounts for Industry:
@@ -102,7 +103,7 @@ Applies region + industry regex fallback for any deal with null values from Bigi
 
 **Source of truth: Google Sheet, NOT desktop xlsx.** Sonal edits the Sheet; we never touch her desktop file. The xlsx on Niloy's Desktop is only the schema template we built in `scripts/projects/add_projects_tab_to_xlsx.py` for reference.
 
-Call `mcp__a9a30244-5e56-4840-804f-19f9622e0bf6__download_file_content` with:
+Call `mcp__google-drive__download_file_content` with:
 - `fileId`: `1kBYFQfER46gAqcnCA2jaGkjG_h4iEHj4c6EDVVvREKA`
 - `mimeType`: `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`
 
@@ -155,7 +156,7 @@ If exit 3: stop the pipeline, post to Telegram chat `8770250893` with the migrat
 
 ## Step 5 — Fetch HDFC bank transaction emails (Gmail MCP)
 
-Call `mcp__211f86be-24d9-4ad8-8c8e-2454fa7eff51__search_threads` with:
+Call `mcp__gmail__search_threads` with:
 - `query`: `label:finance-hdfc-txn newer_than:60d`
 - `pageSize`: `100`
 
@@ -222,7 +223,7 @@ If this fails with a missing-file error, check which step didn't write its outpu
 
 Validation checklist (required before declaring success):
 - [ ] `dashboards/dashboard.html` exists and contains `{{CASHFLOW_JSON}}` substituted (not the literal placeholder)
-- [ ] 0 instances of `NaN` or `undefined` in the rendered HTML
+- [ ] 0 instances of `NaN` in the rendered HTML, and 0 *data-injected* `undefined`. NOTE: the template's own JS contains exactly one legitimate `actualPct !== undefined` guard — that single match is expected and is NOT a failure. Check with: `grep -oE '.{0,30}undefined.{0,30}' dashboards/dashboard.html` — if the only hit is the `!== undefined` guard, validation passes. Any `undefined` appearing inside the injected JSON data block IS a failure.
 - [ ] `drift_report.json` has `counts.ALERT` and `counts.WARNING` keys (not missing keys)
 - [ ] `momentum.json` has `mode` key (one of: snapshot_only / partial / full)
 - [ ] `sheet_bank_transactions.json` `meta.unparseableCount` is 0
@@ -241,8 +242,14 @@ cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain && open dashboards/dashboa
 
 2. **Publish to Cloudflare Pages for Sonal + remote access**:
 ```bash
-cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain && cp dashboards/dashboard.html dashboards/index.html && wrangler pages deploy dashboards --project-name=firstrain-dashboard --branch=main --commit-dirty=true
+cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain && bash scripts/deploy_dashboard.sh
 ```
+
+**This is the ONLY way to deploy.** `scripts/deploy_dashboard.sh` is the single source of truth — the interactive `/finance`, the 9:08 AM `first-rain-monday-sync` cron, and the 10:05 AM `first-rain-heal-check` all call this exact line. Never inline a raw `wrangler pages deploy` command anywhere: that is what caused the May–Jun 2026 daily-stale-dashboard bug (the cron copies were missing `source .secrets/cloudflare.env`, so headless deploys silently failed while the interactive copy worked).
+
+The script prints one machine-parseable final line — `DEPLOY_RESULT=OK url=... canonical=401` or `DEPLOY_RESULT=FAIL reason=... detail="..."` — and writes the same to `data/projects/deploy_status.json`. **Report deploy status from that line / that file. Never narrate a "headless gap."**
+
+**Auth:** the script sources `CLOUDFLARE_API_TOKEN` from `.secrets/cloudflare.env` (gitignored, chmod 600) — a persistent API token (Account → Cloudflare Pages → Edit, no expiry), set up 01 Jun 2026 to replace the OAuth login that kept expiring. **Do NOT rely on `wrangler login` OAuth** — it breaks the cron. If `DEPLOY_RESULT=FAIL reason=no_token`, the token was revoked or the file is missing — recreate at https://dash.cloudflare.com/profile/api-tokens and rewrite `.secrets/cloudflare.env` as `export CLOUDFLARE_API_TOKEN=...`.
 
 The Cloudflare URL is `https://firstrain-dashboard.pages.dev` — gated by HTTP Basic Auth via `dashboards/_worker.js`. Password is in the Pages env var `DASHBOARD_PASSWORD` (set in Cloudflare dashboard → Pages → firstrain-dashboard → Settings → Variables and Secrets, encrypted). Sonal has the password.
 
@@ -252,7 +259,41 @@ Do both **after** validation. Never publish a broken dashboard.
 
 ---
 
-## Step 12 — Report
+## Step 12 — Emit daily briefing (Telegram + Gmail Draft)
+
+**Always run this step — not conditional on alerts.**
+
+All three outputs must come from the same `cashflow.json["FR"]["telegramBriefing"]` string so they are guaranteed consistent. Never reconstruct the briefing text from scratch here — read the pre-built string from the JSON.
+
+```python
+import json
+d = json.load(open("data/projects/cashflow.json"))
+briefing_text = d["FR"]["telegramBriefing"]
+today_str = d["META"]["today"]          # e.g. "25 May 2026"
+```
+
+**12a — Telegram (always send)**
+
+Send to chat_id `8770250893`:
+```
+{briefing_text}
+```
+Use `mcp__plugin_telegram_telegram__reply` with `chat_id: "8770250893"`.
+
+**12b — Gmail Draft (always create)**
+
+Call `mcp__gmail__create_draft` with:
+- `to`: `niloy@firstrain.co.in`
+- `subject`: `First Rain Daily · {today_str}`
+- `body`: `{briefing_text}`
+
+This draft stays in Drafts until Niloy sends or discards — it is the paper trail for the day's cash position.
+
+**Consistency rule**: Dashboard HTML, Telegram message, and Gmail Draft all carry identical content because all three read from `cashflow.json["FR"]["telegramBriefing"]`. If you ever need to regenerate just the HTML (e.g. after a template fix), re-run Step 9+11 AND re-emit Steps 12a+12b so all three stay in sync.
+
+---
+
+## Step 13 — Report
 
 Print summary:
 ```
@@ -263,9 +304,8 @@ HDFC: [N] txns over 60d  Credits ₹X.XL  Debits ₹Y.YL  Net ₹Z.ZL  LatestBal
 Drift: [N] ALERT · [N] WARNING · [N] INFO
 Momentum: [mode] ([N] snapshots)
 Dashboard: dashboards/dashboard.html ✓ (opened locally) · https://firstrain-dashboard.pages.dev ✓ (published)
+Telegram: sent ✓ · Gmail Draft: created ✓
 ```
-
-If drift ALERT count > 0 OR `operatingCash` below floor: send Telegram message to chat_id `8770250893` listing each issue (use `mcp__plugin_telegram_telegram__reply`).
 
 ---
 
@@ -280,6 +320,8 @@ If drift ALERT count > 0 OR `operatingCash` below floor: send Telegram message t
 | `parse_hdfc_emails.py` `unparseableCount > 0` | HDFC changed an alert template. Inspect warnings, patch a regex, re-run. Do not skip. |
 | `build_cashflow_json.py --from-files` fails | Check which JSON file is missing. Re-run from that step. |
 | Template missing `{{CASHFLOW_JSON}}` | Report: "dashboard-template.html missing substitution marker — re-check dashboards/ folder." |
+| Telegram send fails (Step 12a) | Log the error; still create Gmail Draft. Never skip both. |
+| Gmail Draft creation fails (Step 12b) | Log the error; verify Telegram was sent. Never skip both. |
 
 ---
 
