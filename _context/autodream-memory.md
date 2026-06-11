@@ -6,7 +6,7 @@
 
 ## Verified client facts
 - GIC India (gicindia.com): New target account. Electrical automation sector. GSTIN 27AAACG6241J1ZM, MIDC Bhosari Pune. Multi-show commitment: ELAsia Bangalore 36sqm + Automation India Mumbai 46sqm + Elecrama 2027 Gr. Noida 110sqm. Bundle pricing: ₹34.83L at 36.8% CM (5% loyalty). ELAsia Closed Won ₹6.50L SP (EST-26-27-03, ₹7.67L incl. IGST). Exec: Shilpa. T01 PI Sent ✓ (17 Apr). T02 advance pending. Zoho contact created 15 Apr 2026.
-- Secure Meters: 52.5% of FY27 pipeline. Ceiling 25%. Live breach.
+- Secure Meters: 41.5% of FY27 active pipeline (₹287.24L / ₹692.44L, 28 Apr). Ceiling 25%. Live breach.
   MEE ₹18.95L on hold. RenewX ₹9.4L awaiting PO (floor ₹7.24L).
   Utility Week: GH Display selected, GH10918/3 £16,319.75. PO required first.
   Utility Week: Doha Protocol — 3 FAIL (supervisor, GH paperwork, escalation contact). PO deadline 14 April.
@@ -18,16 +18,20 @@
 - Messung: Smart Manufacturing Expo Pune brief received — ₹8L SP, 9 sqm, margin PASS. 5 brief gaps outstanding.
 
 ## Verified financial facts
-- Monthly burn FY27: ₹25,50,000 | Operating cash: ₹18,74,960 (CRITICAL — 0.7 months) [updated 16 Apr from Sonal's sheet]
-- Treasury: ₹1,39,97,287 (real buffer) | OD Facility: ₹1,21,00,000
-- Total receivables: ₹24,44,933 (per Sonal's sheet 16 Apr)
+- Monthly burn FY27: ₹25,50,000 | Operating cash: ₹12,58,919 (CRITICAL — 0.5 months) [updated 05 May from Sonal's sheet]
+- Treasury: ₹1,39,95,068 | OD Facility: ₹1,21,00,000 | OD Utilized: ₹0
+- Cash floor: ₹76,50,000. Current cash is 16% of floor — escalation level.
 - Carl Bechem ₹1,16,800 received 15 Apr — BME Conclave post-show. HDFC XX0247 NEFT AXISP00788721946.
 
 ## Verified project facts
-- Bechem BME Delhi 8–9 Apr: Delivered. T22 ✓. T23 dismantling + T27–T31 wrap pending. Exec: Chinmay.
-- Labguard Analytica 22–24 Apr: Active. Exec: Shilpa. Balance ₹1.36L. T11 ✓ — 7 days to show. T21 NOT ticked.
-- Mosil IDMC Lucknow 23–24 Apr: Active. Exec: Dhruv. T11 ✓ — 8 days to show. T21 NOT ticked.
-- Messung Smart Home 28–30 Apr: Active. Exec: Shilpa. T12 ✓ — 13 days to show. T21 NOT ticked.
+- Bechem BME Delhi 8–9 Apr: FULLY CLOSED. T27–T31 all ✓. [updated 05 May]
+- Labguard Analytica 22–24 Apr: Show complete. T22/T23 ✓. T27 final invoice NOT sent. [updated 05 May]
+- Mosil IDMC Lucknow 23–24 Apr: Show complete. T22/T23 ✓. T27 final invoice NOT sent. [updated 05 May]
+- Messung Smart Home 28–30 Apr: Show complete. T22/T23 ✓. T27 final invoice NOT sent. [updated 05 May]
+- Secure RenewX Chennai 27 Apr: Show complete. T22/T23 ✓. T27 final invoice NOT sent. [updated 05 May]
+- Amaara Vitafoods Europe Barcelona 5–7 May: SHOW ON NOW. T20/T21 ✓. T22/T23 after close. ₹14L balance to chase.
+- GIC ELAsia Bangalore 14–17 May: T15 ✓. T02 advance STILL NOT received. 9 days to show.
+- Secure Utility Week Birmingham 19 May: Closed Won ₹47.95L. T01–T06 NOT set up in Notion. 14 days.
 - Secure RenewX 27 Apr: Active. Exec: Chinmay. T06 ✓ — T02 advance NOT received. 12 days to show.
 - Amaara Vitafoods Europe ~5 May: Active. Exec: Shilpa. T11 ✓. T08 still pending. ₹14L outstanding — required before on-site.
 - GIC ELAsia Bangalore 14–17 May: Active (Closed Won 15 Apr). Exec: Shilpa. ₹6.50L SP. T01 PI Sent ✓ (17 Apr). T02 advance pending.
@@ -101,6 +105,33 @@
 - PCM Railone brief: RailTrans 2026 Pragati Maidan, possession 26 Apr, 36sqm Bold & Graphic. Status New, no exec. URGENT.
 - bypassPermissions set: .claude/settings.json defaultMode = bypassPermissions for this project (21 Apr).
 
+## Verified facts (28 Apr 2026)
+- Operating cash: ₹35,86,209 (Sonal, 24 Apr, account 0247 — unchanged). BELOW ₹76.5L floor. Breach still active. Treasury: ₹1,39,97,249. OD utilized: ₹0.
+- Secure concentration: 41.5% (₹287.24L Secure / ₹692.44L total active pipeline — 28 Apr Bigin pull, 96 deals). Still above 25% ceiling. Was 52.5% in CLAUDE.md — updated.
+- Bigin pipeline: 96 deals (was 90 on 22 Apr). 8 Closed Won, 17 Existing Confirmed, 8 Design, 2 Price Quote, 22 New Leads, 8 BBANNTI Qualified, 27 Not Qualified, 1 Closed Lost.
+- 7 drift ALERTs: closed-won FY27 deals not in Sonal's Projects sheet: Carl Bechem (56 biz days), Mosil IDMC (31), Secure RenewX (25), Messung SHE26 (19), Labguard Anacon26 (19), Amaara Vitafoods (19), GIC ELAsia (14). Sonal flagged via Telegram.
+- Labguard Anacon26 (22–24 Apr): T22 ✓ + T23 ✓ — FULLY WRAPPED. Post-show invoicing pending.
+- Secure RenewX (27 Apr): T20 ✓, T21 ✓, T22 ✓, T23 ✗ — installation complete, dismantling pics pending.
+- Messung SHE26 (28–30 Apr): T21 ✓ — installation started. Show ONGOING today. T22 pending.
+- Secure Utility Week Birmingham (19 May): T01 ✓, T02 ✓ — advance received. T03–T06 to set up in Notion (CK).
+- Mosil IDMC26 (ended 23 Apr): T20 ✗, T21 ✗, T22 ✗, T23 ✗ — 5 days post-show, unresolved. Dhruv has not updated.
+- GIC ELAsia (14–17 May): T02 ✗ — advance still not received. Show in 16 days.
+- HDFC 0247/0241 alerts: STILL NOT ENABLED — 3rd session flagged. Zero business bank data in dashboard.
+- Production tracker last pulled: 27 Apr 2026 (28 Apr session).
+
+## Verified facts (24 Apr 2026)
+- Operating cash: ₹35,86,209 (Sonal, 24 Apr, "Live Data", account 0247). BELOW ₹76.5L floor. Cash breach active. Treasury: ₹1,39,97,249. OD limit: ₹1,21,00,000, OD utilized: ₹0.
+- HDFC parser: now filters to ALLOWED_ACCOUNTS {"0247","0241"} only. 63 personal-account transactions filtered out. Zero business transactions in current cache — HDFC alerts for both accounts not yet enabled in NetBanking.
+- Receivables hit detection spec saved to memory (pending_hdfc_receivables_check.md): build _validate_bank_vs_sheet() in build_cashflow_json.py once 0247 alerts are live.
+- Secure RenewX 27 Apr: T07–T18 ALL ticked (24 Apr). Last milestone: T18 Graphics Check. Show in 3 days. T20/T21 on-site pending.
+- GIC ELAsia: T03 Costing Drawing ✓ (24 Apr). T02 advance still NOT received. Show 14–17 May.
+- Messung SHE26: T13 ✓ + T18 ✓ (24 Apr). T22 Handover Pics already ✓. Show 28–30 Apr.
+- Labguard Anacon26: T18 ✓ (24 Apr). T22 still ✗ — show last day today (24 Apr). T22/T23 pics needed today.
+- Mosil IDMC26: Show ENDED (23–24 Apr). T21 still ✗. Chase Dhruv for T21/T22/T23 urgently.
+- Utility Week Birmingham ₹47.95L: in active-projects.md + bigin_pipeline_raw.json. Drift: INFO (recently closed, awaiting Sonal Projects sheet row). Will escalate to ALERT next /finance if not added.
+- EM Power Munich: amount confirmed ₹32.0L (was TBC). Requirement gathering. Closing 5 May.
+- Production tracker last pulled: 24 Apr 2026.
+
 ## Verified facts (23 Apr 2026)
 - FirstRain-Cashflow-Master 7-tab audit complete. Dead columns deleted. Invoices_Raised tab deleted. Bigin_Deal_ID removed from Projects. Vendor outflow now auto-computed from Projects CP. CONFIG_MONTHLY_BURN_YYYY-MM pattern live in Notes parser.
 - /close skill 0C: no longer fetches CSV. Reads data/projects/sheet_cash_position.json from last /finance run.
@@ -121,3 +152,12 @@
 - Mosil IDMC Lucknow: Show TOMORROW (23 Apr). T21 NOT ticked. Chase Dhruv urgently.
 - Sonal finance sheet CSV URL returning 404 — publish link expired. Sonal needs to re-publish from Google Sheets.
 - Notion production tracker row-level data: 404 on view fetch — production status held at 21 Apr 2026.
+
+## Verified outbound facts [added 11 Jun 2026]
+- Bauma CONEXPO India 2026: 28 Sep–1 Oct, India Expo Centre Greater Noida (Bigin deal names confirm venue; Intel wiki "BIEC Bengaluru" was wrong inference). Mosil 18sqm ₹3.78L Existing Confirmed; Molygraph 39sqm ₹5.95L Closed Won at 2024 edition. Contact both: Dennis Mathew.
+- Bauma shortlist (Niloy, 10 accounts): JCB, SCHWING Stetter, Escorts Kubota, Tata Hitachi, Volvo CE, Liebherr, ACE, SANY, Doosan Bobcat, Putzmeister. NONE in Bigin. JCB/Liebherr/Putzmeister NOT in 2024 exhibitor scrape — verify 2026 participation.
+- Confirmed still in seat (Niloy, 11 Jun): Tarun Singhal = Chief Marketing Manager ACE (tarun.singhal@ace-cranes.com, +91 9560144199); Baskar Babu @ SCHWING Stetter (baskarbabu.s@schwingstetterindia.com); P Sathya @ Caterpillar (sathya_p@cat.com). Reconnect sequences drafted for all 3 in _outputs/.
+- Unworked warm leads from 2019 Gmail thread: Abhishek Phadnis (Hyundai CE Marcom Mgr, abhishek.phadnis@hyundaiindia.net, 9607984373 — internal referral); Apsara Bandopadhyay (Volvo CE — replied "keep in mind"); Rajan Arya (SANY — phone call happened).
+- RR Kabel (= RR Global): LIVE Bigin deal "ND - Deal for Rajesh Jain", New Leads & Enquiries, Smarter E Europe context — NOT a cold ABM target.
+- Utkarsh India: 3 Bigin deals all Not Qualified (Feb 2026), contact Anindya Sarkar via referral — re-engage, not cold.
+- No Bauma 2024 outdoor case study exists. Molygraph 2024 build was indoor hall. Never claim outdoor case studies in outreach.
