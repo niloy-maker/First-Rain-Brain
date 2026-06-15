@@ -62,6 +62,11 @@ NON_TXN_SUBJECT_FRAGMENTS = (
     "planned system maintenance",
     "scheduled downtime",
     "hdfc bank calls start",
+    # Outward cross-border remittance confirmation from TradeQualityUnit@: the
+    # downstream "beneficiary received it" notice. The INR debit was already
+    # captured as a separate alert when the remittance was initiated, so this
+    # is informational only — never a standalone transaction.
+    "successful credit of your cross border remittance",
 )
 
 # Snippet fragments that mark a non-transactional admin notice
@@ -69,6 +74,7 @@ NON_TXN_SNIPPET_FRAGMENTS = (
     "successfully read secure usage tips",
     "accepted the terms",
     "mobilebanking app",
+    "password reset",  # "Account update ... - NetBanking password reset"
 )
 
 # Bank sender domains — anything else (e.g. niloy@firstrain.co.in forwards)
@@ -109,6 +115,17 @@ P_UPI_DEBIT_V2 = re.compile(
     re.IGNORECASE,
 )
 
+# Pattern: permissive UPI debit — "Rs.X (is) debited from (your) account ending NNNN [towards VPA Y]".
+# Covers the alert variants that omit the (NAME) and/or the trailing date, which
+# P_UPI_DEBIT_V2 requires. VPA is optional. Tried AFTER V2 so the richer match wins.
+# (These are mostly personal-account 4401 spends — they parse, then route to the
+# wrong-account filter so they stop showing up as "unparseable" noise.)
+P_UPI_DEBIT_V3 = re.compile(
+    r"Rs\.?\s*([\d,]+\.?\d*)\s+(?:is\s+)?debited from\s+(?:your\s+)?account ending\s+(\d{4})"
+    r"(?:\s+towards VPA\s+(\S+))?",
+    re.IGNORECASE,
+)
+
 # Pattern: "Rs. X has been deducted from your HDFC Bank account ending in XXNNNN for a transfer to payee Y via NEFT"
 P_NEFT_DEBIT = re.compile(
     r"Rs\.?\s*(?:INR\s*)?([\d,]+\.?\d*)\s+has been deducted from your HDFC Bank account ending in XX(\d{4})"
@@ -145,6 +162,23 @@ P_CHEQUE = re.compile(
     re.IGNORECASE,
 )
 
+# Pattern (short form): "cheque no. NNNN has been successfully cleared, Rs. INR X deducted from XXNNNN".
+# Same event as P_CHEQUE but without the "and an amount of ... has been deducted from"
+# wording — the account tail is present, so capture it directly.
+P_CHEQUE_SHORT = re.compile(
+    r"cheque no\.?\s+(\d+)\s+has been successfully cleared,?\s+Rs\.?\s*(?:INR\s*)?([\d,]+\.?\d*)"
+    r"\s+deducted from\s+XX(\d{4})",
+    re.IGNORECASE,
+)
+
+# Pattern: account-update debit — "Rs. INR X deducted from XXNNNN - NARRATION".
+# Covers expense/FD/internal-transfer alerts that carry a free-text narration after
+# a dash (HP Laptop, Office Exp, FD Booked, Fund trf CA to OD, MahindraCar, etc.).
+P_DEDUCT_NARRATION = re.compile(
+    r"Rs\.?\s*(?:INR\s*)?([\d,]+\.?\d*)\s+deducted from\s+XX(\d{4})\s*[-–]\s*(.+)",
+    re.IGNORECASE,
+)
+
 # Pattern: "Cheque of INR X has been successfully deposited in your A/c ending XXNNNN" (CREDIT).
 # Gmail snippet frequently truncates the account tail (e.g. "XX0"), so the account
 # group is 0-4 digits; cheque deposits land in the operating current account 0247,
@@ -165,6 +199,12 @@ CHEQUE_ATTRIBUTION = {
 # Pattern (BALANCE-only ping, not txn): "Available balance in your account ending XXNNNN is Rs. INR X as on DD-MMM-YY"
 P_BALANCE_ONLY = re.compile(
     r"Available balance in your account ending XX(\d{4})\s+is Rs\.?\s*(?:INR\s*)?([\d,]+\.?\d*)\s+as on\s+" + DATE_DDMMMYY,
+    re.IGNORECASE,
+)
+
+# Pattern (BALANCE-only ping, short form): "Available balance in XXNNNN is Rs. INR X as on DD-MMM-YY"
+P_BALANCE_ONLY_V2 = re.compile(
+    r"Available balance in XX(\d{4})\s+is Rs\.?\s*(?:INR\s*)?([\d,]+\.?\d*)\s+as on\s+" + DATE_DDMMMYY,
     re.IGNORECASE,
 )
 
@@ -448,6 +488,23 @@ def _parse_hdfc_email_impl(message: dict) -> dict | None:
             "_sender": sender,
         }
 
+    # UPI debit v3 — permissive variant (no required (NAME)/date; VPA optional)
+    m = P_UPI_DEBIT_V3.search(snippet)
+    if m:
+        amt, account, vpa = m.groups()
+        return {
+            "type": "UPI_DEBIT",
+            "date": msg_date,
+            "amount": _amt(amt),
+            "direction": "debit",
+            "account": account,
+            "counterparty": (vpa or "").strip(),
+            "reference": vpa or "",
+            "purpose": "UPI payment",
+            "subject": subject,
+            "_sender": sender,
+        }
+
     # NEFT outward ("deducted from your HDFC Bank account ending in XXNNNN for a transfer to payee Y via NEFT")
     m = P_NEFT_DEBIT.search(snippet)
     if m:
@@ -526,6 +583,46 @@ def _parse_hdfc_email_impl(message: dict) -> dict | None:
             "_sender": sender,
         }
 
+    # Cheque cleared (short form: "...cleared, Rs. INR X deducted from XXNNNN")
+    m = P_CHEQUE_SHORT.search(snippet)
+    if m:
+        cheque_no, amt, account = m.groups()
+        return {
+            "type": "CHEQUE_CLEARED",
+            "date": msg_date,
+            "amount": _amt(amt),
+            "direction": "debit",
+            "account": account,
+            "counterparty": "",
+            "reference": f"Cheque {cheque_no}",
+            "purpose": "Cheque cleared",
+            "subject": subject,
+            "_sender": sender,
+        }
+
+    # Account-update debit with free-text narration ("Rs. INR X deducted from XXNNNN - NARRATION").
+    # FD bookings move cash to an own fixed deposit (treasury), so they are flagged
+    # internal_transfer to keep them out of the operating-debit / burn totals. The
+    # parse_hdfc_email wrapper separately reclassifies CA<->OD narrations.
+    m = P_DEDUCT_NARRATION.search(snippet)
+    if m:
+        amt, account, narration = m.groups()
+        narration = narration.strip()
+        nlow = narration.lower()
+        is_fd = "fd booked" in nlow or "fd booking" in nlow or nlow.startswith("fd ")
+        return {
+            "type": "FD_BOOKING" if is_fd else "DEBIT",
+            "date": msg_date,
+            "amount": _amt(amt),
+            "direction": "internal_transfer" if is_fd else "debit",
+            "account": account,
+            "counterparty": narration,
+            "reference": "",
+            "purpose": "FD booked (own treasury)" if is_fd else "Account debit",
+            "subject": subject,
+            "_sender": sender,
+        }
+
     # Cheque deposit (credit into account) — snippet often truncates the account,
     # so default to the operating current account 0247 when fewer than 4 digits parse.
     m = P_CHEQUE_DEPOSIT.search(snippet)
@@ -574,7 +671,7 @@ def _parse_hdfc_email_impl(message: dict) -> dict | None:
 
     # Balance-only ping FALLBACK — try this last so we never mask a txn
     if "available balance" in snippet.lower():
-        m = P_BALANCE_ONLY.search(snippet)
+        m = P_BALANCE_ONLY.search(snippet) or P_BALANCE_ONLY_V2.search(snippet)
         if m:
             account, balance, dd, mm, yy = m.groups()
             txn_date = _parse_date_dmy(dd, mm, yy)
