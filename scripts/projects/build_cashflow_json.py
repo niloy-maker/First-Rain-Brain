@@ -29,7 +29,7 @@ from typing import Optional
 sys.path.insert(0, str(Path(__file__).parent))
 
 from fetch_bigin_pipeline import fetch_pipeline
-from classify_pipeline import classify
+from classify_pipeline import classify, _match_industry
 from read_sheet_projects import read_sheet
 from compute_momentum import compute as compute_momentum
 from drift_check import check as drift_check
@@ -48,6 +48,8 @@ NOTES_JSON = Path("data/projects/sheet_notes.json")
 FINANCE_JSON = Path("data/projects/sheet_finance.json")
 
 EXEC_NAMES = {"CK": "Chinmay", "SP": "Shilpa", "DS": "Dhruv", "ND": "Niloy"}
+
+IMESSAGE_TXN_JSON = Path("data/projects/_cache/hdfc_imessages.json")
 
 
 def build():
@@ -70,8 +72,31 @@ def build():
     # Step 5: drift
     drift = drift_check(bigin_classified, sheet)
 
-    # Step 6: compose cashflow.json matching v11 renderer schema
-    cashflow = _compose_cashflow(bigin_classified, sheet, momentum, drift)
+    # Step 6: load iMessage SMS data FIRST so OD override happens inside _compose_cashflow
+    imessage_data = _load_imessage_txns()
+
+    # Step 7: compose cashflow.json matching v11 renderer schema
+    cashflow = _compose_cashflow(bigin_classified, sheet, momentum, drift, imessage_data=imessage_data)
+
+    # Attach iMessage data to cashflow (for dashboard Data tab + downstream use)
+    cashflow["imessageBankData"] = imessage_data
+    # Surface SMS-feed health at top level so the dashboard can badge a dead feed.
+    _imsg_meta = cashflow["imessageBankData"].get("meta", {})
+    cashflow["smsFeedStatus"] = _imsg_meta.get("feed_status", "unknown")
+    cashflow["smsFeedHealth"] = _imsg_meta.get("feed_health", {})
+    if cashflow["smsFeedStatus"] == "stale":
+        fh = cashflow["smsFeedHealth"]
+        print(f"  📵 HDFC SMS feed STALE — newest chat.db msg {fh.get('hours_since_any')}h old. "
+              f"iPhone->Mac sync likely down; relying on Gmail HDFC email alerts.")
+    sms_only = [
+        t for t in cashflow["imessageBankData"].get("transactions", [])
+        if t.get("confidence") == "sms_only" and t.get("type") == "credit"
+    ]
+    if sms_only:
+        print(f"  ⚠  {len(sms_only)} SMS-only credit(s) not yet in Gmail:")
+        for t in sms_only:
+            src = " [MANUAL]" if t.get("source") == "manual_paste" else ""
+            print(f"     {t['date'][:16]}  ₹{t['amount']:,.0f}  acc:{t['account']}  {t.get('counterparty','?')}{src}")
 
     CASHFLOW_JSON.parent.mkdir(parents=True, exist_ok=True)
     with open(CASHFLOW_JSON, "w") as f:
@@ -119,12 +144,25 @@ def _load_finance():
     # --- Receivables (new) ---
     if RECEIVABLES_JSON.exists():
         rv = json.loads(RECEIVABLES_JSON.read_text())
-        finance["receivables"] = rv.get("receivables", [])
+        all_recv = rv.get("receivables", [])
+        # Suppress rows where balance = 0 — fully paid invoices that the sheet
+        # still marks as "Open". These have nothing to chase and create false
+        # overdue alerts. Sonal's sheet is the permanent fix; this filter
+        # prevents noise until she marks them Closed.
+        finance["receivables"] = [
+            r for r in all_recv
+            if float(r.get("balance", r.get("amount", 0)) or 0) > 0
+        ]
 
     # --- Payables (new) ---
     if PAYABLES_JSON.exists():
         pv = json.loads(PAYABLES_JSON.read_text())
-        finance["payables"] = pv.get("payables", [])
+        all_pay = pv.get("payables", [])
+        # Suppress paid rows (balance = 0) — same as receivables filter.
+        finance["payables"] = [
+            p for p in all_pay
+            if float(p.get("balance", p.get("amount", 0)) or 0) > 0
+        ]
 
     # --- Statutory (new) ---
     if STATUTORY_JSON.exists():
@@ -150,6 +188,19 @@ def _load_finance():
         finance["notesMonthlyBurn"] = notes.get("monthlyBurn", {})
 
     return finance
+
+
+def _load_imessage_txns():
+    """
+    Load iMessage-sourced HDFC transactions written by parse_hdfc_imessages.py.
+    Returns the full JSON dict (or an empty scaffold if the file doesn't exist yet).
+    """
+    if not IMESSAGE_TXN_JSON.exists():
+        return {"meta": {"source": "imessage_sms", "transaction_count": 0, "note": "file not found"}, "transactions": []}
+    try:
+        return json.loads(IMESSAGE_TXN_JSON.read_text())
+    except Exception as e:
+        return {"meta": {"source": "imessage_sms", "transaction_count": 0, "error": str(e)}, "transactions": []}
 
 
 def _compute_derived(bigin, sheet, finance):
@@ -233,6 +284,8 @@ def _compute_derived(bigin, sheet, finance):
         "allRegions": all_regions,
         "allIndustries": all_industries,
         "secureConcentration": secure_pct,
+        "secureRevenue": account_totals.get("Secure Meters Pvt Ltd", 0.0),
+        "pipelineTotal": pipeline_total,
         "saltwaterConcentration": saltwater_pct,
         "saltwaterOutstanding": saltwater_outstanding,
         "topActions": top_actions,
@@ -249,7 +302,9 @@ TREASURY_JSON = Path("data/projects/sheet_treasury.json")
 # Region short codes from classify_pipeline.py → full names expected by regionColors in template.
 _REGION_NAME_MAP = {
     "SEA": "South East Asia",
-    "RoW": "Rest of the World",
+    "ME":  "Middle East",
+    "ROW": "Rest of the World",
+    "RoW": "Rest of the World",  # legacy alias
 }
 
 # Payable flexibility values from the sheet → CSS class names the template expects.
@@ -361,9 +416,9 @@ def _normalize_project(p: dict) -> dict:
     raw_pct = out.get("contributionPct", 0) or 0
     if raw_pct <= 1.0:
         out["contributionPct"] = round(raw_pct * 100, 1)
-    # industry: not in Projects sheet yet → default to Unknown
-    if not out.get("industry"):
-        out["industry"] = "Unknown"
+    # industry: not in Projects sheet — infer from company + project name via regex
+    if not out.get("industry") or out.get("industry") == "Unknown":
+        out["industry"] = _match_industry(f"{out.get('company', '')} {out.get('project', '')}")
     # Normalize region short codes
     out["region"] = _REGION_NAME_MAP.get(out.get("region", ""), out.get("region", "Unknown"))
     return out
@@ -378,18 +433,103 @@ def _normalize_deal(d: dict) -> dict:
 
 # ── Treasury Sweep computation ──────────────────────────────────────────────
 
+def _derive_od_from_sms(imessage_data: dict) -> "dict | None":
+    """
+    Extract the most recent OD position from iMessage SMS data.
+
+    HDFC SMS alerts for account 0241 include 'Avl bal:INR -X' which encodes
+    the OD balance directly. A negative available balance = OD drawn.
+
+    Returns a dict:
+        {odUtilized, operatingCash, date, source, rawBalance}
+    or None if no 0241 Avl-bal snapshot is available.
+
+    The caller should compare `date` against `sheet_cash_position.json`'s
+    `cash.date` and use whichever is more recent as the authoritative value.
+    """
+    snapshots = (imessage_data or {}).get('od_balance_snapshots', [])
+    if not snapshots:
+        return None
+    # Already sorted most-recent-first by the parser
+    latest = snapshots[0]
+    raw_balance = latest['balance']
+    od_utilized = latest['odUtilized']
+    # operatingCash = -odUtilized (conservative: assumes CA net position is
+    # effectively funded by OD, same convention as Sonal's manual entries)
+    return {
+        'odUtilized': od_utilized,
+        'operatingCash': -od_utilized,
+        'date': latest['date'][:10],   # YYYY-MM-DD
+        'source': 'hdfc_sms',
+        'rawBalance': raw_balance,
+    }
+
+
 def _compute_sweep(op_cash: float, monthly_burn: float,
-                   od_facility: float, od_utilized: float) -> tuple[dict, dict]:
+                   od_facility: float, od_utilized: float,
+                   receivables: list = None, payables: list = None) -> tuple[dict, dict]:
     """
     Returns (sweepConfig, treasurySweep) dicts for the dashboard Overview card.
-    Logic: compare operating cash against 1.5× monthly burn float target.
+
+    Phase-aware float target (salary hits in week 1 of every month):
+      Days  1–7  (post-salary):  1.0× burn  — salary already out, lower float needed
+      Days  8–20 (mid-month):    1.5× burn  — standard operating window
+      Days 21–31 (pre-salary):   2.0× burn  — pre-fund next salary cycle
+
+    Net cash position = op_cash + expected_inflows_30d − expected_outflows_30d
+    OD draw recommendation is against net position, not raw operating cash.
+    Treasury is never touched while OD headroom remains.
     """
-    float_multiplier = 1.5
+    from datetime import date as _date
+    import calendar as _calendar
+
+    today = _date.today()
+    day = today.day
     min_sweep = 200_000  # ignore tiny movements
 
+    def _fmt(n):
+        abs_n = abs(n)
+        sign = "-" if n < 0 else ""
+        if abs_n >= 10_00_000:
+            return f"{sign}₹{abs_n/1_00_000:.1f}L"
+        if abs_n >= 1_000:
+            return f"{sign}₹{abs_n/1_000:.0f}K"
+        return f"{sign}₹{int(abs_n)}"
+
+    # ── Phase logic ──────────────────────────────────────────────────────────
+    if day <= 7:
+        phase = "post-salary"
+        float_multiplier = 1.0
+        phase_note = (
+            f"Day {day}: salary week just cleared — lower float buffer applies (1.0× burn). "
+            "Major cash out already happened; focus on receivables chase."
+        )
+    elif day <= 20:
+        phase = "mid-month"
+        float_multiplier = 1.5
+        phase_note = (
+            f"Day {day}: mid-month window — standard float buffer applies (1.5× burn). "
+            "No salary pressure for ~{} days.".format(
+                (1 + _calendar.monthrange(today.year, today.month)[1] - day) % 31 + 7
+            )
+        )
+    else:
+        phase = "pre-salary"
+        float_multiplier = 2.0
+        days_to_salary = (_calendar.monthrange(today.year, today.month)[1] - day) + 7
+        phase_note = (
+            f"Day {day}: pre-salary phase — elevated float buffer (2.0× burn). "
+            f"Next salary ~{days_to_salary}d away. Build cash now."
+        )
+
+    float_target = monthly_burn * float_multiplier
+    od_available = od_facility - od_utilized
+
     config = {
-        "workingFloatTarget": monthly_burn * float_multiplier,
+        "workingFloatTarget": float_target,
         "workingFloatMultiplier": float_multiplier,
+        "phase": phase,
+        "dayOfMonth": day,
         "minSweepSize": min_sweep,
         "cadence": "daily",
     }
@@ -405,85 +545,176 @@ def _compute_sweep(op_cash: float, monthly_burn: float,
         }
         return config, sweep
 
-    float_target = monthly_burn * float_multiplier
-    od_available = od_facility - od_utilized
-    surplus = op_cash - float_target
+    # ── Net cash position (30-day horizon) ───────────────────────────────────
+    recv_list = receivables or []
+    pay_list  = payables  or []
 
-    def _fmt(n):
-        if n >= 10_00_000:
-            return f"₹{n/1_00_000:.1f}L"
-        if n >= 1_000:
-            return f"₹{n/1_000:.0f}K"
-        return f"₹{int(n)}"
+    # Expected inflows: receivables due within 30d (daysLeft <= 30, or already overdue)
+    # Use balance field; exclude rent/non-project (vendor field check)
+    expected_inflows = sum(
+        float(r.get("balance", r.get("amount", 0)) or 0)
+        for r in recv_list
+        if (r.get("daysLeft", r.get("daysOD", 0)) or 0) <= 30
+    )
 
+    # Expected outflows: payables due within 30d (daysLeft <= 30, negative daysLeft = overdue)
+    # Flag salary payables separately (vendor name contains "salary" / "payroll" / "staff")
+    salary_due_30d = 0.0
+    vendor_due_30d = 0.0
+    salary_keywords = {"salary", "payroll", "staff", "wages", "remuneration"}
+    for p in pay_list:
+        days_left = float(p.get("daysLeft", p.get("daysToDue", 999)) or 999)
+        amt = float(p.get("amount", p.get("balance", 0)) or 0)
+        vendor = (p.get("vendor", p.get("vendorName", "")) or "").lower()
+        if days_left <= 30:
+            if any(kw in vendor for kw in salary_keywords):
+                salary_due_30d += amt
+            else:
+                vendor_due_30d += amt
+
+    expected_outflows = salary_due_30d + vendor_due_30d
+
+    # Net 30d position
+    net_position_30d = op_cash + expected_inflows - expected_outflows
+    net_deficit      = float_target - net_position_30d   # positive = need cash
+    raw_deficit      = float_target - op_cash            # old simple view
+
+    # Use net position as primary; fall back to raw if no payables/receivables data
+    has_flow_data = bool(recv_list or pay_list)
+    working_deficit = net_deficit if has_flow_data else raw_deficit
+    surplus         = -working_deficit
+
+    # ── Build context lines for rationale ────────────────────────────────────
+    flow_context = ""
+    if has_flow_data:
+        flow_context = (
+            f" Net 30d position: {_fmt(net_position_30d)} "
+            f"(+{_fmt(expected_inflows)} receivables − {_fmt(expected_outflows)} payables"
+            + (f", incl. {_fmt(salary_due_30d)} salary" if salary_due_30d > 0 else "")
+            + ")."
+        )
+
+    # ── Sweep decision ────────────────────────────────────────────────────────
     if surplus > min_sweep:
         amount = surplus
-        sweep = {
-            "direction": "OUTWARD",
-            "verdict": f"Deploy {_fmt(amount)} to liquid MF",
-            "headline": f"{_fmt(amount)} above working float target — invest the surplus",
-            "rationale": (
-                f"Operating cash {_fmt(op_cash)} exceeds the 1.5× burn target "
-                f"({_fmt(float_target)}). Deploy surplus of {_fmt(amount)} to HDFC Liquid Fund "
-                f"to earn ~7% p.a. while keeping the float intact."
-            ),
-            "recommendedAmount": amount,
-            "destination": "HDFC Liquid Fund – Growth",
-            "annualYieldGain": round(amount * 0.07),
-            "actionFor": "Sonal",
-            "howTo": (
-                "HDFC NetBanking → Mutual Funds → Invest → HDFC Liquid Fund – Growth. "
-                "Enter the amount and confirm. Update Notes tab: SWEEP_EXECUTED YYYY-MM-DD."
-            ),
-            "confidence": "HIGH",
-            "nextReview": "tomorrow 08:00",
-        }
-    elif surplus < -min_sweep:
-        deficit = abs(surplus)
+        if od_utilized > min_sweep:
+            # OD is active — repaying OD (12.5% p.a.) saves more than MF yields (7% p.a.).
+            # Collect receivables → repay OD first, then deploy any remaining surplus to MF.
+            od_repay = min(od_utilized, amount)
+            mf_deploy = max(0.0, amount - od_utilized)
+            monthly_od_saving = od_repay * 0.125 / 12
+            if mf_deploy > min_sweep:
+                verdict = f"Repay OD {_fmt(od_repay)} first, then deploy {_fmt(mf_deploy)} to liquid MF"
+                howto = (
+                    "Step 1: Collect receivables → transfer to HDFC 0247 → reduce OD 0241 by "
+                    f"{_fmt(od_repay)} (saves ₹{monthly_od_saving:,.0f}/mo at 12.5% p.a.). "
+                    f"Step 2: Deploy remaining {_fmt(mf_deploy)} to HDFC Liquid Fund – Growth. "
+                    "Update Notes tab: SWEEP_EXECUTED YYYY-MM-DD."
+                )
+            else:
+                verdict = f"Repay OD {_fmt(od_repay)} — do not deploy to MF until OD cleared"
+                howto = (
+                    "Collect receivables → transfer to HDFC 0247 → reduce OD 0241. "
+                    f"Saves ₹{monthly_od_saving:,.0f}/mo at 12.5% p.a. MF deployment deferred until OD = 0."
+                )
+            sweep = {
+                "direction": "REPAY_OD",
+                "verdict": verdict,
+                "headline": f"OD {_fmt(od_utilized)} active — repay before deploying to MF (12.5% > 7%)",
+                "rationale": (
+                    f"{phase_note} Operating cash {_fmt(op_cash)} · float target {_fmt(float_target)} "
+                    f"({float_multiplier}× burn).{flow_context} "
+                    f"Net surplus {_fmt(amount)} on 30d horizon, but OD {_fmt(od_utilized)} is being "
+                    f"drawn at 12.5% p.a. — 5.5 pts more expensive than 7% MF yield. "
+                    f"Repaying OD saves {_fmt(monthly_od_saving)}/mo. Chase receivables first."
+                ),
+                "recommendedAmount": od_repay,
+                "destination": "Repay HDFC OD 0241",
+                "mfDeploy": mf_deploy,
+                "annualODSaving": round(od_repay * 0.125),
+                "actionFor": "Niloy",
+                "howTo": howto,
+                "confidence": "HIGH",
+                "nextReview": "today before 17:00",
+                "phase": phase,
+            }
+        else:
+            sweep = {
+                "direction": "OUTWARD",
+                "verdict": f"Deploy {_fmt(amount)} to liquid MF",
+                "headline": f"{_fmt(amount)} above working float — invest the surplus",
+                "rationale": (
+                    f"{phase_note} Operating cash {_fmt(op_cash)} · float target {_fmt(float_target)} "
+                    f"({float_multiplier}× burn).{flow_context} "
+                    f"Surplus {_fmt(amount)} — deploy to HDFC Liquid Fund at ~7% p.a."
+                ),
+                "recommendedAmount": amount,
+                "destination": "HDFC Liquid Fund – Growth",
+                "annualYieldGain": round(amount * 0.07),
+                "actionFor": "Sonal",
+                "howTo": (
+                    "HDFC NetBanking → Mutual Funds → Invest → HDFC Liquid Fund – Growth. "
+                    "Enter the amount and confirm. Update Notes tab: SWEEP_EXECUTED YYYY-MM-DD."
+                ),
+                "confidence": "HIGH",
+                "nextReview": "tomorrow 08:00",
+                "phase": phase,
+            }
+    elif working_deficit > min_sweep:
+        deficit = working_deficit
         if od_available >= deficit:
             verdict = f"Draw OD {_fmt(deficit)} — do not touch treasury"
             rationale = (
-                f"Operating cash {_fmt(op_cash)} is {_fmt(deficit)} below the float target "
-                f"({_fmt(float_target)}). OD facility has {_fmt(od_available)} available at ~12.5% p.a. "
-                f"Draw OD first — cheaper than breaking treasury MF compounding."
+                f"{phase_note} Operating cash {_fmt(op_cash)} · float target {_fmt(float_target)} "
+                f"({float_multiplier}× burn).{flow_context} "
+                f"Shortfall {_fmt(deficit)} — OD has {_fmt(od_available)} at ~12.5% p.a. "
+                "Draw OD first — cheaper than breaking treasury MF compounding."
             )
             how_to = (
                 "HDFC NetBanking → Accounts → Current → Draw OD. "
                 "Enter exact amount. Notify Sonal. Repay immediately when receivables clear."
             )
+            confidence = "HIGH"
         else:
             verdict = f"Redeem {_fmt(deficit)} from liquid MF (OD insufficient)"
             rationale = (
-                f"Operating cash {_fmt(op_cash)} is {_fmt(deficit)} below float target. "
-                f"OD headroom ({_fmt(od_available)}) is insufficient. "
+                f"{phase_note} Operating cash {_fmt(op_cash)} · float target {_fmt(float_target)}.{flow_context} "
+                f"OD headroom {_fmt(od_available)} insufficient for full deficit {_fmt(deficit)}. "
                 "Redeem liquid MF portion of treasury — do NOT touch debt or equity funds."
             )
             how_to = (
                 "HDFC NetBanking → Mutual Funds → Redeem → HDFC Liquid Fund. "
                 "Redeem exactly the deficit amount. Confirm with Niloy first."
             )
+            confidence = "MEDIUM"
         sweep = {
             "direction": "INWARD",
             "verdict": verdict,
-            "headline": f"{_fmt(deficit)} below float target — cash needs replenishment",
+            "headline": f"{_fmt(deficit)} shortfall vs {float_multiplier}× burn target — replenish now",
             "rationale": rationale,
             "recommendedAmount": deficit,
             "howTo": how_to,
-            "confidence": "HIGH",
+            "confidence": confidence,
             "nextReview": "today before 17:00",
+            "phase": phase,
+            "salaryDue30d": salary_due_30d,
+            "vendorDue30d": vendor_due_30d,
+            "expectedInflows30d": expected_inflows,
+            "netPosition30d": net_position_30d,
         }
     else:
         sweep = {
             "direction": "AT_TARGET",
-            "verdict": "Hold — operating cash at target float",
+            "verdict": "Hold — net cash position at target float",
             "headline": "Operating cash within working float range",
             "rationale": (
-                f"Cash {_fmt(op_cash)} is within ±{_fmt(min_sweep)} of the {float_multiplier}× burn "
-                f"target ({_fmt(float_target)}). No sweep needed today."
+                f"{phase_note} Cash {_fmt(op_cash)} · target {_fmt(float_target)} "
+                f"({float_multiplier}× burn).{flow_context} No sweep needed today."
             ),
             "recommendedAmount": 0,
             "confidence": "HIGH",
             "nextReview": "tomorrow 08:00",
+            "phase": phase,
         }
 
     return config, sweep
@@ -586,6 +817,7 @@ def _compute_levers(receivables: list, payables: list,
             "debt_long": tiers.get("debt_long", 0),
             "equity": tiers.get("equity", 0),
             "hybrid": tiers.get("hybrid", 0),
+            "fd": tiers.get("fd", 0),
             "dataStale": data_stale,
             "bestFor": "Last resort. Breaking compounding costs more than interest saved.",
             "vrWealthManaged": False,
@@ -639,11 +871,10 @@ _QUARTER_META = [
 # Exhibition build: 38% margin floor → ~55-62% CP. We use 55% (slightly optimistic).
 _VENDOR_PCT = 0.55
 
-# Flat vendor standing cost for months with ₹0 revenue (ongoing project work in progress)
-_VENDOR_FLOOR = 500_000   # ₹5L/month
-
-# Statutory: flat estimate (GST IGST payable net of input credit + TDS)
-_STATUTORY_MONTHLY = 250_000  # ₹2.5L/month
+# Vendor floor dropped — when there's no close-month activity and no tracked
+# projects, vendor outflow is ₹0 (was ₹5L standing). If a real standing cost
+# exists, capture it as a recurring entry in Payables instead of a hidden floor.
+_VENDOR_FLOOR = 0   # ₹0/month — was ₹5L (dropped per Niloy 20-May-2026)
 
 
 def _compute_cashflow(
@@ -653,6 +884,8 @@ def _compute_cashflow(
     op_cash: float,
     receivables: list,
     monthly_burn_overrides: Optional[dict] = None,
+    monthly_close_revenue: Optional[dict] = None,
+    monthly_statutory: Optional[dict] = None,
 ) -> tuple[dict, list, list, dict]:
     """
     Compute 12-month cash flow projection for FY 2026-27.
@@ -686,15 +919,25 @@ def _compute_cashflow(
         in_pipeline = float(monthly_revenue.get(mk, 0) or 0)
         in_recv = float(recv_expected.get(mk, 0) or 0)
 
-        # Vendor outflow: Projects CP (auto) → floor for months with no projects
+        # Vendor outflow priority:
+        #   1. Actual project CP from Sonal's Projects sheet (most accurate)
+        #   2. 55% of GROSS close-month revenue (work happens at close month,
+        #      so CP hits then — not in the month when the trailing 25% cash
+        #      lands). This prevents double-counting vendor costs.
+        #   3. ₹5L standing floor for zero-revenue months with no tracked projects
+        close_rev = float((monthly_close_revenue or {}).get(mk, 0) or 0)
         if mk in monthly_vendor_outflow and monthly_vendor_outflow[mk]:
             out_vendors = float(monthly_vendor_outflow[mk])
+        elif close_rev > 0:
+            out_vendors = close_rev * _VENDOR_PCT
         else:
             out_vendors = _VENDOR_FLOOR
 
         # Payroll: per-month CONFIG_MONTHLY_BURN_YYYY-MM override → global fallback
         out_payroll = burn_overrides.get(mk) or default_payroll
-        out_statutory = _STATUTORY_MONTHLY
+        # Statutory: pull from Statutory sheet tab (was flat ₹2.5L/month).
+        # Months with no scheduled obligations get ₹0.
+        out_statutory = float((monthly_statutory or {}).get(mk, 0) or 0)
 
         total_in = in_pipeline + in_recv
         total_out = out_vendors + out_payroll + out_statutory
@@ -759,11 +1002,14 @@ def _compute_cashflow(
 
     extrapolation = {
         "basis": (
-            "Bigin Won + Existing Confirmed deals by closing month + "
+            "Bigin Won + Existing Confirmed deals split 75% advance (close month) + "
+            "25% balance (close month + 1, net-30) + "
             "receivable expected collection dates (GSheet). "
-            "Vendor cost: 55% of monthly revenue (38% margin floor); "
-            "floor ₹5L/month for zero-revenue months. "
-            "Payroll = CONFIG_MONTHLY_BURN (Notes tab). Statutory = ₹2.5L/month flat."
+            "Vendor cost: actual project CP from Sonal's Projects sheet → "
+            "55% of close-month revenue for months without tracked projects → "
+            "₹0 for months with no work activity. "
+            "Payroll = CONFIG_MONTHLY_BURN (Notes tab). "
+            "Statutory = scheduled obligations from Statutory tab (no flat default)."
         ),
         "confidence": "Months 1–3: HIGH (Bigin confirmed) · Months 4–6: MEDIUM (pipeline weighted) · Months 7–12: LOW (estimated)",
         "assumptions": (
@@ -793,15 +1039,19 @@ _MONTH_ABBR = {
 def _parse_delivery_month(raw: str) -> Optional[str]:
     """
     Convert a delivery_month string to 'YYYY-MM'.
-    Handles: 'YYYY-MM', 'Apr 2026', 'April 2026', 'Apr-26', 'Apr-2026'.
+    Handles: 'YYYY-MM', 'YYYY-MM-DD', 'YYYY-MM-DD HH:MM:SS',
+             'Apr 2026', 'April 2026', 'Apr-26', 'Apr-2026'.
     Returns None if unparseable.
     """
     s = raw.strip()
     if not s:
         return None
-    # Already YYYY-MM
-    if len(s) == 7 and s[4] == "-":
-        return s
+    # ISO date/datetime: 'YYYY-MM-DD' or 'YYYY-MM-DD HH:MM:SS'
+    # First 7 chars are always 'YYYY-MM' when the string starts with a 4-digit year
+    if len(s) >= 7 and s[4] == "-" and s[:4].isdigit():
+        candidate = s[:7]
+        if len(candidate) == 7 and candidate[4] == "-":
+            return candidate
     # Try "Mon YYYY" or "Month YYYY"
     parts = s.replace("-", " ").split()
     if len(parts) == 2:
@@ -811,6 +1061,29 @@ def _parse_delivery_month(raw: str) -> Optional[str]:
             yr = yr_raw if len(yr_raw) == 4 else f"20{yr_raw}"
             return f"{yr}-{mon}"
     return None
+
+
+def _monthly_statutory_from_obligations(obligations: list) -> dict:
+    """
+    Sum amountPayable by due month from the Statutory sheet tab.
+    Returns {YYYY-MM: total_amount} covering only FY 2026-27.
+    Replaces the flat ₹2.5L/month assumption — pulls actual data from
+    sheet_statutory.json. Months with no entries get ₹0 (the caller may
+    leave them blank rather than assume a default).
+    """
+    monthly: dict[str, float] = {}
+    for o in obligations:
+        due = o.get("dueDate")
+        if not due:
+            continue
+        mk = _parse_delivery_month(str(due).strip())
+        if not mk or mk < _FY27_START or mk > _FY27_END:
+            continue
+        amount = float(o.get("amountPayable", 0) or 0)
+        if amount <= 0:
+            continue
+        monthly[mk] = monthly.get(mk, 0.0) + amount
+    return monthly
 
 
 def _monthly_vendor_from_projects(projects: list) -> dict:
@@ -829,14 +1102,36 @@ def _monthly_vendor_from_projects(projects: list) -> dict:
     return monthly
 
 
+def _shift_month(mk: str, delta_months: int) -> str:
+    """Shift a YYYY-MM key by delta months (positive = forward, negative = back)."""
+    yr, mo = int(mk[:4]), int(mk[5:7])
+    total = (yr * 12 + (mo - 1)) + delta_months
+    new_yr, new_mo = divmod(total, 12)
+    return f"{new_yr:04d}-{new_mo + 1:02d}"
+
+
+# Payment-terms split applied to all Bigin deals:
+#   - 75% advance lands in the close month (typical order-placement payment)
+#   - 25% balance lands the month after close (net-30 trailing)
+_REVENUE_SPLIT_ADVANCE = 0.75
+_REVENUE_SPLIT_BALANCE = 0.25
+
+
 def _monthly_revenue_from_bigin(deals):
     """
-    Group Won + Existing Confirmed deals from Bigin by closing month.
-    Key = "YYYY-MM", value = sum of deal amounts for that month.
+    Group Won + Existing Confirmed deals from Bigin into projected CASH
+    inflow months using First Rain's standard 75/25 payment-terms model:
+       - 75% advance → close_month
+       - 25% balance → close_month + 1 (within 30 days post-close)
 
-    Only deals with close dates within FY 2026-27 (Apr 2026 – Mar 2027) are
-    included. Deals closing before Apr 2026 (FY26 history) or after Mar 2027
-    are excluded. Deals with no close date go to the undated list only.
+    Key = "YYYY-MM", value = projected cash inflow for that month.
+
+    Only inflows that fall within FY 2026-27 (Apr 2026 – Mar 2027) are
+    retained. This means the 25% balance from a Mar'27 close lands in
+    Apr'27 (FY28) and is dropped; Dec'26 close splits 75/Dec + 25/Jan'27
+    so Q4 (Jan–Mar 2027) inflows pull from the prior-quarter Bigin deals.
+
+    Deals with no close date go to the undated list only.
 
     Stages included:
       - "Closed Won 26-27" — delivered / invoiced
@@ -844,7 +1139,8 @@ def _monthly_revenue_from_bigin(deals):
 
     Notes-tab Monthly_Revenue_YYYY-MM entries override individual months.
     """
-    monthly: dict[str, float] = {}
+    monthly: dict[str, float] = {}        # cash inflow by month (75/25 split)
+    monthly_close: dict[str, float] = {}  # gross revenue at close month (for vendor calc)
     undated: list[dict] = []
 
     for d in deals:
@@ -862,34 +1158,68 @@ def _monthly_revenue_from_bigin(deals):
                 "exec": d.get("exec"),
             })
             continue
-        month = str(close)[:7]  # "YYYY-MM-DD" → "YYYY-MM"
-        if month < _FY27_START or month > _FY27_END:
-            continue  # Exclude deals outside FY 2026-27
-        monthly[month] = monthly.get(month, 0.0) + amount
+        close_month = str(close)[:7]  # "YYYY-MM-DD" → "YYYY-MM"
+        balance_month = _shift_month(close_month, 1)
 
-    return monthly, undated
+        # Track gross revenue at close month — used to compute vendor cost
+        # (work happens at close month, so CP hits that month regardless of
+        # when the customer pays).
+        if _FY27_START <= close_month <= _FY27_END:
+            monthly_close[close_month] = (
+                monthly_close.get(close_month, 0.0) + amount
+            )
+
+        # 75% advance cash — at close month
+        if _FY27_START <= close_month <= _FY27_END:
+            monthly[close_month] = (
+                monthly.get(close_month, 0.0) + amount * _REVENUE_SPLIT_ADVANCE
+            )
+        # 25% balance cash — month after close
+        if _FY27_START <= balance_month <= _FY27_END:
+            monthly[balance_month] = (
+                monthly.get(balance_month, 0.0) + amount * _REVENUE_SPLIT_BALANCE
+            )
+
+    return monthly, undated, monthly_close
 
 
 def _build_telegram_briefing(
     op_cash, monthly_burn, treasury, od_facility, od_utilized,
     norm_receivables, norm_statutory, treasury_sweep, cf_annual,
-    secure_concentration, saltwater_concentration, health_score=None
+    secure_concentration, saltwater_concentration, health_score=None,
+    norm_projects=None, bank_latest_balance=None
 ) -> str:
     """Generate the plaintext daily briefing shown on the Alerts tab."""
     from datetime import datetime
 
     def fmt(n):
+        """
+        Mirror dashboard JS fmtP() exactly:
+          ≥ 1Cr  → X.XXCr  (2 decimal places, matches fmtP .toFixed(2))
+          ≥ 1L   → X.XL   (1 decimal place, matches fmtP .toFixed(1))
+          ≥ 1K   → XK      (0 decimal places)
+          else   → ₹X
+        Uses half-up rounding (not Python banker's rounding) to match JS toFixed().
+        """
+        import math as _math
         if n is None or n == 0:
             return "₹0"
         sign = "-" if n < 0 else ""
         a = abs(n)
+
+        def _round_half_up(x, decimals):
+            factor = 10 ** decimals
+            return _math.floor(x * factor + 0.5) / factor
+
         if a >= 10_000_000:
-            return f"{sign}₹{a/10_000_000:.1f}Cr"
+            v = _round_half_up(a / 10_000_000, 2)
+            return f"{sign}₹{v:.2f}Cr"
         if a >= 100_000:
-            return f"{sign}₹{a/100_000:.1f}L"
+            v = _round_half_up(a / 100_000, 1)
+            return f"{sign}₹{v:.1f}L"
         if a >= 1_000:
-            return f"{sign}₹{a/1_000:.0f}K"
-        return f"{sign}₹{a:.0f}"
+            return f"{sign}₹{round(a/1_000):.0f}K"
+        return f"{sign}₹{int(a)}"
 
     now = datetime.now()
     date_str = now.strftime("%d %b %Y")
@@ -916,19 +1246,33 @@ def _build_telegram_briefing(
 
     # ── Header ───────────────────────────────────────────────────────────────
     od_free = od_facility - od_utilized
+    od_pct  = round(od_utilized / od_facility * 100) if od_facility else 0
     lines = [
         f"🟢 FIRST RAIN · {date_str} · 08:00 IST",
         "",
         f"💰 Operating: {fmt(op_cash)} · Runway {runway:.1f}mo {rwy_emoji}",
-        f"🏦 Treasury {fmt(treasury)} · OD free {fmt(od_free)}",
+        f"🏦 Treasury {fmt(treasury)} · OD: {fmt(od_utilized)} used · {fmt(od_free)} free / {fmt(od_facility)} ({od_pct}% drawn)",
     ]
+
+    # ── HDFC iMessage vs sheet variation line ────────────────────────────────
+    # bank_latest_balance is the latest BALANCE_SNAPSHOT transaction dict (amount
+    # field holds the rupee figure), not a bare number. Accept either shape.
+    bank_bal = bank_latest_balance
+    if isinstance(bank_bal, dict):
+        bank_bal = bank_bal.get("amount")
+    if isinstance(bank_bal, (int, float)) and bank_bal:
+        gap = abs(op_cash - bank_bal)
+        if gap > 100_000:  # >₹1L gap
+            lines.append(
+                f"⚠️ HDFC alert shows {fmt(bank_bal)} — gap {fmt(gap)} vs sheet. Confirm with Sonal."
+            )
 
     # ── Treasury sweep ───────────────────────────────────────────────────────
     lines.append("")
     direction = (treasury_sweep or {}).get("direction", "AT_TARGET")
     verdict = (treasury_sweep or {}).get("verdict", "")
     rationale = (treasury_sweep or {}).get("rationale", "")
-    sweep_icon = "⬆" if direction == "OUTWARD" else "⬇" if direction == "INWARD" else "⏸"
+    sweep_icon = "⬆" if direction == "OUTWARD" else "⬇" if direction == "INWARD" else "♻" if direction == "REPAY_OD" else "⏸"
     lines.append(f"{sweep_icon} TREASURY SWEEP")
     if verdict:
         lines.append(verdict)
@@ -983,7 +1327,25 @@ def _build_telegram_briefing(
             except Exception:
                 due_fmt = due_raw
             action = "overdue" if (s.get("daysLeft") or 0) < 0 else "pay on time"
-            lines.append(f"• {name} · {fmt(amt)} · due {due_fmt} · {action}")
+            est = " (est)" if s.get("isEstimate") else ""
+            lines.append(f"• {name} · {fmt(amt)}{est} · due {due_fmt} · {action}")
+
+    # ── Projects YTD ─────────────────────────────────────────────────────────
+    all_proj = norm_projects or []
+    if all_proj:
+        total_sp  = sum(p.get("sales_sp", p.get("sales", 0)) or 0 for p in all_proj)
+        total_sqm = sum(p.get("sizeSqm", 0) or 0 for p in all_proj)
+        lines.append("")
+        lines.append(f"📐 PROJECTS YTD ({len(all_proj)} · {int(total_sqm)} sqm · {fmt(total_sp)} SP)")
+        for p in all_proj:
+            sqm   = p.get("sizeSqm", 0) or 0
+            sp    = p.get("sales_sp", p.get("sales", 0)) or 0
+            cp    = p.get("variable_cost_cp", p.get("variableCost", 0)) or 0
+            cm    = p.get("contributionPct", 0) or 0
+            sp_sq = fmt(sp / sqm) if sqm > 0 else "—"
+            cp_sq = fmt(cp / sqm) if sqm > 0 else "—"
+            client = (p.get("company") or "—")[:22]
+            lines.append(f"• {client} · {int(sqm)}sqm · SP/sqm {sp_sq} · CP/sqm {cp_sq} · {cm:.1f}%")
 
     # ── Health ───────────────────────────────────────────────────────────────
     lines.append("")
@@ -992,23 +1354,87 @@ def _build_telegram_briefing(
     return "\n".join(lines)
 
 
-def _build_sources(bigin, sheet, finance, bank_txn) -> list:
-    """Build the 4 source status cards shown on the Data tab."""
+def _build_sources(bigin, sheet, finance, bank_txn, imessage_data=None) -> list:
+    """Build the 5 source status cards shown on the Data tab.
+    Each card includes: name, detail, ok (bool), status ('ok'|'stale'|'failed'),
+    lastAccessed (ISO str or ''), lastAccessedFmt (human-readable).
+    """
+    from datetime import timezone
+
+    from datetime import timedelta as _tdelta
+    _IST = timezone(_tdelta(hours=5, minutes=30))
+
+    def _parse_iso(s):
+        """Return a timezone-aware datetime from an ISO string, or None.
+        Naive timestamps (no offset) are assumed to be IST — all local scripts
+        use datetime.now() without tzinfo, which is local clock (IST on this Mac)."""
+        if not s:
+            return None
+        try:
+            s_clean = s.replace("Z", "+00:00")
+            dt = datetime.fromisoformat(s_clean)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=_IST)
+            return dt
+        except Exception:
+            return None
+
+    def _fmt_ts(iso_str):
+        """Return (formatted_str, hours_ago) from an ISO timestamp string."""
+        dt = _parse_iso(iso_str)
+        if dt is None:
+            return "—", None
+        now = datetime.now(tz=_IST)
+        hours_ago = (now - dt).total_seconds() / 3600
+        # Format as "25 May · 15:47 IST"
+        dt_ist = dt.astimezone(_IST)
+        fmt = dt_ist.strftime("%-d %b · %H:%M IST")
+        if hours_ago < 0.017:  # < 1 minute
+            age = "just now"
+        elif hours_ago < 1:
+            age = f"{int(hours_ago * 60)}min ago"
+        elif hours_ago < 24:
+            age = f"{hours_ago:.1f}h ago"
+        else:
+            age = f"{int(hours_ago / 24)}d ago"
+        return f"{fmt} ({age})", hours_ago
+
+    def _status(ok_bool, hours_ago, stale_threshold=10, failed_threshold=30):
+        """Return 'ok', 'stale', or 'failed' from hours_ago."""
+        if not ok_bool:
+            return "failed"
+        if hours_ago is None:
+            return "ok"  # no timestamp = assume fresh (just written)
+        if hours_ago < stale_threshold:
+            return "ok"
+        if hours_ago < failed_threshold:
+            return "stale"
+        return "failed"
+
     sources = []
 
     # ── Gmail / HDFC bank transactions ───────────────────────────────────────
     txn_meta = bank_txn.get("meta", {}) if bank_txn else {}
     totals = bank_txn.get("totals", {}) if bank_txn else {}
     txn_count = totals.get("transactionCount", 0) or 0
-    credits = bank_txn.get("transactions", []) if bank_txn else []
-    credit_count = sum(1 for t in credits if (t.get("type") or "").upper() in ("CREDIT", "INWARD"))
+    txns = bank_txn.get("transactions", []) if bank_txn else []
+    credit_count = sum(1 for t in txns if (t.get("type") or "").upper() in ("CREDIT", "INWARD"))
     debit_count = txn_count - credit_count
     gmail_ok = txn_count > 0
+    gmail_ts_raw = txn_meta.get("read_at", "")
+    gmail_ts_fmt, gmail_hrs = _fmt_ts(gmail_ts_raw)
     gmail_detail = (
         f"HDFC alerts parsed: {credit_count} credits, {debit_count} debits in last 7 days"
         if gmail_ok else "No HDFC transactions parsed yet"
     )
-    sources.append({"name": "Gmail (niloy@firstrain.co.in)", "detail": gmail_detail, "ok": gmail_ok})
+    sources.append({
+        "name": "Gmail (niloy@firstrain.co.in)",
+        "detail": gmail_detail,
+        "ok": gmail_ok,
+        "status": _status(gmail_ok, gmail_hrs),
+        "lastAccessed": gmail_ts_raw,
+        "lastAccessedFmt": gmail_ts_fmt,
+    })
 
     # ── Google Sheet ─────────────────────────────────────────────────────────
     recv_count = len(finance.get("receivables", []))
@@ -1016,8 +1442,25 @@ def _build_sources(bigin, sheet, finance, bank_txn) -> list:
     proj_count = len(sheet.get("projects", []))
     sheet_tabs = 7  # Cash_Position, Treasury, Receivables, Payables, Statutory, Notes, Projects
     sheet_ok = recv_count > 0 or pay_count > 0 or proj_count > 0
+    # Timestamp from sheet_cash_position.json meta.read_at (written by read_cashflow_xlsx.py)
+    sheet_ts_raw = ""
+    try:
+        cp_json = Path("data/projects/sheet_cash_position.json")
+        if cp_json.exists():
+            cp_data = json.loads(cp_json.read_text())
+            sheet_ts_raw = cp_data.get("meta", {}).get("read_at", "")
+    except Exception:
+        pass
+    sheet_ts_fmt, sheet_hrs = _fmt_ts(sheet_ts_raw)
     sheet_detail = f"{sheet_tabs} tabs read, {recv_count} receivables + {pay_count} payables + {proj_count} projects"
-    sources.append({"name": "Google Sheet (FirstRain-Cashflow-Master)", "detail": sheet_detail, "ok": sheet_ok})
+    sources.append({
+        "name": "Google Sheet (FirstRain-Cashflow-Master)",
+        "detail": sheet_detail,
+        "ok": sheet_ok,
+        "status": _status(sheet_ok, sheet_hrs),
+        "lastAccessed": sheet_ts_raw,
+        "lastAccessedFmt": sheet_ts_fmt,
+    })
 
     # ── Bigin CRM ────────────────────────────────────────────────────────────
     deals = bigin.get("deals", [])
@@ -1025,25 +1468,99 @@ def _build_sources(bigin, sheet, finance, bank_txn) -> list:
     won_count = sum(1 for d in deals if d.get("bucket") == "won")
     junk_count = sum(1 for d in deals if d.get("bucket") == "junk")
     bigin_ok = len(deals) > 0
+    bigin_ts_raw = bigin.get("meta", {}).get("fetched_at", "")
+    bigin_ts_fmt, bigin_hrs = _fmt_ts(bigin_ts_raw)
     bigin_detail = (
         f"{active_count} active deals in Sales Pipeline 26-27 · {won_count} won · {junk_count} unqualified"
         if bigin_ok else "No pipeline data"
     )
-    sources.append({"name": "Bigin CRM", "detail": bigin_detail, "ok": bigin_ok})
+    sources.append({
+        "name": "Bigin CRM",
+        "detail": bigin_detail,
+        "ok": bigin_ok,
+        "status": _status(bigin_ok, bigin_hrs),
+        "lastAccessed": bigin_ts_raw,
+        "lastAccessedFmt": bigin_ts_fmt,
+    })
+
+    # ── HDFC SMS / iMessage ───────────────────────────────────────────────────
+    sms_meta = (imessage_data or {}).get("meta", {})
+    sms_feed = sms_meta.get("feed_status", "unknown")
+    sms_bank_feed = sms_meta.get("bank_feed_status", sms_feed)
+    sms_stale_but_live = sms_meta.get("bank_stale_but_phone_live", False)
+    feed_health = sms_meta.get("feed_health", {})
+    last_hdfc_sms = feed_health.get("last_hdfc_sms_date", "")
+    hours_since_hdfc = feed_health.get("hours_since_hdfc")
+    sms_txn_count = sms_meta.get("transaction_count", 0) or 0
+    sms_ts_raw = sms_meta.get("fetched_at", "")
+    sms_ts_fmt, _ = _fmt_ts(sms_ts_raw)
+    # Status logic — use hours directly so thresholds are enforced here too.
+    # Priority: overall relay down (h_any ≥ 24) > bank channel stale (h_hdfc ≥ 20) > ok.
+    h_any = feed_health.get("hours_since_any")
+    h_hdfc_val = hours_since_hdfc  # already extracted above (may be None)
+    if h_any is not None and h_any >= 24:
+        # Relay has been down ≥ 24h — entire iMessage feed stalled
+        sms_status = "stale" if h_any < 48 else "failed"
+        sms_ok = True  # data is just delayed, not missing
+    elif sms_stale_but_live or sms_bank_feed == "stale" or (h_hdfc_val is not None and h_hdfc_val >= 20):
+        sms_status = "stale"
+        sms_ok = True  # phone alive, just bank SMS quiet
+    elif sms_bank_feed == "unknown":
+        sms_status = "failed"
+        sms_ok = sms_txn_count > 0
+    else:
+        sms_status = "ok"
+        sms_ok = True
+    # Detail line — surface relay-down warning if overall feed is stale
+    od_snaps = (imessage_data or {}).get("od_balance_snapshots", [])
+    relay_warn = ""
+    if h_any is not None and h_any >= 24:
+        relay_warn = f" ⚠️ iMessage relay down {h_any:.0f}h — iPhone→Mac SMS stalled"
+    if od_snaps:
+        latest_snap = od_snaps[0]
+        od_used = latest_snap.get("odUtilized", 0)
+        snap_date = (latest_snap.get("date") or "")[:10]
+        sms_detail = (
+            f"Last HDFC SMS {last_hdfc_sms or snap_date} ({hours_since_hdfc:.0f}h ago)"
+            f" · OD ₹{od_used/1e5:.1f}L as of {snap_date}{relay_warn}"
+            if hours_since_hdfc is not None else
+            f"{sms_txn_count} SMS txns parsed · OD ₹{od_used/1e5:.1f}L{relay_warn}"
+        )
+    else:
+        sms_detail = (
+            f"Last HDFC SMS {last_hdfc_sms or '—'} ({hours_since_hdfc:.0f}h ago)"
+            f" · {sms_txn_count} txns{relay_warn}"
+            if hours_since_hdfc is not None else
+            f"Feed {sms_bank_feed} · {sms_txn_count} txns · iMessage chat.db{relay_warn}"
+        )
+    sources.append({
+        "name": "HDFC SMS (iMessage)",
+        "detail": sms_detail,
+        "ok": sms_ok,
+        "status": sms_status,
+        "lastAccessed": sms_ts_raw,
+        "lastAccessedFmt": sms_ts_fmt,
+    })
 
     # ── Telegram Bot (static — briefing always generated) ────────────────────
+    now_fmt = datetime.now().strftime("%-d %b · %H:%M IST")
     sources.append({
         "name": "Telegram Bot (@FirstRainOS1_bot)",
         "detail": "Daily briefing sent at 08:00 IST",
-        "ok": True
+        "ok": True,
+        "status": "ok",
+        "lastAccessed": datetime.now().astimezone().isoformat(),
+        "lastAccessedFmt": f"{now_fmt} (now)",
     })
 
     return sources
 
 
-def _compose_cashflow(bigin, sheet, momentum, drift):
+def _compose_cashflow(bigin, sheet, momentum, drift, imessage_data: dict = None):
     """
     Compose the cashflow.json structure the v11 renderer reads.
+    imessage_data: pre-loaded hdfc_imessages.json dict (passed in so the SMS OD
+    override happens before sweep/levers are computed from the cash dict).
     """
     finance = _load_finance()
     cash = finance.get("cash", {}) or {}
@@ -1064,12 +1581,17 @@ def _compose_cashflow(bigin, sheet, momentum, drift):
     derived = _compute_derived(bigin, sheet, finance)
 
     # Monthly revenue: auto from Bigin Won deals, overridden by Notes manual entries
-    bigin_monthly_revenue, undated_won = _monthly_revenue_from_bigin(bigin.get("deals", []))
+    bigin_monthly_revenue, undated_won, bigin_monthly_close = _monthly_revenue_from_bigin(bigin.get("deals", []))
     notes_overrides = finance.get("notesMonthlyRevenue", {})
     monthly_revenue = {**bigin_monthly_revenue, **notes_overrides}  # Notes wins on conflict
 
     # Monthly vendor outflow: auto from Projects variable_cost_cp (no manual entry needed)
     monthly_vendor_outflow = _monthly_vendor_from_projects(sheet.get("projects", []))
+    # Gross close-month revenue → used for vendor cost estimation (work happens
+    # at close month, so CP hits that month regardless of cash timing).
+    monthly_close_revenue = bigin_monthly_close
+    # Monthly statutory: auto from Statutory sheet tab (was flat ₹2.5L/month)
+    monthly_statutory = _monthly_statutory_from_obligations(finance.get("statutory", []))
 
     # Bank transactions (auto-parsed from HDFC emails by parse_hdfc_emails.py)
     bank_txn = {}
@@ -1080,12 +1602,65 @@ def _compose_cashflow(bigin, sheet, momentum, drift):
     treasury_holdings: list = []
     if TREASURY_JSON.exists():
         th = json.loads(TREASURY_JSON.read_text())
-        treasury_holdings = th.get("holdings", [])
+        raw_holdings = th.get("holdings", [])
+        # Deduplicate: sheet_treasury.json accumulates one snapshot per
+        # statement date — keep only the LATEST snapshot per fund so we
+        # don't triple-count when 3 statement dates are present.
+        seen: dict = {}
+        for h in raw_holdings:
+            key = (
+                h.get("folio", ""),
+                h.get("investmentType", h.get("instrument", "")),
+                h.get("instrument", ""),
+            )
+            existing_date = seen.get(key, {}).get("lastStatementDate", "")
+            if h.get("lastStatementDate", "") >= existing_date:
+                seen[key] = h
+        treasury_holdings = list(seen.values())
+
+    # ── Override cash position from HDFC SMS when fresher than Sonal's sheet ──
+    # The iMessage parser extracts 'Avl bal:INR -X' from 0241 SMS alerts.
+    # If that reading is newer than the last sheet date, it becomes the live source.
+    # Sheet (Sonal) is still shown for reconciliation; the delta is flagged.
+    sms_od = _derive_od_from_sms(imessage_data or {})
+    sheet_date = (cash.get("date") or "")[:10]
+    od_source = "sheet"
+    sms_od_note = None
+    if sms_od and sms_od["date"] > sheet_date:
+        sheet_od_utilized = cash.get("odUtilized", 0) or 0
+        sheet_op_cash = cash.get("operatingCash", 0) or 0
+        delta = sms_od["odUtilized"] - sheet_od_utilized
+        # Override the cash dict with SMS-authoritative values
+        cash["odUtilized"] = sms_od["odUtilized"]
+        cash["operatingCash"] = sms_od["operatingCash"]
+        cash["odSource"] = "hdfc_sms"
+        cash["odDate"] = sms_od["date"]
+        od_source = "hdfc_sms"
+        sms_od_note = {
+            "smsOdDate": sms_od["date"],
+            "smsOdUtilized": sms_od["odUtilized"],
+            "sheetOdDate": sheet_date,
+            "sheetOdUtilized": sheet_od_utilized,
+            "delta": delta,
+            "deltaFormatted": f"+₹{delta/1e5:.1f}L OD drawn since sheet" if delta > 0 else f"-₹{abs(delta)/1e5:.1f}L OD repaid since sheet",
+        }
+        print(f"  📱 HDFC SMS OD override: ₹{sms_od['odUtilized']/1e5:.2f}L drawn "
+              f"(SMS {sms_od['date']}) vs sheet ₹{sheet_od_utilized/1e5:.2f}L ({sheet_date}). "
+              f"Delta: {sms_od_note['deltaFormatted']}")
+    elif sms_od:
+        cash["odSource"] = "sheet"   # Sheet is fresher — SMS data is older, keep sheet
+        print(f"  ℹ HDFC SMS OD ({sms_od['date']}) not newer than sheet ({sheet_date}) — keeping sheet values")
+    else:
+        cash["odSource"] = "sheet"
 
     # ── Sweep advisory & levers ───────────────────────────────────────────────
     op_cash = cash.get("operatingCash", 0) or 0
     od_facility = cash.get("odLimit", cash.get("odFacility", 0)) or 0
     od_utilized = cash.get("odUtilized", 0) or 0
+    # Treasury total from the DEDUPED holdings. cash.treasury can be inflated
+    # (it gets corrupted to ~10x when non-deduped accumulating snapshots are
+    # summed upstream), so trust the deduped holdings sum as the real buffer.
+    treasury_total = sum(float(h.get("currentValue") or 0) for h in treasury_holdings) or (cash.get("treasury", 0) or 0)
     monthly_burn = finance.get("monthlyBurn") or cash.get("monthlyBurn") or 0
     # Fallback: if no plain CONFIG_MONTHLY_BURN entry, derive from per-month overrides
     if not monthly_burn:
@@ -1096,7 +1671,8 @@ def _compose_cashflow(bigin, sheet, momentum, drift):
             monthly_burn = _notes_burn.get(_cur_mk) or next(iter(_notes_burn.values()), 0)
 
     sweep_config, treasury_sweep = _compute_sweep(
-        op_cash, monthly_burn, od_facility, od_utilized
+        op_cash, monthly_burn, od_facility, od_utilized,
+        receivables=norm_receivables, payables=norm_payables,
     )
     levers = _compute_levers(
         norm_receivables, norm_payables,
@@ -1107,6 +1683,8 @@ def _compose_cashflow(bigin, sheet, momentum, drift):
     cf_annual, cf_months, cf_quarters, cf_extrapolation = _compute_cashflow(
         monthly_revenue, monthly_vendor_outflow, monthly_burn, op_cash, norm_receivables,
         monthly_burn_overrides=finance.get("notesMonthlyBurn", {}),
+        monthly_close_revenue=monthly_close_revenue,
+        monthly_statutory=monthly_statutory,
     )
 
     return {
@@ -1117,24 +1695,35 @@ def _compose_cashflow(bigin, sheet, momentum, drift):
             "momentum": momentum,
             "drift": drift,
 
-            # Cash position (from sheet_cash_position.json; odLimit = OD facility limit)
+            # Cash position — source priority: HDFC SMS (live) > Sheet (Sonal, daily manual)
+            # odSource: 'hdfc_sms' when SMS is fresher; 'sheet' otherwise.
+            # smsOdReconcile: non-null when SMS overrode the sheet — shows date/delta.
             "operatingCash": op_cash,
-            "treasury": cash.get("treasury", 0),
-            # parser writes "odLimit" (the OD facility ceiling); legacy wrote "odFacility"
+            "treasury": treasury_total,
             "odFacility": od_facility,
             "odUtilized": od_utilized,
-            # monthlyBurn from Notes CONFIG_MONTHLY_BURN entry; not a Sheet column
+            "odSource": od_source,
+            "smsOdReconcile": sms_od_note,
             "monthlyBurn": monthly_burn,
 
             # Working capital (normalised field aliases added above)
             "receivables": norm_receivables,
             "payables": norm_payables,
-            "statutory": norm_statutory,
+            # Statutory TAB display: only obligations with a real amount (> ₹0).
+            # The dozens of ₹0 "projected" filing rows (future GSTR-1, PT-MH, TDS
+            # returns with no payment) are dropped from the tab to cut clutter.
+            # NOTE: the FULL list (norm_statutory) is still used for the health
+            # score, cash-flow projection, and briefing — so ₹0 filing deadlines
+            # remain tracked internally; they are only hidden from this tab view.
+            "statutory": [s for s in norm_statutory
+                          if abs(float(s.get("amount", 0) or 0)) > 0.0],
 
             # Derived / computed
             "allRegions": derived["allRegions"],
             "allIndustries": derived["allIndustries"],
             "secureConcentration": derived["secureConcentration"],
+            "secureRevenue": derived["secureRevenue"],
+            "pipelineTotal": derived["pipelineTotal"],
             "saltwaterConcentration": derived["saltwaterConcentration"],
             "saltwaterOutstanding": derived["saltwaterOutstanding"],
             "topActions": derived["topActions"],
@@ -1156,6 +1745,8 @@ def _compose_cashflow(bigin, sheet, momentum, drift):
             "sweepConfig": sweep_config,
             "treasurySweep": treasury_sweep,
             "levers": levers,
+            # FD holdings — filtered subset of treasury_holdings for dashboard FD card
+            "fdHoldings": [h for h in treasury_holdings if (h.get("investmentType") or "").lower() == "fd"],
 
             # 12-month cash flow projection (computed above)
             "annual": cf_annual,
@@ -1166,7 +1757,7 @@ def _compose_cashflow(bigin, sheet, momentum, drift):
             "telegramBriefing": _build_telegram_briefing(
                 op_cash=op_cash,
                 monthly_burn=monthly_burn,
-                treasury=cash.get("treasury", 0),
+                treasury=treasury_total,
                 od_facility=od_facility,
                 od_utilized=od_utilized,
                 norm_receivables=norm_receivables,
@@ -1175,6 +1766,8 @@ def _compose_cashflow(bigin, sheet, momentum, drift):
                 cf_annual=cf_annual,
                 secure_concentration=derived["secureConcentration"],
                 saltwater_concentration=derived["saltwaterConcentration"],
+                norm_projects=[_normalize_project(p) for p in sheet.get("projects", [])],
+                bank_latest_balance=bank_txn.get("latestBalance"),
             ),
 
             "meta": {
@@ -1197,7 +1790,7 @@ def _compose_cashflow(bigin, sheet, momentum, drift):
             "generated_at": datetime.now().astimezone().isoformat(),
             "extrapolation": cf_extrapolation,
             "lastRefresh": datetime.now().strftime("%d %b %Y · %H:%M IST"),
-            "sources": _build_sources(bigin, sheet, finance, bank_txn),
+            "sources": _build_sources(bigin, sheet, finance, bank_txn, imessage_data),
         }
     }
 
@@ -1270,7 +1863,29 @@ def build_from_files():
     momentum = json.loads(Path("data/projects/momentum.json").read_text())
     drift = json.loads(Path("data/projects/drift_report.json").read_text())
 
-    cashflow = _compose_cashflow(bigin_classified, sheet, momentum, drift)
+    # Load iMessage SMS data FIRST so OD override happens inside _compose_cashflow
+    imessage_data = _load_imessage_txns()
+
+    cashflow = _compose_cashflow(bigin_classified, sheet, momentum, drift, imessage_data=imessage_data)
+
+    # Attach iMessage data to cashflow output
+    cashflow["imessageBankData"] = imessage_data
+    _imsg_meta = cashflow["imessageBankData"].get("meta", {})
+    cashflow["smsFeedStatus"] = _imsg_meta.get("feed_status", "unknown")
+    cashflow["smsFeedHealth"] = _imsg_meta.get("feed_health", {})
+    if cashflow["smsFeedStatus"] == "stale":
+        fh = cashflow["smsFeedHealth"]
+        print(f"  📵 HDFC SMS feed STALE — newest chat.db msg {fh.get('hours_since_any')}h old. "
+              f"iPhone->Mac sync likely down; relying on Gmail HDFC email alerts.")
+    sms_only = [
+        t for t in cashflow["imessageBankData"].get("transactions", [])
+        if t.get("confidence") == "sms_only" and t.get("type") == "credit"
+    ]
+    if sms_only:
+        print(f"  ⚠  {len(sms_only)} SMS-only credit(s) not yet in Gmail:")
+        for t in sms_only:
+            src = " [MANUAL]" if t.get("source") == "manual_paste" else ""
+            print(f"     {t['date'][:16]}  ₹{t['amount']:,.0f}  acc:{t['account']}  {t.get('counterparty','?')}{src}")
 
     CASHFLOW_JSON.parent.mkdir(parents=True, exist_ok=True)
     with open(CASHFLOW_JSON, "w") as f:
@@ -1282,6 +1897,7 @@ def build_from_files():
     print(f"✓ Dashboard rendered → {OUTPUT_HTML}")
     print(f"  drift: {drift['counts']['ALERT']} ALERT · {drift['counts']['WARNING']} WARNING")
     print(f"  momentum: {momentum['mode']} ({momentum['snapshot_count']} snapshots)")
+    print(f"  SMS feed: {cashflow['smsFeedStatus']} · {len(cashflow['imessageBankData'].get('transactions', []))} txns")
     print("=" * 60)
 
 
