@@ -378,6 +378,7 @@ def parse_payables(wb) -> dict:
             "vendor": vendor,
             "invoiceNo": _clean(d.get("invoice_no")),
             "invoiceDate": (_parse_date(d.get("invoice_date")) or None),
+            "showProject": _clean(d.get("show_project")),
             "invoiceAmount": _to_float(d.get("invoice_amount")),
             "gstAmount": _to_float(d.get("gst_amount")),
             "totalAmount": _to_float(d.get("total_amount")),

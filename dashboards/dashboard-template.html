@@ -2712,10 +2712,14 @@ body{
     var flex = p.flexibility || "can-delay-7d";  // default if Sonal hasn't tagged
     var flexLabels = { "must-pay": "must pay", "can-delay-7d": "delay 7d", "can-delay-30d": "delay 30d" };
     var flexTag = '<span class="flex-tag ' + flex + '">' + flexLabels[flex] + '</span>';
+    // Project name renders between invoice and approver in the sub-line,
+    // mirroring the Collect tab. Skip if absent so we don't get "· ·" gaps.
+    var pProj = p.showProject ? ' · <span class="list-row-proj">' + esc(p.showProject) + '</span>' : '';
+    var pApprover = p.approver ? ' · ' + esc(p.approver) : '';
     payHtml += '<div class="list-row ' + rowCls + '">'
       + '<div class="list-row-main">'
       +   '<div class="list-row-title">' + esc(p.vendor) + pill + flexTag + '</div>'
-      +   '<div class="list-row-sub">' + esc(p.invoice || "") + (p.due ? ' · due ' + esc(p.due) : '') + '</div>'
+      +   '<div class="list-row-sub">' + esc(p.invoice || "") + pProj + pApprover + (p.due ? ' · due ' + esc(p.due) : '') + '</div>'
       +   (p.flexNote ? '<div class="flex-note">' + esc(p.flexNote) + '</div>' : '')
       + '</div>'
       + '<div class="list-row-right">'
