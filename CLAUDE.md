@@ -27,6 +27,7 @@ Enforced by Hooks (100% deterministic). Do not override.
 - Only Niloy writes vault files
 - FirstRain-Intel/CLAUDE.md is a separate file — never overwrite it
 - Dashboard deploys → ALWAYS `bash scripts/deploy_dashboard.sh` — NEVER raw `wrangler pages deploy` (defaults to Preview env, leaves Production stale)
+- HDFC email cache → NEVER hand-merge new threads into `data/projects/_cache/hdfc_emails.json`. Always re-fetch the full window via the morning sync's Gmail MCP call. Surgical merges leave gaps that drift the bank-balance reconciliation (caught 16-Jun-2026 with a ₹23L overshoot).
 
 ## NOTION MCP — PRODUCTION TRACKER
 - Tracker DB ID: ac84c676ad7249d2a79732d842f71d62

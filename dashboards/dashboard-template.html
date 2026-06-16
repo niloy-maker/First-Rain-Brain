@@ -2225,6 +2225,18 @@ body{
   var _balCls = _bankBal < 0 ? 'neg' : 'pos';
   var _acctFoot = 'Recent flow · +' + fmtP(_bt.credits || 0) + ' in · −' + fmtP(_bt.debits || 0) + ' out';
   if (_internalOut > 0) _acctFoot += ' — incl. ' + fmtP(_internalOut) + ' internal CA→OD sweep, external out ' + fmtP(_extOut);
+  // Bank balance reconciliation badge — fires when computed running total
+  // drifts > Rs 1L from the email-embedded "Available Balance". Caught silent
+  // ₹23L overshoot on 16-Jun-2026 (anchor 18 days old, missing debits).
+  var _rec = FR.bankReconcile || {};
+  var _recBadge = '';
+  if (_rec.status === 'material_gap') {
+    _recBadge = ' · <span class="acct-disc">⚠ BALANCE DRIFT ' + fmtP(Math.abs(_rec.delta_inr||0)) + ' — refetch HDFC cache</span>';
+  } else if (_rec.status === 'drift') {
+    _recBadge = ' · <span class="acct-warn">drift ' + fmtP(Math.abs(_rec.delta_inr||0)) + '</span>';
+  } else if (_rec.status === 'ok') {
+    _recBadge = ' · <span class="acct-ok">✓ reconciled to HDFC</span>';
+  }
   var acctHtml = '<div class="acct-strip">'
     + '<div class="acct-strip-top">'
     +   '<span class="acct-strip-label">Current Account · HDFC 0247</span>'
@@ -2232,7 +2244,8 @@ body{
     + '</div>'
     + '<div class="acct-strip-meta"><span class="acct-truth">✓ HDFC alerts — source of truth</span> · as of ' + esc(String(_asOf).slice(5))
     +   ' · sheet (Sonal) ' + fmtP(_sheetBal)
-    +   (_hasDisc ? ' · <span class="acct-disc">Δ ' + fmtP(Math.abs(_diff)) + ' — reconcile</span>' : ' · matches') + '</div>'
+    +   (_hasDisc ? ' · <span class="acct-disc">Δ ' + fmtP(Math.abs(_diff)) + ' — reconcile</span>' : ' · matches')
+    +   _recBadge + '</div>'
     + (acctTxnHtml ? '<div class="acct-txn-head">Latest activity</div>' + acctTxnHtml : '')
     + '<div class="acct-foot">' + _acctFoot + '</div>'
     + '</div>';

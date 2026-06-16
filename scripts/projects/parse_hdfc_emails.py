@@ -211,6 +211,15 @@ P_NEW_DEPOSIT_ALERT_LITE = re.compile(
     re.IGNORECASE | re.DOTALL,
 )
 
+# "Available Balance: INR X" embedded inside ANY HDFC email body (credit alerts,
+# debit alerts, all of them include it). Captured as an auxiliary balance
+# snapshot — keeps the running-total anchor as fresh as the latest txn email,
+# even when HDFC hasn't sent a dedicated balance-ping email.
+P_EMBEDDED_BALANCE = re.compile(
+    r"Available Balance:\s*INR\s*([\d,]+\.?\d*)",
+    re.IGNORECASE,
+)
+
 # Manual cheque attribution — HDFC cheque-deposit alerts carry NO payer name, so
 # the depositor must be confirmed manually. Keyed by (ISO date, amount) and by
 # amount alone (fallback). Confirmed by Niloy.
@@ -397,6 +406,21 @@ def parse_hdfc_email(message: dict) -> dict | None:
             txn["type"] = "INTERNAL_TRANSFER"
             txn["direction"] = "internal_transfer"
             txn["purpose"] = "Internal OD<->CA fund transfer (own account)"
+    # Extract embedded "Available Balance" attached to this txn so the running
+    # total has an anchor as fresh as the latest email — even when HDFC stops
+    # sending dedicated balance pings or when the body (not snippet) carries it.
+    if txn and txn.get("account") in ALLOWED_ACCOUNTS:
+        body = (
+            (message.get("plaintext_body") or "")
+            + " "
+            + (message.get("snippet") or "")
+        )
+        bal_match = P_EMBEDDED_BALANCE.search(body)
+        if bal_match:
+            try:
+                txn["_embeddedBalance"] = _amt(bal_match.group(1))
+            except (ValueError, AttributeError):
+                pass
     return txn
 
 

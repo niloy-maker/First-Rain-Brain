@@ -465,6 +465,76 @@ def _derive_od_from_sms(imessage_data: dict) -> "dict | None":
     }
 
 
+def _reconcile_bank_balance(bank_txn: Optional[dict]) -> dict:
+    """Compare the running balance (latest snapshot + activity since) against
+    the freshest embedded "Available Balance" line.
+
+    Returns a dict with `status` (ok / drift / material_gap / no_data),
+    `delta_inr`, `latest_anchor_date`, `latest_embedded_date`, and a
+    human-readable `note`. Drift > Rs 1L is flagged material_gap and surfaces
+    in the dashboard + Telegram so silent cache drift can't compound.
+    """
+    if not bank_txn:
+        return {"status": "no_data", "delta_inr": 0, "note": "no bank txn data"}
+
+    txns = bank_txn.get("transactions", []) or []
+    snap = bank_txn.get("latestBalance") or {}
+    if not snap or "amount" not in snap or "date" not in snap:
+        return {"status": "no_data", "delta_inr": 0, "note": "no balance snapshot found"}
+
+    anchor_amt = float(snap["amount"])
+    anchor_date = str(snap["date"])
+    anchor_acct = str(snap.get("account") or "")
+
+    # Sum credits - debits for same account AFTER snapshot date.
+    net = 0.0
+    embedded = None
+    embedded_date = None
+    for t in sorted(txns, key=lambda x: str(x.get("date", ""))):
+        if str(t.get("account") or "") != anchor_acct:
+            continue
+        d = str(t.get("date") or "")
+        if d > anchor_date and t.get("direction") in ("credit", "debit"):
+            net += float(t.get("amount") or 0) * (1 if t["direction"] == "credit" else -1)
+        # Track latest embedded balance for the SAME account
+        if t.get("_embeddedBalance") is not None and d >= (embedded_date or ""):
+            embedded = float(t["_embeddedBalance"])
+            embedded_date = d
+
+    computed = anchor_amt + net
+
+    if embedded is None:
+        return {
+            "status": "no_embedded",
+            "delta_inr": 0,
+            "anchor_date": anchor_date,
+            "computed_balance": computed,
+            "note": "no embedded 'Available Balance' line in any recent txn email — reconciliation skipped",
+        }
+
+    delta = computed - embedded
+    abs_delta = abs(delta)
+    if abs_delta < 10_000:
+        status = "ok"
+    elif abs_delta < 100_000:
+        status = "drift"
+    else:
+        status = "material_gap"
+
+    return {
+        "status": status,
+        "delta_inr": round(delta, 2),
+        "computed_balance": round(computed, 2),
+        "embedded_balance": round(embedded, 2),
+        "anchor_date": anchor_date,
+        "embedded_date": embedded_date,
+        "note": (
+            f"Computed Rs {computed:,.0f} vs HDFC-embedded Rs {embedded:,.0f} "
+            f"(Δ Rs {delta:+,.0f}) — anchor {anchor_date}, latest body {embedded_date}"
+        ),
+    }
+
+
 def _compute_sweep(op_cash: float, monthly_burn: float,
                    od_facility: float, od_utilized: float,
                    receivables: list = None, payables: list = None) -> tuple[dict, dict]:
@@ -1739,6 +1809,7 @@ def _compose_cashflow(bigin, sheet, momentum, drift, imessage_data: dict = None)
             "bankTransactions": bank_txn.get("transactions", []),
             "bankTotals": bank_txn.get("totals", {}),
             "bankLatestBalance": bank_txn.get("latestBalance"),
+            "bankReconcile": _reconcile_bank_balance(bank_txn),
             "fcyPending": bank_txn.get("fcyPending", []),
 
             # Treasury sweep advisory + liquidity levers (computed above)
