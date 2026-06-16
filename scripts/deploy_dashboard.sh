@@ -114,6 +114,14 @@ fi
 DEPLOY_URL="$(echo "$DEPLOY_OUT" | grep -oE 'https://[a-z0-9]+\.firstrain-dashboard\.pages\.dev' | head -1)"
 [ -z "$DEPLOY_URL" ] && DEPLOY_URL="$CANONICAL"
 
+# Layer 4b — confirm the deploy actually landed on Production (not Preview).
+# If `--branch=main` is ever silently stripped, the canonical URL keeps serving
+# stale content. This guard makes that failure loud rather than user-discovered.
+LATEST_ENV="$(wrangler pages deployment list --project-name="$PROJECT" 2>/dev/null | head -8 | grep -oE 'Production|Preview' | head -1)"
+if [ "$LATEST_ENV" != "Production" ]; then
+  finish 5 FAIL wrong_environment "wrangler succeeded but latest deployment is '$LATEST_ENV' not 'Production' — canonical URL will keep serving stale content. Check the --branch=main flag." "$DEPLOY_URL"
+fi
+
 # Layer 5 — verify the live gate. Expected: 401 (the _worker.js Basic-Auth gate
 # is alive and serving). 200 = gate bypassed (escalate). Anything else = not live.
 CANON_STATUS="$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$CANONICAL" 2>/dev/null)"

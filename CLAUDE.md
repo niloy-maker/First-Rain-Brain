@@ -26,6 +26,7 @@ Enforced by Hooks (100% deterministic). Do not override.
 - All Claude output → _outputs/ folder only
 - Only Niloy writes vault files
 - FirstRain-Intel/CLAUDE.md is a separate file — never overwrite it
+- Dashboard deploys → ALWAYS `bash scripts/deploy_dashboard.sh` — NEVER raw `wrangler pages deploy` (defaults to Preview env, leaves Production stale)
 
 ## NOTION MCP — PRODUCTION TRACKER
 - Tracker DB ID: ac84c676ad7249d2a79732d842f71d62
