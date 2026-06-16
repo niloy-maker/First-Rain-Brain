@@ -57,8 +57,10 @@ DEFAULT_XLSX = Path("data/projects/_cache/cashflow_master.xlsx")
 OUTPUT_DIR = Path("data/projects")
 REQUIRED_TABS = {
     "Cash_Position", "Treasury_Holdings", "Receivables", "Payables",
-    "Statutory", "Notes", "Projects",
+    "Notes", "Projects",
 }
+# Statutory tab is accepted as either name (parser handles both via _load_tab fallback)
+STATUTORY_TAB_NAMES = {"Statutory", "Statutory-1"}
 
 # ---------- Shared helpers ----------
 
@@ -107,15 +109,44 @@ def _to_bool(v: Any) -> bool:
     return s in ("true", "yes", "1", "y", "t")
 
 
-def _load_tab(wb, tab_name: str) -> tuple[list[str], list[list]]:
-    """Return (headers, data_rows). Headers are lower_snake_case from row 1."""
-    if tab_name not in wb.sheetnames:
-        raise ValueError(f"Tab '{tab_name}' not found. Available: {wb.sheetnames}")
-    ws = wb[tab_name]
+def _normalize_header(h: Any) -> str:
+    """Normalize a header cell to lower_snake_case.
+    Handles camelCase ('obligationType' → 'obligation_type'), spaces,
+    and stray whitespace. Idempotent on already-snake headers.
+    """
+    s = _clean(h)
+    if not s:
+        return ""
+    # Insert underscore before each uppercase letter that follows a lowercase
+    # letter or digit (camelCase → camel_case)
+    out = []
+    for i, ch in enumerate(s):
+        if i > 0 and ch.isupper() and (s[i-1].islower() or s[i-1].isdigit()):
+            out.append("_")
+        out.append(ch)
+    return "".join(out).lower().replace(" ", "_").replace("-", "_")
+
+
+def _load_tab(wb, tab_name) -> tuple[list[str], list[list]]:
+    """Return (headers, data_rows). Headers normalized to lower_snake_case.
+    `tab_name` can be a string or a list/tuple of acceptable names — the
+    first one that exists in the workbook wins.
+    """
+    candidates = [tab_name] if isinstance(tab_name, str) else list(tab_name)
+    resolved = None
+    for cand in candidates:
+        if cand in wb.sheetnames:
+            resolved = cand
+            break
+    if resolved is None:
+        raise ValueError(
+            f"None of {candidates} found in workbook. Available: {wb.sheetnames}"
+        )
+    ws = wb[resolved]
     all_rows = list(ws.iter_rows(values_only=True))
     if not all_rows:
         return [], []
-    headers = [_clean(h).lower() for h in all_rows[0]]
+    headers = [_normalize_header(h) for h in all_rows[0]]
     data_rows = [list(r) for r in all_rows[1:] if any(c is not None and str(c).strip() for c in r)]
     return headers, data_rows
 
@@ -189,7 +220,7 @@ def parse_cash_position(wb) -> dict:
 
 # ---------- 2. Treasury_Holdings ----------
 
-VALID_INVESTMENT_TYPES = {"liquid", "debt_short", "debt_long", "equity", "hybrid"}
+VALID_INVESTMENT_TYPES = {"liquid", "debt_short", "debt_long", "equity", "hybrid", "fd"}
 
 def parse_treasury(wb) -> dict:
     headers, rows = _load_tab(wb, "Treasury_Holdings")
@@ -205,6 +236,9 @@ def parse_treasury(wb) -> dict:
         inv_type = _clean(d.get("investment_type")).lower()
         if inv_type and inv_type not in VALID_INVESTMENT_TYPES:
             warnings.append(f"invalid_investment_type:{inv_type}:{name}")
+        notes_val = _clean(d.get("notes")) or ""
+        if "redeemed" in notes_val.lower():
+            continue
         current_val = _to_float(d.get("current_value"))
         h = {
             "instrument": name,
@@ -221,7 +255,7 @@ def parse_treasury(wb) -> dict:
             "lockInUntil": (_parse_date(d.get("lock_in_until")) or None),
             "ltcgApplicable": _to_bool(d.get("ltcg_applicable")),
             "lastStatementDate": (_parse_date(d.get("last_statement_date")) or None),
-            "notes": _clean(d.get("notes")),
+            "notes": notes_val,
         }
         # Normalize dates to ISO strings
         for k in ("exitLoadValidUntil", "lockInUntil", "lastStatementDate"):
@@ -257,7 +291,13 @@ def parse_receivables(wb) -> dict:
             continue
         due = _parse_date(d.get("due_date"))
         expected = _parse_date(d.get("expected_date"))
-        days_od = max(0, (today - due).days) if due else 0
+        # Use expected_date when it's later than due_date (e.g. show closes
+        # after invoice date, so payment can't realistically arrive on
+        # invoice due_date). This matches how the exec team tracks
+        # collections and stops false 50d-overdue alerts for invoices
+        # that are actually on schedule.
+        ref_date = expected if (expected and (not due or expected > due)) else due
+        days_od = max(0, (today - ref_date).days) if ref_date else 0
         balance = _to_float(d.get("balance"))
         if balance > 0:
             total_balance += balance
@@ -372,7 +412,9 @@ def parse_payables(wb) -> dict:
 # ---------- 5. Statutory (manual schedule — Gmail parser fills `filings` separately) ----------
 
 def parse_statutory_manual(wb) -> dict:
-    headers, rows = _load_tab(wb, "Statutory")
+    # Try the new tab first ("Statutory-1" with expanded schema) and fall back
+    # to the original "Statutory" tab.
+    headers, rows = _load_tab(wb, ["Statutory-1", "Statutory"])
     today = date.today()
     obligations = []
     overdue = []
@@ -389,11 +431,35 @@ def parse_statutory_manual(wb) -> dict:
         status = _clean(d.get("status")).lower()
         days_to_due = (due - today).days if due else None
 
+        # Effective net payable.
+        # The sheet's `amountPayable` = taxPayableSales − creditInputPurchase, but
+        # is only filled once a return is finalized/filed. For not-yet-filed
+        # ("projected") rows it stays 0 even when a real gross tax-on-sales
+        # estimate exists (e.g. May GSTR-3B: taxPayableSales ₹17.9L, input credit
+        # not yet entered → net ₹17.9L). Showing 0 would hide a material cash
+        # obligation in both the dashboard and the monthly cash-flow projection.
+        # So: prefer the finalized amountPayable; otherwise fall back to the net
+        # estimate (tax on sales − input credit) when that is positive.
+        amt_final = _to_float(d.get("amount_payable"))
+        tax_sales = _to_float(d.get("tax_payable_sales"))
+        credit_in = _to_float(d.get("credit_input_purchase"))
+        net_est = round(tax_sales - credit_in, 2)
+        effective_payable = amt_final if amt_final > 0 else (net_est if net_est > 0 else 0.0)
+        is_estimate = amt_final <= 0 and net_est > 0
+
         entry = {
             "obligationType": ob_type,
             "periodFor": _clean(d.get("period_for")),
             "dueDate": due.isoformat() if due else None,
-            "amountPayable": _to_float(d.get("amount_payable")),
+            "amountPayable": effective_payable,
+            "amountPayableFinal": amt_final,   # raw sheet value (0 until filed)
+            "taxPayableSales": tax_sales,
+            "creditInputPurchase": credit_in,
+            "netEstimate": net_est,
+            "cgstNet": _to_float(d.get("cgst_net")),
+            "sgstNet": _to_float(d.get("sgst_net")),
+            "igstNet": _to_float(d.get("igst_net")),
+            "isEstimate": is_estimate,
             "filedDate": filed.isoformat() if filed else None,
             "challanRef": _clean(d.get("challan_ref")),
             "status": status or "pending",
@@ -484,7 +550,7 @@ def parse_projects(wb) -> dict:
         totals["cp"] += cp
         totals["commission"] += comm
         totals["contribution"] += contribution
-        totals["sizeSqm"] += _to_float(d.get("sizesqm"))
+        totals["sizeSqm"] += _to_float(d.get("size_sqm"))
 
         # Margin floor check (CLAUDE.md): 33% India / 38% International
         region = _clean(d.get("region")) or "India"
@@ -495,7 +561,7 @@ def parse_projects(wb) -> dict:
             "company": company,
             "project": _clean(d.get("project")),
             "delivery_month": _clean(d.get("delivery_month")),
-            "sizeSqm": _to_float(d.get("sizesqm")),
+            "sizeSqm": _to_float(d.get("size_sqm")),
             "city": _clean(d.get("city")),
             "fabricator": _clean(d.get("fabricator")),
             "sales_sp": sp,
@@ -549,6 +615,8 @@ def main(xlsx_path: Path | None = None) -> int:
     # Pre-flight: confirm the live Sheet has the new structure (post-migration).
     actual_tabs = set(wb.sheetnames)
     missing = REQUIRED_TABS - actual_tabs
+    if not (actual_tabs & STATUTORY_TAB_NAMES):
+        missing.add("Statutory (or Statutory-1)")
     if missing:
         print(
             "ERROR: live Sheet is missing required tabs — "
