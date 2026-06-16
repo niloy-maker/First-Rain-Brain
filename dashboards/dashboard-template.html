@@ -337,6 +337,12 @@ body{
 .sweep-card.sweep-neutral{
   border-left:4px solid var(--border);
 }
+.sweep-card.sweep-hold{
+  border-left:4px solid var(--amber);
+  background:linear-gradient(135deg, var(--amber-bg) 0%, var(--surface) 60%);
+}
+.sweep-hold .sweep-arrow{color:var(--amber)}
+.sweep-hold .sweep-label{color:var(--amber)}
 .sweep-header{
   display:flex;align-items:center;gap:14px;margin-bottom:10px;
 }
@@ -2320,11 +2326,15 @@ body{
     var ts = FR.treasurySweep;
     var cfg = FR.sweepConfig || {};
     var dirCls = ts.direction === 'OUTWARD' ? 'sweep-out' :
-                 ts.direction === 'INWARD'  ? 'sweep-in'  : 'sweep-neutral';
+                 ts.direction === 'INWARD'  ? 'sweep-in'  :
+                 ts.direction === 'HOLD_PENDING_COLLECTION' ? 'sweep-hold' : 'sweep-neutral';
     var dirIcon = ts.direction === 'OUTWARD' ? '↗' :
-                  ts.direction === 'INWARD'  ? '↙' : '↔';
+                  ts.direction === 'INWARD'  ? '↙' :
+                  ts.direction === 'HOLD_PENDING_COLLECTION' ? '⏸' : '↔';
     var dirLabel = ts.direction === 'OUTWARD' ? 'DEPLOY SURPLUS' :
-                   ts.direction === 'INWARD'  ? 'BELOW FLOAT'    : 'AT TARGET';
+                   ts.direction === 'INWARD'  ? 'BELOW FLOAT'    :
+                   ts.direction === 'HOLD_PENDING_COLLECTION' ? 'HOLD · COLLECT FIRST' :
+                   ts.direction === 'REPAY_OD' ? 'REPAY OD FIRST' : 'AT TARGET';
 
     ovHtml += '<div class="sweep-card ' + dirCls + '">'
       + '<div class="sweep-header">'
@@ -2350,6 +2360,14 @@ body{
       }
     } else if (ts.direction === 'INWARD') {
       ovHtml += '<div class="sweep-footer-hint">See <em>Your levers</em> below for deficit-funding strategy.</div>';
+    } else if (ts.direction === 'HOLD_PENDING_COLLECTION') {
+      ovHtml += '<div class="sweep-footer">'
+        +   '<div class="sweep-footer-item"><span class="sweep-footer-label">30d horizon surplus</span><span class="sweep-footer-value">' + fmt(ts.horizonSurplus || 0) + '</span></div>'
+        +   '<div class="sweep-footer-item"><span class="sweep-footer-label">Action</span><span class="sweep-footer-value">' + esc(ts.actionFor || '') + '</span></div>'
+        + '</div>';
+      if (ts.howTo) {
+        ovHtml += '<div class="sweep-howto"><em>How:</em> ' + esc(ts.howTo) + '</div>';
+      }
     }
 
     // Config reference (small print)

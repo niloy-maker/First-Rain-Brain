@@ -647,12 +647,25 @@ def _compute_sweep(op_cash: float, monthly_burn: float,
     # Net 30d position
     net_position_30d = op_cash + expected_inflows - expected_outflows
     net_deficit      = float_target - net_position_30d   # positive = need cash
-    raw_deficit      = float_target - op_cash            # old simple view
+    raw_deficit      = float_target - op_cash            # cash-only view
 
-    # Use net position as primary; fall back to raw if no payables/receivables data
+    # Use net position as primary for DEFICIT checks (when we need to draw OD
+    # or sweep treasury inward, future inflows matter — they tell us whether
+    # the shortfall is bridged by tomorrow's receivables).
     has_flow_data = bool(recv_list or pay_list)
     working_deficit = net_deficit if has_flow_data else raw_deficit
-    surplus         = -working_deficit
+
+    # SURPLUS check is different: we can only deploy CASH ON HAND today.
+    # A 30d-projected surplus driven by expected receivables is not deployable
+    # — collecting those receivables takes weeks and the MF deployment must
+    # come from money already in the bank. Cap deployable surplus by today's
+    # cash above float so we never recommend deploying funds that aren't there.
+    # (Fix 17-Jun-2026: prior code used -working_deficit which sourced
+    # ~₹84L of "surplus" from ₹142L of expected receivables while op_cash
+    # was below float — would have left 0247 deeply negative on execution.)
+    today_surplus    = max(0.0, op_cash - float_target)
+    horizon_surplus  = max(0.0, net_position_30d - float_target)
+    surplus          = min(today_surplus, horizon_surplus)
 
     # ── Build context lines for rationale ────────────────────────────────────
     flow_context = ""
@@ -771,6 +784,36 @@ def _compute_sweep(op_cash: float, monthly_burn: float,
             "vendorDue30d": vendor_due_30d,
             "expectedInflows30d": expected_inflows,
             "netPosition30d": net_position_30d,
+        }
+    elif horizon_surplus > min_sweep and today_surplus < min_sweep:
+        # 30d projection looks healthy but cash on hand is below float — the
+        # surplus is sitting in unrealised receivables. Tell Niloy to chase
+        # collections, not to deploy a sum that isn't there yet.
+        sweep = {
+            "direction": "HOLD_PENDING_COLLECTION",
+            "verdict": (
+                f"Hold — 30d position +{_fmt(horizon_surplus)} above float, "
+                f"but op_cash {_fmt(op_cash)} is below {_fmt(float_target)}"
+            ),
+            "headline": "Collect receivables before deploying surplus",
+            "rationale": (
+                f"{phase_note} Cash {_fmt(op_cash)} · target {_fmt(float_target)}.{flow_context} "
+                f"Net 30d projection shows +{_fmt(horizon_surplus)} above float, but those "
+                f"funds are still in receivables ({_fmt(expected_inflows)} expected). "
+                "Deploying to MF today would push the operating account negative. "
+                "Re-evaluate once Sonal posts the next collection cycle."
+            ),
+            "recommendedAmount": 0,
+            "horizonSurplus": horizon_surplus,
+            "actionFor": "Chinmay (chase) + Sonal (post collections)",
+            "howTo": (
+                "Step 1: Chinmay accelerates the next-due receivable (see Collect tab). "
+                "Step 2: Once cash arrives in 0247 and op_cash > float_target + Rs 2L, "
+                "the next sync will flip this to a deploy recommendation."
+            ),
+            "confidence": "HIGH",
+            "nextReview": "tomorrow 08:00",
+            "phase": phase,
         }
     else:
         sweep = {
