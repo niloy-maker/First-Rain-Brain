@@ -188,6 +188,29 @@ P_CHEQUE_DEPOSIT = re.compile(
     re.IGNORECASE,
 )
 
+# Pattern: "New Deposit Alert" template — HDFC's newer credit notification (added
+# ~Jun 2026). Snippet: "You have received a credit in your HDFC Bank account.
+# Details of the transaction: Amount received: INR X Account: XXNNNN Date:
+# DD-MON-YYYY Reference Details: RTGS Cr-... | FD Redeem | FIRST RAIN EXH-..."
+# 4+ credits to operating account 0247 were silently dropped before this fix.
+P_NEW_DEPOSIT_ALERT = re.compile(
+    r"You have received a credit.*?"
+    r"Amount received:\s*INR\s*([\d,]+\.?\d*)\s*"
+    r"Account:\s*XX(\d{4})\s*"
+    r"Date:\s*(\d{1,2})[-/](\w{3})[-/](\d{2,4})\s*"
+    r"Reference Details:\s*(.+?)(?:\s*$|<|\n)",
+    re.IGNORECASE | re.DOTALL,
+)
+
+# Lenient fallback for the same template when snippet truncates before Reference
+# Details. Date still required so we don't double-count balance pings.
+P_NEW_DEPOSIT_ALERT_LITE = re.compile(
+    r"You have received a credit.*?"
+    r"Amount received:\s*INR\s*([\d,]+\.?\d*)\s*"
+    r"Account:\s*XX(\d{4})",
+    re.IGNORECASE | re.DOTALL,
+)
+
 # Manual cheque attribution — HDFC cheque-deposit alerts carry NO payer name, so
 # the depositor must be confirmed manually. Keyed by (ISO date, amount) and by
 # amount alone (fallback). Confirmed by Niloy.
@@ -261,7 +284,7 @@ _UNKNOWN_TEMPLATES = Path("data/projects/_manual/hdfc_unknown_templates.txt")
 # Permissive regexes for the fallback — looser than the named-template patterns
 _FB_AMT_RE = re.compile(r"INR\s*([\d,]+(?:\.\d{1,2})?)", re.IGNORECASE)
 _FB_ACCT_RE = re.compile(
-    r"(?:account|a/c)\s*(?:ending|ending in|no\.?)?\s*(?:XX)?(\d{4})",
+    r"(?:account|a/c)\s*[:]?\s*(?:ending|ending in|no\.?)?\s*(?:XX)?(\d{4})",
     re.IGNORECASE,
 )
 _CREDIT_HINTS = ("credited", "moved into", "deposited", "received", "added to",
@@ -540,6 +563,42 @@ def _parse_hdfc_email_impl(message: dict) -> dict | None:
             "_sender": sender,
         }
 
+    # "New Deposit Alert" template (Jun-2026 onwards) — checked BEFORE legacy
+    # P_CREDIT because the snippet phrasing is completely different and the
+    # legacy regex would silently not match.
+    m = P_NEW_DEPOSIT_ALERT.search(snippet)
+    if m:
+        amt, account, dd, mm, yy, ref_details = m.groups()
+        txn_date = _parse_date_dmy(dd, mm, yy)
+        ref_clean = ref_details.strip().rstrip("-").rstrip(",")
+        rl = ref_clean.lower()
+        purpose = "Credit"
+        counterparty = ref_clean
+        if "rtgs" in rl or "neft" in rl:
+            purpose = "Fund Transfer credit"
+            # Strip "RTGS Cr-IFSC-" prefix to expose payer name
+            m2 = re.search(r"(?:RTGS|NEFT)\s+Cr-[A-Z0-9]+-(.+)", ref_clean, re.IGNORECASE)
+            if m2:
+                counterparty = m2.group(1).strip()
+        elif "fd redeem" in rl or "fd matur" in rl:
+            purpose = "FD redemption"
+        elif "ppfas" in rl or "mutual fund" in rl or rl.startswith("mf "):
+            purpose = "MF redemption"
+        elif "first rain" in rl:
+            purpose = "Internal transfer (self)"
+        return {
+            "type": "CREDIT",
+            "date": txn_date.isoformat() if txn_date else msg_date,
+            "amount": _amt(amt),
+            "direction": "credit",
+            "account": account,
+            "counterparty": counterparty,
+            "reference": ref_clean,
+            "purpose": purpose,
+            "subject": subject,
+            "_sender": sender,
+        }
+
     # Credit (FT/Salary/etc)
     m = P_CREDIT.search(snippet)
     if m:
@@ -641,6 +700,24 @@ def _parse_hdfc_email_impl(message: dict) -> dict | None:
             "purpose": "Cheque deposit",
             "subject": subject,
             "_sender": sender,
+        }
+
+    # "New Deposit Alert" LITE — when snippet truncates before "Reference Details"
+    m = P_NEW_DEPOSIT_ALERT_LITE.search(snippet)
+    if m:
+        amt, account = m.groups()
+        return {
+            "type": "CREDIT",
+            "date": msg_date,
+            "amount": _amt(amt),
+            "direction": "credit",
+            "account": account,
+            "counterparty": "",
+            "reference": "",
+            "purpose": "Credit",
+            "subject": subject,
+            "_sender": sender,
+            "_dateFromMsgHeader": True,
         }
 
     # Credit fallback: snippet truncated before the date — use msg_date
