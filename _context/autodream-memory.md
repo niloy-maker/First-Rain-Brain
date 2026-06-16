@@ -161,3 +161,16 @@
 - RR Kabel (= RR Global): LIVE Bigin deal "ND - Deal for Rajesh Jain", New Leads & Enquiries, Smarter E Europe context — NOT a cold ABM target.
 - Utkarsh India: 3 Bigin deals all Not Qualified (Feb 2026), contact Anindya Sarkar via referral — re-engage, not cold.
 - No Bauma 2024 outdoor case study exists. Molygraph 2024 build was indoor hall. Never claim outdoor case studies in outreach.
+
+## Verified facts (16 Jun 2026)
+- HDFC parser handles three credit alert templates: P_CREDIT (legacy "View: Account update" subject), P_NEW_DEPOSIT_ALERT (new "❗ New Deposit Alert" subject — recovered ~₹2.82Cr of 30d credits previously dropped), and the cheque-deposit / FCY-inward variants. _FB_ACCT_RE generic fallback accepts "Account: XX0247" with colon.
+- Gmail filter rule "Finance/HDFC-Txn" now also labels "New Deposit Alert" subjects. All 3 sync SKILLs use sender-only query `from:alerts@hdfcbank.bank.in` (no label restriction) so future template variants flow without filter edits.
+- Statutory tab schema is now `Statutory-1` (44 rows: 12 GSTR-3B + 12 GSTR-1 + 4 TDS-24Q + 4 TDS-26Q + 12 PT-MH). Legacy `Statutory` retained as fallback. Parser reads either via the `_load_tab(wb, ["Statutory-1", "Statutory"])` lookup + camelCase→snake_case header normalisation. Ravindra owns projected `amountPayable` updates.
+- Revenue projection model: 75% advance at Bigin close month + 25% balance close month + 1 (net-30). Vendor cost stays anchored to close month (work month), not the trailing 25% cash month.
+- Treasury Sweep deployable surplus = `min(today_surplus, horizon_surplus)`. Surplus from uncollected receivables is shown as `HOLD_PENDING_COLLECTION` direction, never recommended for deployment.
+- HDFC bank balance reconciliation: `_reconcile_bank_balance()` compares computed running total vs email-embedded "Available Balance" line. Status: ok < ₹10K, drift < ₹1L, material_gap > ₹1L. Dashboard badge surfaces it; heal-check Step 4B alerts via Telegram.
+- Dashboard deploy rule: ALWAYS `bash scripts/deploy_dashboard.sh`. Raw `wrangler pages deploy` defaults to Preview environment — causes silent Production-stale regressions. Script's Layer 4b guard asserts Production post-deploy.
+- Days-overdue uses `expected_date` if later than `due_date` — Secure UW Birmingham 17d (not 50d).
+- Show_Project column now on both Receivables and Payables tabs; rendered inline on Collect and Pay dashboard tabs between invoice no and exec/approver.
+- Secure UW Birmingham received ₹13.70L RTGS today (16 Jun), most of ₹14.69L balance. ~₹99K residual pending. Sonal to mark partial-paid.
+- Housing'26 Manchester (₹122L) + Installer'26 Birmingham (₹93.79L) Closed Won 20 May — DOTTS Expo (Poland) fabricator. NOT yet in Sonal's Projects sheet, so dashboard YTD synthesises from Bigin Won by company-name + show-prefix dedup.
