@@ -35,15 +35,28 @@ STALE_WIN_BUSINESS_DAYS = 5        # Bigin Closed Won must appear in Sheet withi
 
 # ---------- Helpers ----------
 
+_ENTITY_WORDS = (
+    r'india|systems|pvt|private|limited|ltd|inc|llc|co|corporation|corp|'
+    r'gmbh|bv|sa|ag|srl|spa|plc|controls|industries|enterprises|exports|'
+    r'solutions|technologies|tech|group|holdings'
+)
+_ENTITY_RE = re.compile(r'(\s+(' + _ENTITY_WORDS + r')\.?)+\s*$', re.IGNORECASE)
+
+
 def _normalize_name(name):
     if not name:
         return ""
     s = name.lower().strip()
-    # Strip common entity suffixes
-    s = re.sub(
-        r'\s+(india|systems|pvt|private|limited|ltd|inc|llc|co\.?|corporation|corp|gmbh|bv|sa|ag|srl|spa|plc)\.?(\s|$)',
-        ' ', s
+    # Strip punctuation
+    s = re.sub(r'[.\-,&\'\"()]', ' ', s)
+    # Iteratively strip trailing entity words until stable
+    prev = None
+    pattern = re.compile(
+        r'\s+(?:' + _ENTITY_WORDS + r')\.?(?=\s|$)', re.IGNORECASE
     )
+    while s != prev:
+        prev = s
+        s = pattern.sub(' ', s)
     s = re.sub(r'\s+', ' ', s).strip()
     return s
 
@@ -75,21 +88,43 @@ def _business_days_between(d1, d2):
 
 
 def _month_close(date1, date2):
-    """True if two dates are within 60 days of each other."""
+    """True if two dates are within 180 days of each other (covers full project lifecycle)."""
     if not date1 or not date2:
         return False
-    return abs((date1 - date2).days) <= 60
+    return abs((date1 - date2).days) <= 180
+
+
+def _names_fuzzy_match(norm_a, norm_b):
+    """True if names match exactly, or one is a prefix of the other (≥5 chars)."""
+    if norm_a == norm_b:
+        return True
+    if len(norm_a) >= 5 and len(norm_b) >= 5:
+        return norm_a.startswith(norm_b) or norm_b.startswith(norm_a)
+    return False
 
 
 # ---------- Checks ----------
+
+def _parse_delivery_month(dm):
+    """Accept YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:MM:SS formats."""
+    if not dm:
+        return None
+    dm = str(dm).strip()
+    try:
+        if len(dm) == 7:   # YYYY-MM
+            return date.fromisoformat(dm + "-01")
+        return date.fromisoformat(dm[:10])  # take date portion from any longer string
+    except ValueError:
+        return None
+
 
 def _build_sheet_soft_index(sheet_rows):
     index = []
     for r in sheet_rows:
         dm = r.get("delivery_month")
         try:
-            dm_date = date.fromisoformat(dm + "-01") if dm and len(dm) == 7 else None
-        except ValueError:
+            dm_date = _parse_delivery_month(dm)
+        except Exception:
             dm_date = None
         index.append({
             "company": r.get("company"),
@@ -111,7 +146,7 @@ def _check_bigin_wins_missing_from_sheet(bigin_wins, sheet_rows, today):
 
         matches = [
             e["company"] for e in soft_index
-            if e["norm_name"] == norm_name and _month_close(close_date, e["delivery_date"])
+            if _names_fuzzy_match(e["norm_name"], norm_name) and _month_close(close_date, e["delivery_date"])
         ]
 
         if matches:
@@ -145,13 +180,10 @@ def _check_sheet_unmatched(sheet_rows, bigin_wins):
     for row in sheet_rows:
         norm_name = _normalize_name(row.get("company"))
         dm = row.get("delivery_month")
-        try:
-            dm_date = date.fromisoformat(dm + "-01") if dm and len(dm) == 7 else None
-        except ValueError:
-            dm_date = None
+        dm_date = _parse_delivery_month(dm)
 
         matched = any(
-            _normalize_name(w.get("account_name")) == norm_name
+            _names_fuzzy_match(_normalize_name(w.get("account_name")), norm_name)
             and _month_close(_parse_date(w.get("close")), dm_date)
             for w in bigin_wins
         )
