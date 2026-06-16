@@ -702,6 +702,9 @@ body{
 .list-row.warning .list-row-amount{color:var(--amber)}
 .list-row-amount-sub{font-size:10px;color:var(--text-muted);margin-top:4px;letter-spacing:.04em;text-transform:uppercase;font-weight:500}
 
+/* Show project name inline on Collect tab — between invoice no and exec */
+.list-row-proj{color:var(--text-secondary);font-weight:500}
+
 .empty-state{text-align:center;padding:40px 16px;color:var(--text-muted)}
 .empty-state-icon{font-size:28px;color:var(--green);margin-bottom:8px}
 .empty-state-text{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-size:16px;color:var(--text-tertiary)}
@@ -2679,10 +2682,13 @@ body{
     var pill = r.daysOD > 30 ? '<span class="tag tag-red">' + r.daysOD + 'd overdue</span>' :
                r.daysOD > 0  ? '<span class="tag tag-amber">' + r.daysOD + 'd OD</span>' :
                                '<span class="tag tag-green">on time</span>';
+    // Project name renders between invoice and exec in the sub-line.
+    // Esc the show project; skip if absent so we don't get "· ·" gaps.
+    var projPart = r.showProject ? ' · <span class="list-row-proj">' + esc(r.showProject) + '</span>' : '';
     recHtml += '<div class="list-row ' + rowCls + '">'
       + '<div class="list-row-main">'
       +   '<div class="list-row-title">' + esc(r.client) + pill + '</div>'
-      +   '<div class="list-row-sub">' + esc(r.invoice || "") + ' · ' + esc(r.exec || "?") + (r.dueDate ? ' · due ' + esc(r.dueDate) : '') + '</div>'
+      +   '<div class="list-row-sub">' + esc(r.invoice || "") + projPart + ' · ' + esc(r.exec || "?") + (r.dueDate ? ' · due ' + esc(r.dueDate) : '') + '</div>'
       + '</div>'
       + '<div class="list-row-right">'
       +   '<div class="list-row-amount">' + fmt(r.balance) + '</div>'
