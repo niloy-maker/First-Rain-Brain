@@ -13,6 +13,7 @@
 | Google Sheet `FirstRain-Cashflow-Master` (Drive MCP, all 8 tabs) | Cash, Treasury, Receivables, Payables, Invoices_Raised, Statutory, Notes, Projects | `data/projects/sheet_*.json` (8 files) |
 | Gmail `niloy@firstrain.co.in` (HDFC alerts) | Bank transactions: NACH/UPI/ACH/credit/cheque/FCY | `data/projects/sheet_bank_transactions.json` |
 | Gmail `niloy@firstrain.co.in` (collections) | Collection status | Collect tab only — NOT this command |
+| FRBIS MongoDB (MCP, read-only) | Design-brief pipeline: status, designer, design-cut SLA | Reported inline (Step 12.5) — NOT written to cashflow.json |
 
 **Known gap:** GST/TDS portal acks land in Ravindra's inbox (Sonal's accountant), NOT Niloy's. `/finance` cannot pull statutory filing confirmations. Workaround: Sonal updates the `Statutory` tab manually after Ravindra forwards GSTR/TDS challan PDFs. See Step 4 for what `Statutory` is expected to contain.
 
@@ -168,6 +169,30 @@ If `nextPageToken` is present in the response, fetch a second page with `pageTok
 
 ---
 
+## Step 5b — Scan deal-status emails (Gmail MCP, including CC'd)
+
+Call `mcp__gmail__search_threads` with:
+- `query`: `(Secure OR Amaara OR Nordex OR Nutriventia OR Iberchem OR Brenntag OR Coats OR Jyothi OR DOTTS) newer_than:2d (to:niloy@firstrain.co.in OR from:niloy@firstrain.co.in OR cc:niloy@firstrain.co.in)`
+- `pageSize`: `20`
+
+For each thread found, check if it signals a deal status change vs what Bigin/sheet shows:
+- Quote sent → stage = Price Quote (not Design)
+- Client reply received → remove "no reply" / "follow up" language from that deal item
+- Payment confirmed → update receivables status
+- New terms / delays → note in the relevant deal item in the briefing
+
+**Rules:**
+- Surface changes as delta lines in the briefing: `⚡ [Client] — [what changed] (email [date])`
+- Never say "no reply" or "push design" if this scan shows the action already happened
+- If no deal-email threads found: skip silently — do not warn
+- This scan is read-only — never update Bigin or the sheet here
+
+**HDFC iMessage cross-check (cash variation line):**
+Also check `data/projects/sheet_bank_transactions.json` → `latestBalance`. If the HDFC iMessage-derived balance differs from `sheet_cash_position.json` → `operatingCash` by more than ₹1L, surface as:
+`⚠️ Cash: ₹XX.XXL (Sonal's sheet) | HDFC alert shows ₹YY.YYL — gap ₹ZZ.ZZL. Confirm with Sonal.`
+
+---
+
 ## Step 6 — Parse HDFC emails (Python)
 
 ```bash
@@ -293,6 +318,21 @@ This draft stays in Drafts until Niloy sends or discards — it is the paper tra
 
 ---
 
+## Step 12.5 — FRBIS brief pipeline (MongoDB MCP, read-only)
+
+Pull and bucket the design-brief pipeline per `.claude/frbis-sync.md` (connect from
+`.secrets/frbis.env`, pull all briefs, bucket in-head). Emit the **morning / midday / eod**
+variant from that spec based on the current IST time. This surfaces design-cut SLA health
+(overdue cuts, unclaimed briefs, synthesis pending) alongside cash — the delivery side of the
+business the cash dashboard doesn't see.
+
+Print it as a standalone block in the interactive output. **Do not** write it into
+`cashflow.json` or the Python-built `telegramBriefing` — this step is report-only and must not
+touch the dashboard pipeline. If FRBIS won't connect, print "FRBIS DISCONNECTED" and continue;
+never let it block the finance run.
+
+---
+
 ## Step 13 — Report
 
 Print summary:
@@ -303,6 +343,7 @@ Sheet: 8 tabs parsed (cash ₹X.XL · treasury ₹Y.YL · [N] receivables · [N]
 HDFC: [N] txns over 60d  Credits ₹X.XL  Debits ₹Y.YL  Net ₹Z.ZL  LatestBal ₹B.BL (acct NNNN)
 Drift: [N] ALERT · [N] WARNING · [N] INFO
 Momentum: [mode] ([N] snapshots)
+FRBIS: [N] briefs ([n] New / [n] Active / [n] Done) · [n] overdue cuts · [n] synth pending
 Dashboard: dashboards/dashboard.html ✓ (opened locally) · https://firstrain-dashboard.pages.dev ✓ (published)
 Telegram: sent ✓ · Gmail Draft: created ✓
 ```
