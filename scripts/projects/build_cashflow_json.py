@@ -1296,6 +1296,91 @@ def _monthly_revenue_from_bigin(deals):
     return monthly, undated, monthly_close
 
 
+# ── Pipeline coverage by EXECUTION month ────────────────────────────────────
+# Tracks how loaded each delivery month is (Bigin Project_Month, NOT close
+# date). A thin month inside the actionable window fires a briefing flag —
+# custom stands need ~6-8 weeks lead time, so by T-10-weeks a thin month is
+# a salvage operation, not a prospecting one (spec 2026-07-06).
+_COVERAGE_FLOOR_DEFAULT = 4_000_000   # ₹40L; override: CONFIG_EXEC_COVERAGE_FLOOR Notes entry
+_COVERAGE_ALERT_WEEKS = 10            # ≤ this many weeks out + thin → ALERT
+_COVERAGE_INFO_WEEKS = 18             # ≤ this (≈4 months) + thin → INFO
+
+
+def _compute_pipeline_coverage_by_month(deals, today, floor=_COVERAGE_FLOOR_DEFAULT):
+    """
+    Bucket live deals (bucket not in {lost, junk} = won + hot + active) by
+    execution month and flag under-filled months vs the floor.
+
+    Returns {floor, dataAvailable, missingExecMonthCount, months, flags}.
+    dataAvailable=False (and flags=[]) when NO live deal carries
+    project_month — first-run safety: flagging every month as ₹0 before the
+    Bigin fetch carries Project_Month would be pure noise.
+
+    Pure function (deals + date in, dict out) — unit-tested in
+    tests/projects/test_execution_coverage.py.
+    """
+    from datetime import date as _date
+
+    live = [d for d in deals if d.get("bucket") not in ("lost", "junk")]
+    dated = [d for d in live if d.get("project_month")]
+    data_available = len(dated) > 0
+
+    by_month: dict[str, dict] = {}
+    for d in dated:
+        mk = str(d["project_month"])[:7]  # "YYYY-MM-DD" → "YYYY-MM"
+        b = by_month.setdefault(mk, {"value": 0.0, "committed": 0.0,
+                                     "active": 0.0, "count": 0, "unpriced": 0})
+        amt = float(d.get("amount") or 0)
+        b["value"] += amt
+        b["count"] += 1
+        if amt <= 0:
+            b["unpriced"] += 1
+        stage_l = (d.get("stage") or "").strip().lower()
+        if d.get("bucket") == "won" or stage_l in REVENUE_STAGES:
+            b["committed"] += amt
+        else:
+            b["active"] += amt
+
+    cur_mk = today.strftime("%Y-%m")
+    months, flags = [], []
+    for mk in _FY_MONTHS:
+        if mk < cur_mk:
+            continue
+        first_day = _date(int(mk[:4]), int(mk[5:7]), 1)
+        weeks_out = max(0.0, (first_day - today).days / 7.0)
+        b = by_month.get(mk, {"value": 0.0, "committed": 0.0,
+                              "active": 0.0, "count": 0, "unpriced": 0})
+        severity = "OK"
+        if data_available and b["value"] < floor:
+            if weeks_out <= _COVERAGE_ALERT_WEEKS:
+                severity = "ALERT"
+            elif weeks_out <= _COVERAGE_INFO_WEEKS:
+                severity = "INFO"
+        row = {
+            "month": mk,
+            "label": first_day.strftime("%b'%y"),
+            "value": b["value"],
+            "committedValue": b["committed"],
+            "activeValue": b["active"],
+            "dealCount": b["count"],
+            "unpricedCount": b["unpriced"],
+            "weeksOut": round(weeks_out, 1),
+            "severity": severity,
+        }
+        months.append(row)
+        if severity in ("ALERT", "INFO"):
+            flags.append(row)
+
+    flags.sort(key=lambda r: (r["severity"] != "ALERT", r["month"]))
+    return {
+        "floor": floor,
+        "dataAvailable": data_available,
+        "missingExecMonthCount": len(live) - len(dated),
+        "months": months,
+        "flags": flags,
+    }
+
+
 def _build_telegram_briefing(
     op_cash, monthly_burn, treasury, od_facility, od_utilized,
     norm_receivables, norm_statutory, treasury_sweep, cf_annual,
