@@ -182,6 +182,11 @@ def _load_finance():
                     pass
             elif cat == "CONFIG_WEEK_ENDING" and val:
                 finance["weekEnding"] = val
+            elif cat == "CONFIG_EXEC_COVERAGE_FLOOR" and val:
+                try:
+                    finance["execCoverageFloor"] = float(val.replace(",", "").replace("₹", ""))
+                except ValueError:
+                    pass
         # Monthly revenue overrides (Notes wins over Bigin for that month)
         finance["notesMonthlyRevenue"] = notes.get("monthlyRevenue", {})
         # Per-month burn overrides: CONFIG_MONTHLY_BURN_YYYY-MM rows
@@ -1893,6 +1898,12 @@ def _compose_cashflow(bigin, sheet, momentum, drift, imessage_data: dict = None)
         monthly_statutory=monthly_statutory,
     )
 
+    # ── Pipeline coverage by execution month (spec 2026-07-06) ──────────────
+    coverage_floor = finance.get("execCoverageFloor") or _COVERAGE_FLOOR_DEFAULT
+    pipeline_coverage_meta = _compute_pipeline_coverage_by_month(
+        bigin.get("deals", []), datetime.now().date(), floor=coverage_floor
+    )
+
     return {
         "FR": {
             # Project / pipeline data (field-name aliases + region expansion applied)
@@ -1959,6 +1970,9 @@ def _compose_cashflow(bigin, sheet, momentum, drift, imessage_data: dict = None)
             "annual": cf_annual,
             "cashflow": cf_months,
             "quarters": cf_quarters,
+
+            # Pipeline coverage by execution month (Bigin Project_Month)
+            "pipelineCoverageMeta": pipeline_coverage_meta,
 
             # Daily briefing (generated from computed data; shown on Alerts tab)
             "telegramBriefing": _build_telegram_briefing(
