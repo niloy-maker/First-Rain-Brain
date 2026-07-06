@@ -24,7 +24,7 @@
 Use `mcp__bigin__Bigin_getRecordsUsingCoqlQuery` (the Bigin-specific MCP — NOT the Zoho CRM one). First try with `Region`:
 
 ```sql
-SELECT id, Deal_Name, Account_Name.id, Account_Name.Account_Name, Amount, Closing_Date, Stage, Pipeline, Probability, Created_Time, Modified_Time, Region, Owner.id FROM Pipelines WHERE Pipeline = 'Sales Pipeline 26-27'
+SELECT id, Deal_Name, Account_Name.id, Account_Name.Account_Name, Amount, Closing_Date, Project_Month, Stage, Pipeline, Probability, Created_Time, Modified_Time, Region, Owner.id FROM Pipelines WHERE Pipeline = 'Sales Pipeline 26-27'
 ```
 
 **Known quirks:**
@@ -32,6 +32,7 @@ SELECT id, Deal_Name, Account_Name.id, Account_Name.Account_Name, Amount, Closin
 - `Owner.name` errors in COQL — always omit it. Use `Owner.id` only.
 - The COQL `WHERE Pipeline = 'Sales Pipeline 26-27'` filter may return all pipeline records if the pipeline name doesn't match exactly. In that case, use `mcp__bigin__Bigin_getRecords` with `module_api_name=Pipelines`, `sort_by=Created_Time`, `sort_order=desc`, `per_page=200`, and filter in Python to `Created_Time >= '2026-03-01'` excluding stages `{Projections 25-26, Closed Won 25-26, Closed Won 24-25, Closed Won 23-24, Closed Won 22-23}`.
 - If `Region` errors, retry without it — `classify_pipeline.py` applies regex fallback.
+- If `Project_Month` errors in COQL, retry without it and set `"project_month": None` for all deals — the coverage flag degrades gracefully (`dataAvailable: false`) instead of false-alerting.
 
 Then collect unique account_ids from the results and query Accounts for Industry:
 
@@ -64,6 +65,7 @@ normalized_deal = {
     "prob": float(row.get("Probability") or 0),
     "stage": row.get("Stage"),
     "close": row.get("Closing_Date"),
+    "project_month": row.get("Project_Month"),  # execution month (show date) — coverage flag
     "created": row.get("Created_Time"),
     "modified": row.get("Modified_Time"),
     "industry": account_index.get(account_id, {}).get("Industry"),  # None if field absent
