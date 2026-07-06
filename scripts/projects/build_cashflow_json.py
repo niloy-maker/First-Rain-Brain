@@ -1390,7 +1390,7 @@ def _build_telegram_briefing(
     op_cash, monthly_burn, treasury, od_facility, od_utilized,
     norm_receivables, norm_statutory, treasury_sweep, cf_annual,
     secure_concentration, saltwater_concentration, health_score=None,
-    norm_projects=None, bank_latest_balance=None
+    norm_projects=None, bank_latest_balance=None, pipeline_coverage=None
 ) -> str:
     """Generate the plaintext daily briefing shown on the Alerts tab."""
     from datetime import datetime
@@ -1549,6 +1549,26 @@ def _build_telegram_briefing(
             cp_sq = fmt(cp / sqm) if sqm > 0 else "—"
             client = (p.get("company") or "—")[:22]
             lines.append(f"• {client} · {int(sqm)}sqm · SP/sqm {sp_sq} · CP/sqm {cp_sq} · {cm:.1f}%")
+
+    # ── Execution coverage (pipeline by execution month) ────────────────────
+    cov = pipeline_coverage or {}
+    cov_flags = cov.get("flags", [])
+    if cov_flags or (cov and not cov.get("dataAvailable")):
+        lines.append("")
+        lines.append("📅 EXECUTION COVERAGE")
+        if not cov.get("dataAvailable"):
+            lines.append("⚠️ No Project_Month data from Bigin yet — coverage unavailable until next sync.")
+        for g in cov_flags[:4]:
+            icon = "🔴" if g["severity"] == "ALERT" else "🟡"
+            tail = "thin, salvage now" if g["severity"] == "ALERT" else "watch"
+            unp = f" ({g['unpricedCount']} unpriced)" if g.get("unpricedCount") else ""
+            lines.append(
+                f"• {icon} {g['label']}: {fmt(g['value'])} booked vs "
+                f"{fmt(cov.get('floor', 0))} floor · ~{int(round(g['weeksOut']))}wk out — {tail}{unp}"
+            )
+        miss = cov.get("missingExecMonthCount", 0)
+        if cov.get("dataAvailable") and miss:
+            lines.append(f"⚠️ {miss} live deals missing execution month — coverage understated.")
 
     # ── Health ───────────────────────────────────────────────────────────────
     lines.append("")
@@ -1989,6 +2009,7 @@ def _compose_cashflow(bigin, sheet, momentum, drift, imessage_data: dict = None)
                 saltwater_concentration=derived["saltwaterConcentration"],
                 norm_projects=[_normalize_project(p) for p in sheet.get("projects", [])],
                 bank_latest_balance=bank_txn.get("latestBalance"),
+                pipeline_coverage=pipeline_coverage_meta,
             ),
 
             "meta": {

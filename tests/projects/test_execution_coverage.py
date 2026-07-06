@@ -110,5 +110,48 @@ class TestCoverageSeverity(unittest.TestCase):
         self.assertTrue(all(s == "INFO" for s in sev[first_info:]))
 
 
+class TestBriefingSection(unittest.TestCase):
+    def _briefing(self, cov):
+        from build_cashflow_json import _build_telegram_briefing
+        return _build_telegram_briefing(
+            op_cash=10_000_000, monthly_burn=1_000_000, treasury=0,
+            od_facility=0, od_utilized=0, norm_receivables=[],
+            norm_statutory=[], treasury_sweep={}, cf_annual={},
+            secure_concentration=0.0, saltwater_concentration=0.0,
+            pipeline_coverage=cov,
+        )
+
+    def test_flags_render_section(self):
+        cov = _compute_pipeline_coverage_by_month(
+            [deal("2026-08-20", 1_440_000, "hot", "Price Quote"),
+             deal("2026-07-22", 5_975_000, "won", "Closed Won 26-27"),
+             deal("2026-09-16", 6_000_000)], TODAY, FLOOR)
+        text = self._briefing(cov)
+        self.assertIn("EXECUTION COVERAGE", text)
+        self.assertIn("Aug'26", text)
+        self.assertIn("🔴", text)
+
+    def test_no_flags_no_section(self):
+        cov = _compute_pipeline_coverage_by_month(
+            [deal(m + "-15", 9_000_000) for m in
+             ["2026-07", "2026-08", "2026-09", "2026-10", "2026-11"]],
+            TODAY, FLOOR)
+        self.assertEqual(cov["flags"], [])
+        self.assertNotIn("EXECUTION COVERAGE", self._briefing(cov))
+
+    def test_no_data_shows_warning_not_alerts(self):
+        cov = _compute_pipeline_coverage_by_month(
+            [{"deal": "no-pm", "amount": 500_000, "bucket": "active",
+              "stage": "Design"}], TODAY, FLOOR)
+        text = self._briefing(cov)
+        self.assertIn("EXECUTION COVERAGE", text)
+        self.assertIn("No Project_Month data", text)
+        self.assertNotIn("🔴", text.split("EXECUTION COVERAGE")[1])
+
+    def test_none_coverage_is_safe(self):
+        # Callers that don't thread coverage through must not crash.
+        self.assertNotIn("EXECUTION COVERAGE", self._briefing(None))
+
+
 if __name__ == "__main__":
     unittest.main()
