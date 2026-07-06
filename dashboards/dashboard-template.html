@@ -3567,6 +3567,34 @@ body{
     pjHtml += '</div>';
     pjHtml += '<div class="v8-lever-footnote"><em>Levers are the FY29 plan — static until reviewed. Full bet options in /plan doc.</em></div>';
 
+    /* ════════ EXECUTION COVERAGE · pipeline by execution month ════════ */
+    var cov = FR.pipelineCoverageMeta || {};
+    var covMonths = cov.months || [];
+    if (covMonths.length || cov.dataAvailable === false) {
+      pjHtml += '<div class="v7-section-title">Execution <em>coverage</em> · by project month</div>';
+      if (cov.dataAvailable === false) {
+        pjHtml += '<div class="v7-demote-note">⚠️ No Project_Month data from Bigin yet — coverage will populate after the next sync.</div>';
+      } else {
+        if (cov.missingExecMonthCount) {
+          pjHtml += '<div class="v7-demote-note">⚠️ ' + cov.missingExecMonthCount + ' live deals missing execution month — coverage understated.</div>';
+        }
+        var covMax = Math.max(cov.floor || 0, covMonths.reduce(function(m, r){ return Math.max(m, r.value); }, 0)) || 1;
+        pjHtml += '<div class="v11-cm-dist-label">Won + confirmed + active by execution month · floor <strong>' + fmt(cov.floor || 0) + '</strong> · 🔴 thin ≤10wk · 🟡 thin ≤4mo</div>';
+        pjHtml += '<div class="v11-cm-dist">';
+        covMonths.forEach(function(r){
+          var color = r.severity === 'ALERT' ? 'var(--red)' : r.severity === 'INFO' ? 'var(--amber)' : 'var(--green)';
+          var widthPct = Math.max(2, Math.min(100, r.value / covMax * 100));
+          var count = fmt(r.value) + ' · ' + r.dealCount + (r.unpricedCount ? ' (' + r.unpricedCount + ' unpriced)' : '');
+          pjHtml += '<div class="v11-cm-row">'
+            + '<div class="v11-cm-label">' + esc(r.label) + '</div>'
+            + '<div class="v11-cm-bar"><div class="v11-cm-fill" style="width:' + widthPct + '%;background:' + color + '"></div></div>'
+            + '<div class="v11-cm-count" style="white-space:nowrap">' + count + '</div>'
+            + '</div>';
+        });
+        pjHtml += '</div>';
+      }
+    }
+
     /* ════════ DEMOTED ════════ */
     pjHtml += '<div class="v7-demote-header">Supporting <em>data</em></div>';
     pjHtml += '<div class="v7-demote-note">Operational items (CK shadowing, fabricator decisions, lead cleanup) live in the morning briefing and Sonal\'s task list — not here.</div>';
