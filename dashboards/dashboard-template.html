@@ -3585,10 +3585,10 @@ body{
           var color = r.severity === 'ALERT' ? 'var(--red)' : r.severity === 'INFO' ? 'var(--amber)' : r.severity === 'PAST' ? 'var(--text-muted)' : 'var(--green)';
           var widthPct = Math.max(2, Math.min(100, r.value / covMax * 100));
           var count = fmt(r.value) + ' · ' + r.dealCount + (r.unpricedCount ? ' (' + r.unpricedCount + ' unpriced)' : '');
-          pjHtml += '<div class="v11-cm-row">'
+          pjHtml += '<div class="v11-cm-row" style="grid-template-columns:50px 1fr 132px">'
             + '<div class="v11-cm-label">' + esc(r.label) + '</div>'
             + '<div class="v11-cm-bar"><div class="v11-cm-fill" style="width:' + widthPct + '%;background:' + color + '"></div></div>'
-            + '<div class="v11-cm-count" style="white-space:nowrap">' + count + '</div>'
+            + '<div class="v11-cm-count" style="white-space:nowrap;font-size:10px;color:var(--text-secondary)">' + count + '</div>'
             + '</div>';
         });
         pjHtml += '</div>';
