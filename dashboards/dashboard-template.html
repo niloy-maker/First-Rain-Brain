@@ -3579,10 +3579,10 @@ body{
           pjHtml += '<div class="v7-demote-note">⚠️ ' + cov.missingExecMonthCount + ' live deals missing execution month — coverage understated.</div>';
         }
         var covMax = Math.max(cov.floor || 0, covMonths.reduce(function(m, r){ return Math.max(m, r.value); }, 0)) || 1;
-        pjHtml += '<div class="v11-cm-dist-label">Won + confirmed + active by execution month · floor <strong>' + fmt(cov.floor || 0) + '</strong> · 🔴 thin ≤10wk · 🟡 thin ≤4mo</div>';
+        pjHtml += '<div class="v11-cm-dist-label">Won + confirmed + active by execution month · floor <strong>' + fmt(cov.floor || 0) + '</strong> · 🔴 thin ≤10wk · 🟡 thin ≤4mo · grey = elapsed</div>';
         pjHtml += '<div class="v11-cm-dist">';
         covMonths.forEach(function(r){
-          var color = r.severity === 'ALERT' ? 'var(--red)' : r.severity === 'INFO' ? 'var(--amber)' : 'var(--green)';
+          var color = r.severity === 'ALERT' ? 'var(--red)' : r.severity === 'INFO' ? 'var(--amber)' : r.severity === 'PAST' ? 'var(--text-muted)' : 'var(--green)';
           var widthPct = Math.max(2, Math.min(100, r.value / covMax * 100));
           var count = fmt(r.value) + ' · ' + r.dealCount + (r.unpricedCount ? ' (' + r.unpricedCount + ' unpriced)' : '');
           pjHtml += '<div class="v11-cm-row">'

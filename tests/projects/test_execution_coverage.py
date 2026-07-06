@@ -109,6 +109,25 @@ class TestCoverageSeverity(unittest.TestCase):
         self.assertTrue(all(s == "ALERT" for s in sev[:first_info]))
         self.assertTrue(all(s == "INFO" for s in sev[first_info:]))
 
+    def test_past_months_present_with_past_severity(self):
+        # Full-FY view: Apr-Jun 2026 rows exist, marked PAST, values kept.
+        cov = _compute_pipeline_coverage_by_month(
+            [deal("2026-05-15", 12_200_000, "won", "Closed Won 26-27")], TODAY, FLOOR)
+        months = [m["month"] for m in cov["months"]]
+        self.assertEqual(months[:3], ["2026-04", "2026-05", "2026-06"])
+        may = next(m for m in cov["months"] if m["month"] == "2026-05")
+        self.assertEqual(may["severity"], "PAST")
+        self.assertEqual(may["value"], 12_200_000)
+        self.assertEqual(may["weeksOut"], 0.0)
+
+    def test_thin_past_month_never_flags(self):
+        # April had nothing booked - it is history, not actionable. No flag.
+        cov = _compute_pipeline_coverage_by_month(
+            [deal("2026-08-20", 9_000_000)], TODAY, FLOOR)
+        apr = next(m for m in cov["months"] if m["month"] == "2026-04")
+        self.assertEqual(apr["severity"], "PAST")
+        self.assertNotIn("PAST", [f["severity"] for f in cov["flags"]])
+
 
 class TestBriefingSection(unittest.TestCase):
     def _briefing(self, cov):

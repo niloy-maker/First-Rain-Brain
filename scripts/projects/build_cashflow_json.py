@@ -1349,18 +1349,22 @@ def _compute_pipeline_coverage_by_month(deals, today, floor=_COVERAGE_FLOOR_DEFA
     cur_mk = today.strftime("%Y-%m")
     months, flags = [], []
     for mk in _FY_MONTHS:
-        if mk < cur_mk:
-            continue
         first_day = _date(int(mk[:4]), int(mk[5:7]), 1)
         weeks_out = max(0.0, (first_day - today).days / 7.0)
         b = by_month.get(mk, {"value": 0.0, "committed": 0.0,
                               "active": 0.0, "count": 0, "unpriced": 0})
-        severity = "OK"
-        if data_available and b["value"] < floor:
-            if weeks_out <= _COVERAGE_ALERT_WEEKS:
-                severity = "ALERT"
-            elif weeks_out <= _COVERAGE_INFO_WEEKS:
-                severity = "INFO"
+        if mk < cur_mk:
+            # Elapsed FY months: shown for the full-year picture (dashboard
+            # renders them muted) but never flagged — a thin month that has
+            # already passed is history, not an action item.
+            severity = "PAST"
+        else:
+            severity = "OK"
+            if data_available and b["value"] < floor:
+                if weeks_out <= _COVERAGE_ALERT_WEEKS:
+                    severity = "ALERT"
+                elif weeks_out <= _COVERAGE_INFO_WEEKS:
+                    severity = "INFO"
         row = {
             "month": mk,
             "label": first_day.strftime("%b'%y"),

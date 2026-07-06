@@ -52,7 +52,7 @@ New pure function `_compute_pipeline_coverage_by_month(deals, today)`:
    - `deal_count` — number of included deals,
    - `unpriced_count` — included deals with `amount` null/0,
    - `committed_value` / `active_value` — split for context in the dashboard.
-3. For each **future** month (current month through end of FY27, i.e. up to `2027-03`), compute `weeks_out = (month_first_day − today) / 7` (measured to the month's **first day**; the current month yields ≤ 0 and is clamped to 0 for display) and assign severity vs floor:
+3. For **every** FY27 month (`2026-04` … `2027-03`): elapsed months (before the current month) get severity `PAST` — included in `months` for the full-year dashboard view (rendered muted), never flagged. For current/future months, compute `weeks_out = (month_first_day − today) / 7` (measured to the month's **first day**; the current month yields ≤ 0 and is clamped to 0 for display) and assign severity vs floor:
    - `weeks_out ≤ 10` **and** `value < floor` → **ALERT**
    - `10 < weeks_out ≤ ~18` (≈ 4 months) **and** `value < floor` → **INFO**
    - otherwise → no flag
