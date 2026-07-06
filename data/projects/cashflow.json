@@ -4352,7 +4352,7 @@
     },
     "telegramBriefing": "\ud83d\udfe2 FIRST RAIN \u00b7 06 Jul 2026 \u00b7 08:00 IST\n\n\ud83d\udcb0 Operating: \u20b912.6L \u00b7 Runway 0.5mo \ud83d\udd34\n\ud83c\udfe6 Treasury \u20b91.40Cr \u00b7 OD: \u20b90 used \u00b7 \u20b91.21Cr free / \u20b91.21Cr (0% drawn)\n\n\u2b07 TREASURY SWEEP\nDraw OD \u20b945.0L \u2014 do not touch treasury\n\u2192 Day 6: salary week just cleared \u2014 lower float buffer applies (1.0\u00d7 burn). Major cash out already happened; focus on receivables chase. Operating cash \u20b912.6L \u00b7 float target \u20b925.5L (1.0\u00d7 burn). Net 30d position: -\u20b919.5L (+\u20b943.8L receivables \u2212 \u20b975.9L payables). Shortfall \u20b945.0L \u2014 OD has \u20b9121.0L at ~12.5% p.a. Draw OD first \u2014 cheaper than breaking treasury MF compounding.\n\n\ud83d\udcca COLLECT (top 3)\n\u2022 GENERAL INDUSTRIAL CONTROLS PVT LTD \u00b7 \u20b91.9L \u00b7 10d OD \u00b7 chase today\n\u2022 Secure Meters Limited \u00b7 \u20b914.7L \u00b7 10d OD \u00b7 chase today\n\u2022 Labguard India Pvt. Ltd. \u00b7 \u20b99.5L \u00b7 7d OD \u00b7 chase today\n\n\ud83c\udfdb STATUTORY (13d)\n\u2022 TDS Return \u00b7 \u20b93.4L \u00b7 due 20-May \u00b7 pay on time\n\n\ud83d\udcd0 PROJECTS YTD (8 \u00b7 257 sqm \u00b7 \u20b91.23Cr SP)\n\u2022 Mosil Lubricant \u00b7 9sqm \u00b7 SP/sqm \u20b917K \u00b7 CP/sqm \u20b914K \u00b7 15.3%\n\u2022 MESSUNG SYSTEMS PRIVAT \u00b7 42sqm \u00b7 SP/sqm \u20b916K \u00b7 CP/sqm \u20b910K \u00b7 37.4%\n\u2022 Labguard India Pvt. Lt \u00b7 80sqm \u00b7 SP/sqm \u20b917K \u00b7 CP/sqm \u20b96K \u00b7 65.2%\n\u2022 Carl Bechem Lubricants \u00b7 9sqm \u00b7 SP/sqm \u20b920K \u00b7 CP/sqm \u20b913K \u00b7 34.6%\n\u2022 Secure Meters Pvt Ltd \u00b7 27sqm \u00b7 SP/sqm \u20b935K \u00b7 CP/sqm \u20b920K \u00b7 43.2%\n\u2022 Amaara Ayurveda \u00b7 30sqm \u00b7 SP/sqm \u20b91.1L \u00b7 CP/sqm \u20b990K \u00b7 20.6%\n\u2022 Secure Meters Pvt Ltd \u00b7 24sqm \u00b7 SP/sqm \u20b92.1L \u00b7 CP/sqm \u20b91.5L \u00b7 29.0%\n\u2022 GENERAL INDUSTRIAL CON \u00b7 36sqm \u00b7 SP/sqm \u20b918K \u00b7 CP/sqm \u20b910K \u00b7 43.8%\n\n\ud83d\udcc5 EXECUTION COVERAGE\n\u2022 \ud83d\udd34 Aug'26: \u20b914.4L booked vs \u20b940.0L floor \u00b7 ~4wk out \u2014 thin, salvage now\n\u26a0\ufe0f 20 live deals missing execution month \u2014 coverage understated.\n\n\ud83c\udfe5 Health 52/100 \u00b7 C",
     "meta": {
-      "generated_at": "2026-07-06T18:51:41.025816+05:30",
+      "generated_at": "2026-07-06T18:59:30.593864+05:30",
       "bigin_deal_count": 155,
       "sheet_project_count": 8,
       "momentum_mode": "partial",
@@ -4379,13 +4379,13 @@
   },
   "META": {
     "today": "06 Jul 2026",
-    "generated_at": "2026-07-06T18:51:41.025828+05:30",
+    "generated_at": "2026-07-06T18:59:30.593883+05:30",
     "extrapolation": {
       "basis": "Bigin Won + Existing Confirmed deals split 75% advance (close month) + 25% balance (close month + 1, net-30) + receivable expected collection dates (GSheet). Vendor cost: actual project CP from Sonal's Projects sheet \u2192 55% of close-month revenue for months without tracked projects \u2192 \u20b90 for months with no work activity. Payroll = CONFIG_MONTHLY_BURN (Notes tab). Statutory = scheduled obligations from Statutory tab (no flat default).",
       "confidence": "Months 1\u20133: HIGH (Bigin confirmed) \u00b7 Months 4\u20136: MEDIUM (pipeline weighted) \u00b7 Months 7\u201312: LOW (estimated)",
       "assumptions": "Payroll stable at current headcount. No large capex. Saltwater delivery per Bigin close dates. Secure Meters renewal Q4. No black swan."
     },
-    "lastRefresh": "06 Jul 2026 \u00b7 18:51 IST",
+    "lastRefresh": "06 Jul 2026 \u00b7 18:59 IST",
     "sources": [
       {
         "name": "Gmail (niloy@firstrain.co.in)",
@@ -4409,7 +4409,7 @@
         "ok": true,
         "status": "ok",
         "lastAccessed": "2026-07-06T13:21:26.726Z",
-        "lastAccessedFmt": "6 Jul \u00b7 18:51 IST (just now)"
+        "lastAccessedFmt": "6 Jul \u00b7 18:51 IST (8min ago)"
       },
       {
         "name": "HDFC SMS (iMessage)",
@@ -4417,15 +4417,15 @@
         "ok": true,
         "status": "ok",
         "lastAccessed": "2026-07-06T18:13:39.571633",
-        "lastAccessedFmt": "6 Jul \u00b7 18:13 IST (38min ago)"
+        "lastAccessedFmt": "6 Jul \u00b7 18:13 IST (45min ago)"
       },
       {
         "name": "Telegram Bot (@FirstRainOS1_bot)",
         "detail": "Daily briefing sent at 08:00 IST",
         "ok": true,
         "status": "ok",
-        "lastAccessed": "2026-07-06T18:51:41.026118+05:30",
-        "lastAccessedFmt": "6 Jul \u00b7 18:51 IST (now)"
+        "lastAccessed": "2026-07-06T18:59:30.594193+05:30",
+        "lastAccessedFmt": "6 Jul \u00b7 18:59 IST (now)"
       }
     ]
   },
