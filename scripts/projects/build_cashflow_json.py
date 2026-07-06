@@ -1718,13 +1718,21 @@ def _compose_cashflow(bigin, sheet, momentum, drift, imessage_data: dict = None)
         raw_holdings = th.get("holdings", [])
         # Deduplicate: sheet_treasury.json accumulates one snapshot per
         # statement date — keep only the LATEST snapshot per fund so we
-        # don't triple-count when 3 statement dates are present.
+        # don't triple-count when multiple statement dates are present.
+        #
+        # Dedup key: (folio, investmentType) ONLY — folio uniquely identifies
+        # a fund position within an AMC, so name spelling variants must NOT
+        # split the same holding into two. (Bug found 06-Jul-2026: Sonal
+        # re-entered the Kotak Income Plus Arbitrage Omni FOF folio
+        # 15966212/61 with a concatenated name "OmniKotak Income Plus
+        # Arbitrage Omni FOF Regular Plan Growth". The old-name row was
+        # a ₹30L placeholder and the new-name row was the real ₹42.5L
+        # position — three-field dedup kept BOTH, overcounting by ₹30L.)
         seen: dict = {}
         for h in raw_holdings:
             key = (
                 h.get("folio", ""),
                 h.get("investmentType", h.get("instrument", "")),
-                h.get("instrument", ""),
             )
             existing_date = seen.get(key, {}).get("lastStatementDate", "")
             if h.get("lastStatementDate", "") >= existing_date:
