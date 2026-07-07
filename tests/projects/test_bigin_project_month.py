@@ -92,6 +92,56 @@ class TestNormalizeDealPropagatesProjectMonth(unittest.TestCase):
         self.assertIsNone(d["project_month"])
 
 
+class TestClassifyPreservesProjectMonth(unittest.TestCase):
+    """`classify()` iterates deals in-place adding region/industry/bucket/
+    weighted. It must NEVER drop project_month — otherwise every re-classify
+    (midday, EOD, /finance manual, run_pipeline.py) wipes the field even when
+    the morning fetch put it there. This test is the guarantee."""
+
+    def test_classify_preserves_project_month_on_every_deal(self):
+        from classify_pipeline import classify
+        # Minimal shape mimicking a fresh raw.json from Step 5A
+        raw = {
+            "deals": [
+                {"id": "1", "deal": "CK - x", "amount": 100, "prob": 50,
+                 "stage": "Design", "close": "2026-08-01", "region": "India",
+                 "industry": None, "project_month": "2026-08-20",
+                 "account": "a", "account_name": "A",
+                 "created": "2026-01-01", "modified": "2026-01-01"},
+                {"id": "2", "deal": "SP - y", "amount": 200, "prob": 30,
+                 "stage": "Requirement gathering", "close": "2026-09-01", "region": "India",
+                 "industry": None, "project_month": None,  # legitimately untagged
+                 "account": "b", "account_name": "B",
+                 "created": "2026-01-01", "modified": "2026-01-01"},
+            ],
+            "meta": {"region_available": True, "industry_available": False,
+                     "project_month_available": True,
+                     "fetched_at": "2026-07-07T09:00:00", "count": 2}
+        }
+        # classify() mutates in place AND writes to disk. To avoid touching
+        # the real bigin_pipeline_classified.json, run in a temp cwd.
+        import os, tempfile, shutil, sys, importlib
+        with tempfile.TemporaryDirectory() as tmp:
+            (tmp_path := __import__("pathlib").Path(tmp) / "data" / "projects").mkdir(parents=True)
+            old_cwd = os.getcwd()
+            os.chdir(tmp)
+            try:
+                # Reload the module so OUTPUT_PATH resolves against tmp cwd
+                import classify_pipeline as cp
+                importlib.reload(cp)
+                result = cp.classify(raw)
+            finally:
+                os.chdir(old_cwd)
+        self.assertEqual(result["deals"][0]["project_month"], "2026-08-20",
+                         "classify() must preserve project_month on tagged deals")
+        self.assertIsNone(result["deals"][1]["project_month"],
+                          "classify() must preserve None for untagged deals (not delete the key)")
+        self.assertIn("project_month", result["deals"][1],
+                      "the key itself must be present — downstream .get() with default 0 would silently mis-bucket if missing")
+        self.assertTrue(result["meta"]["project_month_available"],
+                        "meta flag must survive classify")
+
+
 class TestMorningSyncSkillCoqlHasProjectMonth(unittest.TestCase):
     """The morning-sync SKILL's inline COQL is the ACTUAL production fetch
     path. `fetch_bigin_pipeline.py` (tested above) is used only by the direct-

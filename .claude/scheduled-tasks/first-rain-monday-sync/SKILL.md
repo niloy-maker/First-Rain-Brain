@@ -274,6 +274,41 @@ print(f"wrote {len(deals)} deals → {out}")
 PY
 ```
 
+**5A.i — Preflight check (fires immediately if COQL regressed):**
+Right after Step 5A writes raw.json, run this verifier. It's cheap (reads
+one file) and catches the 2026-07-07 regression class (COQL SELECT missing
+Project_Month → downstream exec-coverage strip blanks). Failure here means
+STOP: fix the COQL and re-run Step 5A before Step 5-ORCH. Do NOT proceed
+to dashboard rebuild with broken data.
+
+```bash
+python3 - <<'PY'
+import json, sys, pathlib
+raw = json.loads(pathlib.Path("data/projects/bigin_pipeline_raw.json").read_text())
+deals = raw.get("deals", [])
+n_total = len(deals)
+n_with_pm = sum(1 for d in deals if d.get("project_month"))
+meta_says_available = raw.get("meta", {}).get("project_month_available")
+
+print(f"[5A.i preflight] {n_with_pm}/{n_total} deals carry project_month · meta.project_month_available={meta_says_available}")
+
+# HARD FAIL conditions — abort the sync before dashboard rebuild:
+if n_total > 0 and n_with_pm == 0 and meta_says_available:
+    print("[5A.i preflight] FAIL — meta.project_month_available=True but ZERO deals have project_month. "
+          "COQL likely dropped Project_Month from SELECT (2026-07-07 regression). "
+          "STOP: fix Step 5A's COQL/transform and rerun.", file=sys.stderr)
+    sys.exit(1)
+
+# SOFT WARN — surface in DATA HEALTH block (Step 6):
+if n_total > 0 and n_with_pm < 20:
+    print(f"[5A.i preflight] WARN — only {n_with_pm} of {n_total} deals tagged with "
+          "Project_Month. Exec-coverage strip will underread. Chinmay/Sonal action.", file=sys.stderr)
+PY
+```
+If this exits non-zero, ADD to failure list "Step 5A.i preflight failed —
+COQL likely regressed. Exec-coverage would blank. NOT proceeding to dashboard rebuild."
+in the Step Completion Log, and skip Step 5-ORCH.
+
 **5B — Classify** ⏩ now run by Step 5-ORCH (`run_pipeline.py`). Do NOT run `classify_pipeline.py` by hand. The orchestrator produces `data/projects/bigin_pipeline_classified.json`; read it if you need deal counts.
 
 **5C — Download Cashflow Master (Drive MCP)**
