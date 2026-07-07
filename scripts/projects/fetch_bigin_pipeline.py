@@ -55,6 +55,27 @@ SELECT
   Created_Time,
   Modified_Time,
   Region,
+  Project_Month,
+  Owner.id,
+  Owner.name
+FROM Pipelines
+WHERE Pipeline = '{PIPELINE_NAME}'
+""".strip()
+
+COQL_PIPELINE_NO_PROJECT_MONTH = f"""
+SELECT
+  id,
+  Deal_Name,
+  Account_Name.id,
+  Account_Name.Account_Name,
+  Amount,
+  Closing_Date,
+  Stage,
+  Pipeline,
+  Probability,
+  Created_Time,
+  Modified_Time,
+  Region,
   Owner.id,
   Owner.name
 FROM Pipelines
@@ -103,21 +124,34 @@ def _coql_accounts_fallback(account_ids):
 # ---------- Core fetch ----------
 
 def _fetch_pipeline_deals():
-    """Try the full query first, fall back if Region field is missing."""
+    """Try the full query first (with Region + Project_Month). Gracefully step
+    down: drop Project_Month first if Zoho reports it missing, then drop
+    Region. Both fields are custom — an org may configure one and not the
+    other."""
     try:
         result = coql_query(COQL_PIPELINE_FULL)
-        region_available = True
+        return _extract(result), True, True
     except Exception as e:
         err = str(e).lower()
+        if "project_month" in err and ("invalid" in err or "not found" in err or "column" in err):
+            print("[fetch_bigin_pipeline] Project_Month field not yet configured — retrying without it", file=sys.stderr)
+            try:
+                result = coql_query(COQL_PIPELINE_NO_PROJECT_MONTH)
+                return _extract(result), True, False
+            except Exception as e2:
+                err2 = str(e2).lower()
+                if "region" in err2 and ("invalid" in err2 or "not found" in err2 or "column" in err2):
+                    print("[fetch_bigin_pipeline] Region field also missing — using minimal fallback", file=sys.stderr)
+                    return _extract(coql_query(COQL_PIPELINE_FALLBACK)), False, False
+                raise
         if "region" in err and ("invalid" in err or "not found" in err or "column" in err):
             print("[fetch_bigin_pipeline] Region field not yet configured — using fallback COQL", file=sys.stderr)
-            result = coql_query(COQL_PIPELINE_FALLBACK)
-            region_available = False
-        else:
-            raise
+            return _extract(coql_query(COQL_PIPELINE_FALLBACK)), False, False
+        raise
 
-    deals = result.get("data", []) if isinstance(result, dict) else result
-    return deals, region_available
+
+def _extract(result):
+    return result.get("data", []) if isinstance(result, dict) else result
 
 
 def _fetch_accounts(account_ids):
@@ -150,7 +184,7 @@ def _fetch_accounts(account_ids):
 
 # ---------- Normalization ----------
 
-def _normalize_deal(deal_row, account_index, region_available, industry_available):
+def _normalize_deal(deal_row, account_index, region_available, industry_available, project_month_available=False):
     """Shape raw COQL row into the v11 renderer's expected format."""
     account_id = (deal_row.get("Account_Name") or {}).get("id") if isinstance(deal_row.get("Account_Name"), dict) else deal_row.get("Account_Name.id")
     account_name = (deal_row.get("Account_Name") or {}).get("Account_Name") if isinstance(deal_row.get("Account_Name"), dict) else deal_row.get("Account_Name.Account_Name")
@@ -172,6 +206,7 @@ def _normalize_deal(deal_row, account_index, region_available, industry_availabl
         "modified": deal_row.get("Modified_Time"),
         "industry": industry,  # None if field absent — classify_pipeline.py will regex-fallback
         "region": deal_row.get("Region") if region_available else None,
+        "project_month": deal_row.get("Project_Month") if project_month_available else None,
         "exec": _map_owner_to_exec_code(deal_row.get("Owner.name") or (deal_row.get("Owner") or {}).get("name")),
     }
 
@@ -199,9 +234,10 @@ def fetch_pipeline():
     """
     Main entrypoint. Returns dict with:
       - deals: list of normalized deal rows
-      - meta: {region_available, industry_available, fetched_at, count}
+      - meta: {region_available, industry_available, project_month_available,
+               fetched_at, count}
     """
-    deals_raw, region_available = _fetch_pipeline_deals()
+    deals_raw, region_available, project_month_available = _fetch_pipeline_deals()
 
     account_ids = set()
     for d in deals_raw:
@@ -215,7 +251,7 @@ def fetch_pipeline():
     account_index, industry_available = _fetch_accounts(sorted(account_ids))
 
     normalized = [
-        _normalize_deal(d, account_index, region_available, industry_available)
+        _normalize_deal(d, account_index, region_available, industry_available, project_month_available)
         for d in deals_raw
     ]
 
@@ -224,6 +260,7 @@ def fetch_pipeline():
         "meta": {
             "region_available": region_available,
             "industry_available": industry_available,
+            "project_month_available": project_month_available,
             "fetched_at": datetime.now().astimezone().isoformat(),
             "count": len(normalized),
         }
@@ -233,7 +270,7 @@ def fetch_pipeline():
     with open(OUTPUT_PATH, "w") as f:
         json.dump(result, f, indent=2, default=str)
 
-    print(f"[fetch_bigin_pipeline] {len(normalized)} deals · Region={region_available} · Industry={industry_available}")
+    print(f"[fetch_bigin_pipeline] {len(normalized)} deals · Region={region_available} · Industry={industry_available} · Project_Month={project_month_available}")
     return result
 
 
