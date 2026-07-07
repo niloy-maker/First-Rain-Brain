@@ -92,5 +92,47 @@ class TestNormalizeDealPropagatesProjectMonth(unittest.TestCase):
         self.assertIsNone(d["project_month"])
 
 
+class TestMorningSyncSkillCoqlHasProjectMonth(unittest.TestCase):
+    """The morning-sync SKILL's inline COQL is the ACTUAL production fetch
+    path. `fetch_bigin_pipeline.py` (tested above) is used only by the direct-
+    REST invocation which requires .env credentials — the SKILL never calls
+    it. On 2026-07-07 the SKILL COQL silently dropped Project_Month and
+    downstream classify wiped the field from bigin_pipeline_classified.json.
+    This canary is what would have caught it."""
+
+    _SKILL_PATH = Path.home() / ".claude" / "scheduled-tasks" / "first-rain-monday-sync" / "SKILL.md"
+    _SKILL_REPO_COPY = Path(__file__).resolve().parents[2] / ".claude" / "scheduled-tasks" / "first-rain-monday-sync" / "SKILL.md"
+
+    def _skill_text(self):
+        # Prefer the repo copy (guaranteed present in CI); fall back to the
+        # live copy for developers running locally.
+        if self._SKILL_REPO_COPY.exists():
+            return self._SKILL_REPO_COPY.read_text()
+        if self._SKILL_PATH.exists():
+            return self._SKILL_PATH.read_text()
+        self.skipTest("SKILL file not found — running outside a First Rain Mac")
+
+    def test_skill_coql_selects_project_month(self):
+        text = self._skill_text()
+        self.assertIn("Project_Month", text,
+                      "morning-sync SKILL must reference Project_Month "
+                      "(SELECT clause + Python transform + required-shape docs). "
+                      "Dropping it silently blanks the exec-coverage strip.")
+
+    def test_skill_python_transform_extracts_project_month(self):
+        text = self._skill_text()
+        # The literal from the transform snippet
+        self.assertIn('"project_month": d.get("Project_Month")', text,
+                      "morning-sync SKILL's inline Python transform must map "
+                      'Project_Month -> project_month on each deal.')
+
+    def test_skill_meta_declares_project_month_available(self):
+        text = self._skill_text()
+        self.assertIn("project_month_available", text,
+                      "meta object in the SKILL's required-shape and Python "
+                      "transform must include project_month_available so "
+                      "downstream can tell schema-gap from data-gap.")
+
+
 if __name__ == "__main__":
     unittest.main()
