@@ -95,8 +95,23 @@ Ignore outbound emails sent by Chinmay, Shilpa, Dhruv, or Niloy.
 ## STEP 2 — Notion: milestone completions since midday
 
 ONE Notion fetch — not a search loop:
-- Call the durable connector `mcp__4f0ff3f0-60f2-4485-9022-56005bb68c69__notion-fetch` with id `ac84c676ad7249d2a79732d842f71d62`. One fetch returns every project's milestone columns. (The connector is primary — it does not expire and works headless. The OAuth `plugin:Notion:notion` endpoint is an optional fallback only; never alert just because it is unauthenticated.)
-- **Notion failsafe:** If the connector returns a 404 or auth error, fall back to `mcp__plugin_Notion_notion__notion-fetch` (same id). If both fail: log "Notion: both endpoints unavailable — milestone check skipped" and continue. Never abort.
+- **Milestone delta pull** (validated 2026-07-09; `notion-query-*` tools are
+  Business-plan-gated on this workspace — use search+fetch on the durable
+  connector instead):
+  1. `mcp__4f0ff3f0-60f2-4485-9022-56005bb68c69__notion-search` with `query: T`,
+     `page_url: ac84c676ad7249d2a79732d842f71d62`, `page_size: 25`,
+     `max_highlight_length: 0` → enumerate T-row page ids (filter titles matching `^T\d+ `).
+  2. For each T-row that was PENDING for any project in the morning+midday briefing,
+     call `mcp__4f0ff3f0-60f2-4485-9022-56005bb68c69__notion-fetch` with the row's
+     page id. The `properties` block returns `{"Project Name": "__YES__"|"__NO__", ...}`.
+  3. Compare `__YES__` cells against the AM+midday pending list.
+     Difference = EOD completions to report as deltas.
+- **Notion failsafe:** If step 1 search fails: log "Notion: milestone
+  check skipped — search endpoint unavailable" and continue. If step 2
+  fetches fail on >5 rows: log and continue. Never abort.
+- **DO NOT** call `notion-fetch` on the database id
+  (`ac84c676ad7249d2a79732d842f71d62`) expecting row data — that returns
+  the SCHEMA, not per-row values, and led to the 2026-05-29 → 2026-07-09 stale-cache regression.
 - Compare each project's milestone cells against the morning briefing + MIDDAY UPDATE pending list.
 
 Flag as DELTA only if:

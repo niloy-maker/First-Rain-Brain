@@ -123,12 +123,54 @@ Do NOT run the old broad `(payment OR invoice OR credited OR debited OR NEFT OR 
 These are mandatory checks. Do NOT skip. Each gate prevents a class of recurring errors.
 
 **GATE 1 — Notion milestone check (prevents: reporting completed tasks as pending)**
-ONE Notion fetch, not a per-project search loop:
-- Call the durable connector `mcp__4f0ff3f0-60f2-4485-9022-56005bb68c69__notion-fetch` with id `ac84c676ad7249d2a79732d842f71d62`. A single fetch returns every project's milestone columns. (Reuse the pre-flight ping result if already fetched — don't double-call.)
-- **Notion failsafe:** If the connector returns a 404 or auth error, fall back to `mcp__plugin_Notion_notion__notion-fetch` (same id). If both fail: log `GATE 1 Notion: both endpoints unavailable — milestone check skipped` in the Step Completion Log and continue. Never abort. Do NOT alert merely because the plugin endpoint is unauthenticated — the connector is primary now.
-- For each executing/post-show project, read its T22 Handover Pics cell from that one result.
-- YES → all milestones complete; never write "T-XX pending" for it. Only report pending if the cell is explicitly blank/NO.
-- Do NOT issue a separate notion-search per project.
+
+Two-step live pull (validated 2026-07-09 after discovering that
+`notion-query-data-sources` and `notion-query-database-view` are both
+Business-plan-gated on the Team First Rain workspace — but `notion-search`
++ `notion-fetch` are NOT).
+
+**Step 1.** Enumerate the T-milestone row page IDs. Call
+`mcp__4f0ff3f0-60f2-4485-9022-56005bb68c69__notion-search` with:
+  - `query`: `T` (single character — matches every T01, T02, …, T31 row title)
+  - `page_url`: `ac84c676ad7249d2a79732d842f71d62` (scopes search to the tracker DB only)
+  - `page_size`: `25` (max — the tracker has ~28 T-rows; if `has_more`, page)
+  - `max_highlight_length`: `0` (we only need ids)
+Filter results to titles matching `^T\d+ ` — these are the milestone rows.
+
+**Step 2.** For each row page id, call
+`mcp__4f0ff3f0-60f2-4485-9022-56005bb68c69__notion-fetch` with the id.
+The response's `properties` block is a JSON map like:
+```
+{"Amaara Vitafoods26":"__YES__", "GIC Automation":"__NO__", ..., "Milestone":"T22 Handover Pics"}
+```
+`__YES__` means the milestone is complete for that project; `__NO__` (or
+missing) means still pending.
+
+**Building the matrix.** After all row fetches, build
+`milestone[project][t_num]` from the `__YES__` cells. Then, for every
+executing/post-show project mentioned in the briefing, cite the specific
+T-number that's the newest COMPLETE milestone — never write "T-XX
+pending" for a project if that cell is `__YES__`.
+
+**Cost.** ~28 fetch calls; each returns properties-only (no page body),
+< 2KB. Total token cost well under 100k. Do NOT read them all into main
+context — dispatch to a subagent with the Agent tool if the sync token
+budget matters.
+
+**Notion failsafe:**
+- If Step 1 `notion-search` returns 0 results: log `GATE 1 Notion: search
+  returned 0 T-rows — DB structure may have changed` and continue with
+  the 29-May cache fallback. Add to failure list.
+- If any Step 2 fetch fails (429 / 500 / auth): retry once, then skip that
+  row (partial matrix is still useful). Only log to failure list if >5 rows
+  failed.
+- If the search endpoint itself errors (auth expired, connector down): log
+  `GATE 1 Notion: search endpoint unavailable — milestone check skipped`
+  and fall back to `_context/active-projects.md`. Never abort.
+
+**DO NOT** use `notion-query-data-sources` or `notion-query-database-view`
+on this workspace — both return `"This tool requires a Business plan"`.
+The search+fetch path above is the free-tier workaround.
 
 **GATE 2 — Gmail last-inbound check (prevents: wrong silence duration + wrong Stage Lost calls)**
 For every deal flagged as "no response" or being considered for Stage Lost:
