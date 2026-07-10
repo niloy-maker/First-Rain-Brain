@@ -1,0 +1,9 @@
+{
+  "result": "OK",
+  "reason": "ok",
+  "detail": "Deployed and gate live",
+  "deploy_url": "https://450640d0.firstrain-dashboard.pages.dev",
+  "canonical_status": "401",
+  "checked_at_utc": "2026-06-02T08:14:09Z",
+  "exit_code": 0
+}

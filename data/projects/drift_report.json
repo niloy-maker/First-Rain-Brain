@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-05-07T09:21:27.972500+05:30",
+  "bigin_won_count": 8,
+  "sheet_row_count": 8,
+  "issues": [
+    {
+      "severity": "ALERT",
+      "type": "bigin_won_not_in_sheet",
+      "message": "GIC (Bigin 4996576000005170099) closed 22 biz days ago \u2014 no Projects row found. Sonal: add project.",
+      "bigin_deal_id": "4996576000005170099",
+      "close_date": "2026-04-08"
+    },
+    {
+      "severity": "WARNING",
+      "type": "sheet_row_no_bigin_match",
+      "message": "Projects row (GENERAL INDUSTRIAL CONTROLS PVT LTD) has no matching Bigin Closed Won deal. Historic project or stale row?",
+      "company": "GENERAL INDUSTRIAL CONTROLS PVT LTD"
+    }
+  ],
+  "counts": {
+    "ALERT": 1,
+    "WARNING": 1,
+    "INFO": 0
+  },
+  "wip_gap": 1
+}

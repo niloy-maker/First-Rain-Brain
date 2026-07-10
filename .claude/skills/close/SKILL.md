@@ -6,7 +6,21 @@ description: End of session log. Run when session is ending, work is done for th
 
 # Session Close — First Rain V2
 
-## Step 0 — Live data sync (ALWAYS run first, run both in parallel)
+## Step 0 — Live data sync (ALWAYS run first, run all three in parallel)
+
+### 0C — Finance data sync (from /finance JSON files)
+- Read `data/projects/sheet_cash_position.json` (written by last /finance run)
+- If file does not exist: skip silently, note "finance data not yet generated — run /finance first"
+- If file exists: extract from the `cash` object:
+  - `operatingCash` → current operating cash
+  - `treasury` → treasury total
+  - `odLimit` → OD facility
+  - `odUtilized` → OD utilized
+  - `hdfcLast4` → account identifier
+  - `date` → when Sonal last updated
+- Read `data/projects/sheet_receivables.json` for receivables list
+- If `cash.operatingCash` differs materially from financial-rules.md: update cash figures
+- No CSV fetch, no curl, no publish link — data comes from the last /finance run only
 
 ### 0A — Notion Production Tracker sync
 Fetch the FR Production Tracker FY27 from Notion:

@@ -26,6 +26,16 @@ Enforced by Hooks (100% deterministic). Do not override.
 - All Claude output → _outputs/ folder only
 - Only Niloy writes vault files
 - FirstRain-Intel/CLAUDE.md is a separate file — never overwrite it
+- Dashboard deploys → ALWAYS `bash scripts/deploy_dashboard.sh` — NEVER raw `wrangler pages deploy` (defaults to Preview env, leaves Production stale)
+- HDFC email cache → NEVER hand-merge new threads into `data/projects/_cache/hdfc_emails.json`. Always re-fetch the full window via the morning sync's Gmail MCP call. Surgical merges leave gaps that drift the bank-balance reconciliation (caught 16-Jun-2026 with a ₹23L overshoot).
+
+## NOTION MCP — PRODUCTION TRACKER
+- Tracker DB ID: ac84c676ad7249d2a79732d842f71d62
+- Full URL: https://www.notion.so/firstraingroup/ac84c676ad7249d2a79732d842f71d62
+- PRIMARY MCP: durable connector `mcp__4f0ff3f0-60f2-4485-9022-56005bb68c69__notion-fetch` (load via ToolSearch). Does not expire; works headless. Data source: collection://965e6417-5103-4dd0-9b9f-b082bfe0a75f.
+- FALLBACK MCP: `plugin:Notion:notion` (`mcp__plugin_Notion_notion__notion-fetch`) — OAuth, expires every few days, cannot re-auth in headless cron. Optional only; never treat as primary.
+- /context must probe the CONNECTOR at session start. Surface NOTION DISCONNECTED alert ONLY if BOTH the connector and the fallback fail — not when only the plugin is unauthenticated (that is expected and harmless).
+- Re-auth (only if connector itself is down): https://app.notion.com/install-integration (select "Team First Rain").
 
 ## CONTEXT ROUTING — LOAD ON DEMAND
 | Task involves...                   | Load this file                    |

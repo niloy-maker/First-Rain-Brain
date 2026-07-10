@@ -1,6 +1,6 @@
 # First Rain — Financial Rules
 # Single source of truth. Load when: quotes, margins, cash, receivables.
-# Last updated: April 2026. Update after every bank statement.
+# Last updated: 6 May 2026 (auto-sync from Sonal's sheet — all 7 tabs via Drive MCP).
 
 ## Margin floors (hard floor — no exceptions)
 - India projects: 33% contribution margin minimum
@@ -17,24 +17,52 @@
 - RUNWAY ALERT: Operating cash below ₹76,50,000 (3 months at ₹25.5L)
 
 ## Current cash position (update weekly)
-**Source: Sonal's Weekly Finance Report — Google Drive → FirstRain-Weekly-Reports/Finance**
-**Template: _outputs/Sonal-Weekly-Finance-Report-Template.xlsx**
-**Cadence: Sonal uploads every Monday by 10am. Claude reads before /monday.**
+**Source: Sonal's Google Sheet — synced 6 May 2026 (Drive MCP, all 7 tabs)**
+**Sheet date: 5 May 2026 (latest Cash_Position row — Sonal updated)**
 
-- Operating cash: ₹24,56,438 — CRITICAL (1.0 months) [last updated: 18 Apr 2026 — Sonal's sheet]
-- Treasury: ₹1,39,97,287 — real buffer
-- OD Facility: ₹1,21,00,000
-- Total receivables: ₹26,70,705
+### Cash & Liquidity
+- Operating cash (HDFC 0247): ₹12,58,919 — 🔴🔴 CRITICAL RUNWAY (0.5 months at ₹25.5L/month)
+- Treasury: ₹1,39,95,068 — real buffer (~5.5 months)
+- OD Facility: ₹1,21,00,000 limit | ₹0 utilized | ₹1,21,00,000 available
+- **Total liquid: ₹1,52,53,987 (5.98 months runway)**
 
-## Receivables priority (update weekly — from Sonal's report)
-| Client          | Amount       | Status                          |
-|-----------------|-------------|----------------------------------|
-| Amaara Vitafoods | ₹14,00,000 | #1 — ₹20L received 14 Apr. ₹14L outstanding. Chase before 5 May (90% rule). |
-| Messung         | ₹4,63,905   | #2 — April. Show 28-30 Apr.     |
-| Elliott Ebara   | ₹93,800     | #3 — Small residual per Sonal's sheet (daily-updates shows cleared 14 Apr — verify with Sonal) |
-| Secure BES      | ₹6,50,000   | #4 — ₹6.5L outstanding per Sonal's sheet (18 Apr). Source of truth. |
-| Mosil           | ₹63,000     | #5 — April. Show 23 Apr.        |
-| Carl Bechem     | ₹0          | ₹1,16,800 received 15 Apr ✓ (NEFT AXISP00788721946). BME Conclave wrap pending (T23–T31). |
+### Receivables — ₹43,83,573 outstanding (8 invoices, 7 overdue, 1 demo)
+| Client | Invoice | Balance | Due | Status | Owner |
+|--------|---------|---------|-----|--------|-------|
+| GIC (ELAsia) | EST-26-27-03 | ₹1,93,700 | 27 Apr 2026 | 🔴 OVERDUE 9d (₹5.74L received) | Shilpa |
+| Secure Meters (Utility Week) | EST-26-27-06 | ₹14,69,128 | 27 Apr 2026 | 🔴 OVERDUE 9d (fresh balance) | Chinmay |
+| Labguard (Analytica) [DEMO] | EST-25-26-089 | ₹9,52,200 | 30 Apr 2026 | 🔴 OVERDUE 6d | Shilpa |
+| Mosil (IDMC) | EST-25-26-084 | ₹90,000 | 30 Apr 2026 | 🔴 OVERDUE 6d | Shilpa |
+| Messung (Smart Home) | EST-25-26-082 | ₹4,34,700 | 4 May 2026 | 🔴 OVERDUE 2d | Shilpa |
+| Messung (Smart Home) | EST-25-26-082 | ₹29,205 | 4 May 2026 | 🔴 OVERDUE 2d | Shilpa |
+| Secure Meters (RenewX) | EST-25-26-092 | ₹2,62,640 | 4 May 2026 | 🔴 OVERDUE 2d | Chinmay |
+| Amaara Ayurveda (Vitafoods) | EST-26-27-01 | ₹9,52,000 | 10 May 2026 | 🟡 DUE in 4d (₹10.60L received) | Shilpa |
+
+By owner: Shilpa ₹16,99,605 live (5 inv) + ₹9,52,200 demo · Chinmay ₹17,31,768 (2 inv)
+Movement since 4 May: ₹16.34L collected (Amaara ₹10.60L + GIC ₹5.74L) · Secure UW jumped ₹6.43L → ₹14.69L (fresh invoice).
+
+### Payables — ₹76,92,555 outstanding (LIVE — Sonal added)
+| Vendor | Invoice | Balance | Due | Priority | Flexibility |
+|--------|---------|---------|-----|----------|-------------|
+| ZAK | GHI9685 | ₹16,00,000 | 6 May 2026 | 🔴 URGENT — DUE TODAY | Rigid cannot delay |
+| Exporacle | EX/2026-27/10 | ₹2,72,000 | 10 May 2026 | High | Rigid cannot delay |
+| SWD | SWD/11/26-27 | ₹3,28,127 | 10 May 2026 | High | Rigid cannot delay |
+| SWD | SWD/03/26-27 | ₹26,29,937 | 30 May 2026 | High | must-pay (rigid) |
+| Nandu | 4 | ₹18,00,000 | 30 May 2026 | High | Rigid cannot delay |
+| SWD | SWD/15/26-27 | ₹9,62,491 | 30 May 2026 | High | Rigid cannot delay |
+
+### Statutory
+All clear — no filings due within 30 days. (GSTR-3B Mar + TDS Jun both Filed.)
+
+### Margin breaches in active pipeline (3 projects — flag with Niloy)
+| Project | SP | CP | CM% | Floor | Region |
+|---------|----|----|-----|-------|--------|
+| Secure Meters Housing Show Manchester | ₹63.18L | ₹44.22L | 30.0% | 38% | UK |
+| Secure Meters Installer Show Birmingham | ₹39.31L | ₹27.52L | 30.0% | 38% | UK |
+| Amaara Supply Side Global Las Vegas | ₹38.21L | ₹28.53L | 25.3% | 38% | Americas |
+
+### Monthly burn: ₹25,50,000/month (configured through Mar 2027)
+### Active projects: 26 | Pipeline SP: ₹5.48 Cr (24 with values)
 
 ## Quote checklist (all 4 must pass)
 1. SP − CP above 33% of SP?
