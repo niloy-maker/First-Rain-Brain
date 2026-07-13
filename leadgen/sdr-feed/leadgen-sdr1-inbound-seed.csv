@@ -1,0 +1,43 @@
+Account,HQ_Country,ABM_Group,Motion,Target_Show,Tier,Stand_Signal,Concentration_Flag,Exhibiting_Status,Contact_Status,Notes
+Siemens,Germany,G1 Energy,IN,ELECRAMA 2027,T1,Large/island historic,FALSE,VERIFY,PENDING,Target Siemens India marketing/brand team
+ABB,Switzerland,G1 Energy,IN,ELECRAMA 2027,T1,Large/island historic,FALSE,VERIFY,PENDING,ABB India entity is decision-maker
+Schneider Electric,France,G1 Energy,IN,ELECRAMA 2027,T1,Large/island historic,FALSE,VERIFY,PENDING,Schneider India marcomm
+Hitachi Energy,Switzerland,G1 Energy,IN,ELECRAMA 2027,T1,Large/island historic,FALSE,VERIFY,PENDING,Ex-ABB Power Grids
+GE Vernova,USA,G1 Energy,IN,ELECRAMA 2027,T1,Large historic,FALSE,VERIFY,PENDING,Grid/power
+Toshiba T&D,Japan,G1 Energy,IN,ELECRAMA 2027,T2,Mid,FALSE,VERIFY,PENDING,
+Hyundai Electric,South Korea,G1 Energy,IN,ELECRAMA 2027,T2,Mid,FALSE,VERIFY,PENDING,
+Nexans,France,G1 Energy,IN,ELECRAMA 2027,T2,Mid,FALSE,VERIFY,PENDING,Cables
+Prysmian,Italy,G1 Energy,IN,ELECRAMA 2027,T2,Mid,FALSE,VERIFY,PENDING,Cables
+Landis+Gyr,Switzerland,G1 Energy,IN,ELECRAMA 2027,T1,Metering,FALSE,VERIFY,PENDING,Direct Secure Meters adjacency
+Itron,USA,G1 Energy,IN,ELECRAMA 2027,T1,Metering,FALSE,VERIFY,PENDING,Smart metering
+Kamstrup,Denmark,G1 Energy,IN,ELECRAMA 2027,T2,Metering,FALSE,VERIFY,PENDING,
+Caterpillar,USA,G3 Construction Mach,IN,bauma CONEXPO India 2026,T1,Island historic,FALSE,VERIFY,PENDING,Cat India
+Komatsu,Japan,G3 Construction Mach,IN,bauma CONEXPO India 2026,T1,Island historic,FALSE,VERIFY,PENDING,
+Volvo CE,Sweden,G3 Construction Mach,IN,bauma CONEXPO India 2026,T1,Large,FALSE,VERIFY,PENDING,
+Liebherr,Germany,G3 Construction Mach,IN,bauma CONEXPO India 2026,T1,Large,FALSE,VERIFY,PENDING,
+JCB,UK,G3 Construction Mach,IN,bauma CONEXPO India 2026,T1,Large,FALSE,VERIFY,PENDING,JCB India huge presence
+Hitachi Construction,Japan,G3 Construction Mach,IN,bauma CONEXPO India 2026,T2,Mid,FALSE,VERIFY,PENDING,
+Wirtgen Group,Germany,G3 Construction Mach,IN,bauma CONEXPO India 2026,T2,Mid,FALSE,VERIFY,PENDING,
+Sany,China,G3 Construction Mach,IN,bauma CONEXPO India 2026,T2,Large,FALSE,VERIFY,PENDING,
+XCMG,China,G3 Construction Mach,IN,bauma CONEXPO India 2026,T2,Large,FALSE,VERIFY,PENDING,
+Develon (Doosan),South Korea,G3 Construction Mach,IN,bauma CONEXPO India 2026,T2,Mid,FALSE,VERIFY,PENDING,
+Manitou,France,G3 Construction Mach,IN,bauma CONEXPO India 2026,T2,Mid,FALSE,VERIFY,PENDING,
+BASF,Germany,G4 Pharma/G5 Chem,IN,CPhI India 2026,T1,Large,TRUE,VERIFY,PENDING,Excipients/pharma ingredients
+DSM-Firmenich,Netherlands,G4 Pharma,IN,CPhI India 2026,T1,Large,TRUE,VERIFY,PENDING,
+Roquette,France,G4 Pharma,IN,CPhI India 2026,T2,Excipients,TRUE,VERIFY,PENDING,
+Evonik,Germany,G4 Pharma/G5 Chem,IN,CPhI India 2026,T1,Large,TRUE,VERIFY,PENDING,
+Lonza,Switzerland,G4 Pharma,IN,CPhI India 2026,T1,CDMO,TRUE,VERIFY,PENDING,
+Thermo Fisher,USA,G4 Pharma,IN,CPhI India 2026,T1,Large,TRUE,VERIFY,PENDING,
+IMA Group,Italy,G4 Pharma,IN,CPhI India 2026,T2,Machinery,TRUE,VERIFY,PENDING,Pharma packaging machinery
+Syntegon,Germany,G4 Pharma,IN,CPhI India 2026,T2,Machinery,TRUE,VERIFY,PENDING,Ex-Bosch Packaging
+Romaco,Germany,G4 Pharma,IN,CPhI India 2026,T2,Machinery,TRUE,VERIFY,PENDING,
+Colorcon,USA,G4 Pharma,IN,CPhI India 2026,T2,Coatings,TRUE,VERIFY,PENDING,
+Clariant,Switzerland,G5 Specialty Chem,IN,Chemspec India,T1,Large,TRUE,VERIFY,PENDING,
+Croda,UK,G5 Specialty Chem,IN,Chemspec India,T1,Large,TRUE,VERIFY,PENDING,
+Solvay,Belgium,G5 Specialty Chem,IN,Chemspec India,T2,Mid,TRUE,VERIFY,PENDING,
+Lanxess,Germany,G5 Specialty Chem,IN,Chemspec India,T2,Mid,TRUE,VERIFY,PENDING,
+Huntsman,USA,G5 Specialty Chem,IN,Chemspec India,T2,Mid,TRUE,VERIFY,PENDING,
+Infineon,Germany,G1 Electronics,IN,electronica India 2026,T2,Mid,FALSE,VERIFY,PENDING,
+STMicroelectronics,Switzerland,G1 Electronics,IN,electronica India 2026,T2,Mid,FALSE,VERIFY,PENDING,
+TDK,Japan,G1 Electronics,IN,electronica India 2026,T2,Mid,FALSE,VERIFY,PENDING,
+Murata,Japan,G1 Electronics,IN,electronica India 2026,T2,Mid,FALSE,VERIFY,PENDING,

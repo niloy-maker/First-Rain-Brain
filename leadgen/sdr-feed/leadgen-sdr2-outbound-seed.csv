@@ -1,0 +1,43 @@
+Account,HQ_Country,ABM_Group,Motion,Target_Show,Tier,Stand_Signal,Concentration_Flag,Exhibiting_Status,Contact_Status,Notes
+Sun Pharmaceutical,India,G4 Pharma,OUT,CPhI Worldwide,T1,Large historic,TRUE,VERIFY,PENDING,Largest Indian pharma
+Dr Reddy's Laboratories,India,G4 Pharma,OUT,CPhI Worldwide,T1,Large historic,TRUE,VERIFY,PENDING,
+Cipla,India,G4 Pharma,OUT,CPhI Worldwide,T1,Large,TRUE,VERIFY,PENDING,
+Lupin,India,G4 Pharma,OUT,CPhI Worldwide,T1,Large,TRUE,VERIFY,PENDING,
+Aurobindo Pharma,India,G4 Pharma,OUT,CPhI Worldwide,T1,Large,TRUE,VERIFY,PENDING,API heavy
+Zydus Lifesciences,India,G4 Pharma,OUT,CPhI Worldwide,T2,Mid,TRUE,VERIFY,PENDING,
+Torrent Pharma,India,G4 Pharma,OUT,CPhI Worldwide,T2,Mid,TRUE,VERIFY,PENDING,
+Glenmark,India,G4 Pharma,OUT,CPhI Worldwide,T2,Mid,TRUE,VERIFY,PENDING,
+Biocon,India,G4 Pharma,OUT,CPhI Worldwide,T2,Biologics,TRUE,VERIFY,PENDING,
+Divi's Laboratories,India,G4 Pharma,OUT,CPhI Worldwide,T1,API large,TRUE,VERIFY,PENDING,Major API
+Laurus Labs,India,G4 Pharma,OUT,CPhI Worldwide,T2,API,TRUE,VERIFY,PENDING,
+Gland Pharma,India,G4 Pharma,OUT,CPhI Worldwide,T2,Injectables,TRUE,VERIFY,PENDING,
+Alkem Laboratories,India,G4 Pharma,OUT,CPhI Worldwide,T2,Mid,TRUE,VERIFY,PENDING,
+Hetero,India,G4 Pharma,OUT,CPhI Worldwide,T2,API,TRUE,VERIFY,PENDING,
+Mankind Pharma,India,G4 Pharma,OUT,CPhI Worldwide,T2,Mid,TRUE,VERIFY,PENDING,
+UPL,India,G5 Specialty Chem,OUT,Chemspec Europe,T1,Large,TRUE,VERIFY,PENDING,Agrochem major
+SRF Limited,India,G5 Specialty Chem,OUT,Chemspec Europe,T1,Large,TRUE,VERIFY,PENDING,
+Aarti Industries,India,G5 Specialty Chem,OUT,Chemspec Europe,T1,Large,TRUE,VERIFY,PENDING,
+Deepak Nitrite,India,G5 Specialty Chem,OUT,Chemspec Europe,T2,Mid,TRUE,VERIFY,PENDING,
+PI Industries,India,G5 Specialty Chem,OUT,Chemspec Europe,T2,Mid,TRUE,VERIFY,PENDING,
+Gujarat Fluorochemicals,India,G5 Specialty Chem,OUT,Chemspec Europe,T2,Mid,TRUE,VERIFY,PENDING,
+Tata Chemicals,India,G5 Specialty Chem,OUT,Chemspec Europe,T2,Large,TRUE,VERIFY,PENDING,
+Vinati Organics,India,G5 Specialty Chem,OUT,Chemspec Europe,T2,Mid,TRUE,VERIFY,PENDING,
+Navin Fluorine,India,G5 Specialty Chem,OUT,Chemspec Europe,T2,Mid,TRUE,VERIFY,PENDING,
+Atul Ltd,India,G5 Specialty Chem,OUT,Chemspec Europe,T2,Mid,TRUE,VERIFY,PENDING,
+Secure Meters,India,G1 Energy,OUT,Middle East Energy / Enlit,T1,Existing client,FALSE,VERIFY,PENDING,Anchor account - deepen not hunt
+Havells India,India,G1 Energy,OUT,Middle East Energy,T1,Large,FALSE,VERIFY,PENDING,
+Polycab India,India,G1 Energy,OUT,Middle East Energy,T1,Large,FALSE,VERIFY,PENDING,Cables
+KEI Industries,India,G1 Energy,OUT,Middle East Energy,T2,Mid,FALSE,VERIFY,PENDING,
+Genus Power,India,G1 Energy,OUT,Middle East Energy,T2,Metering,FALSE,VERIFY,PENDING,Smart metering peer
+HPL Electric,India,G1 Energy,OUT,Middle East Energy,T2,Metering,FALSE,VERIFY,PENDING,
+Finolex Cables,India,G1 Energy,OUT,Middle East Energy,T2,Mid,FALSE,VERIFY,PENDING,
+RR Kabel,India,G1 Energy,OUT,Middle East Energy,T2,Mid,FALSE,VERIFY,PENDING,
+Apar Industries,India,G1 Energy,OUT,Middle East Energy,T2,Conductors,FALSE,VERIFY,PENDING,
+Sterlite Power,India,G1 Energy,OUT,Enlit Europe,T2,T&D,FALSE,VERIFY,PENDING,
+Larsen & Toubro,India,G3 Construction Mach,OUT,bauma Munich,T1,Large,FALSE,VERIFY,PENDING,Construction/heavy eng
+BEML,India,G3 Construction Mach,OUT,bauma Munich,T2,Mid,FALSE,VERIFY,PENDING,
+Action Construction Equipment,India,G3 Construction Mach,OUT,bauma Munich,T2,Mid,FALSE,VERIFY,PENDING,ACE
+Escorts Kubota,India,G3 Construction Mach,OUT,bauma Munich,T2,Mid,FALSE,VERIFY,PENDING,
+Cummins India,India,G3 Construction Mach,OUT,bauma Munich,T2,Power,FALSE,VERIFY,PENDING,
+Kirloskar,India,G3 Construction Mach,OUT,Middle East / EU,T2,Power,FALSE,VERIFY,PENDING,
+Thermax,India,G3 Construction Mach,OUT,EU energy/industrial,T2,Mid,FALSE,VERIFY,PENDING,
