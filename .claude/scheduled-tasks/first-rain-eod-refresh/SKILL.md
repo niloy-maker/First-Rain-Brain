@@ -63,7 +63,7 @@ Proceed to STEP 1.
    ```bash
    cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain && python3 scripts/projects/run_pipeline.py
    ```
-   This runs classify → sheet → HDFC → momentum → drift → dashboard, each isolated; it always exits 0, renders the dashboard from best-available data, and writes `data/projects/pipeline_health.json`. Then READ `pipeline_health.json`: if `overall` != `green`, include a `⚠️ DATA HEALTH` block (one bullet per non-`fresh` source with its `status`/`detail`/age) in the STEP 6 recovery Telegram + Gmail draft. Do NOT run the individual stage scripts by hand — the orchestrator owns them and never aborts the run.
+   This runs classify → sheet → listing (LR tabs → IPO tab) → HDFC → momentum → drift → dashboard, each isolated; it always exits 0, renders the dashboard from best-available data, and writes `data/projects/pipeline_health.json`. Then READ `pipeline_health.json`: if `overall` != `green`, include a `⚠️ DATA HEALTH` block (one bullet per non-`fresh` source with its `status`/`detail`/age) in the STEP 6 recovery Telegram + Gmail draft. Do NOT run the individual stage scripts by hand — the orchestrator owns them and never aborts the run.
 5. Continue to STEP 1.
 
 ---
@@ -317,7 +317,7 @@ Run on EVERY EOD check — **not only when deltas exist**. This is the day's fin
 ```bash
 cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain && python3 scripts/projects/run_pipeline.py
 ```
-The orchestrator runs classify → sheet → HDFC → momentum → drift → dashboard, each isolated; it ALWAYS exits 0 and renders `dashboards/dashboard.html` from best-available data (restoring `data/projects/last_good/` for any failed stage). If `SHEET_FRESH = false` (Drive re-download failed), it simply re-renders from the existing cached JSON — still correct, just not newer than midday. Do NOT run the individual stage scripts by hand.
+The orchestrator runs classify → sheet → listing (LR tabs → IPO tab) → HDFC → momentum → drift → dashboard, each isolated; it ALWAYS exits 0 and renders `dashboards/dashboard.html` from best-available data (restoring `data/projects/last_good/` for any failed stage). If `SHEET_FRESH = false` (Drive re-download failed), it simply re-renders from the existing cached JSON — still correct, just not newer than midday. Do NOT run the individual stage scripts by hand.
 
 (In RECOVERY_MODE the orchestrator already ran in STEP 0 step 4 — skip 5B-i, go straight to 5B-ii.)
 

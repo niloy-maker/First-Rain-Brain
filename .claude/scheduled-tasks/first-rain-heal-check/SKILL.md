@@ -234,38 +234,62 @@ Run all 5 pings in ONE parallel message — do not serialise them.
 
 Record results as: `MCP health: Bigin ✅/🔴 · Notion ✅/⚠️/🔴 · Drive ✅/🔴 · Gmail ✅/⚠️/🔴 · FRBIS ✅/🔴`
 
-## STEP 6 — Telegram (ALWAYS send)
+## STEP 6 — Telegram (silent-unless-new — 2026-08-13 redesign)
 
 **HEADLESS DELIVERY — do this FIRST, before anything else in this step:** compose the message below, then write it VERBATIM (overwrite) to `_outputs/telegram-outbox/first-rain-heal-check.txt`. On scheduled (launchd) runs the `plugin:telegram` MCP is NOT connected, so the driver reads this file and delivers it via Telegram after the run — this is the path that actually reaches Niloy. Writing this file is mandatory and must not be skipped.
 
 Then also attempt a Telegram via `mcp__plugin_telegram_telegram__reply` (chat_id `"8770250893"`) — this delivers on interactive runs; in headless it fails harmlessly and the driver delivers from the outbox file (do not treat that failure as an error).
 
-**Format by outcome:**
+**Deduplication rule (this is the whole point of the redesign):** the heal-check runs at 10:05, after the 09:08 morning briefing has already been sent. Anything that appears in today's briefing is something Niloy has already seen. The heal-check must NOT re-list it — that's what was making these messages 1200+ bytes of duplication. Filter every candidate issue through:
 
-All checks green, nothing healed:
-```
-🩺 Heal check · <date> · ✅ All systems green
-```
-
-Auto-healed something, no remaining failures:
-```
-🩺 Heal check · <date>
-
-⚠️ Healed:
-- <action> ✅
-…
+```bash
+python3 scripts/projects/persistent_issue_days.py already-in-today "<distinctive substring>"
+# exit 0 = already in today's briefing → SUPPRESS from heal-check message
+# exit 1 = not in today's briefing → include as new
 ```
 
-Any 🔴 failure that could not be fixed:
-```
-🩺 Heal check · <date>
-
-🔴 Unresolved — action needed:
-- <issue>
-…
+For persistent issues (day count ≥ 2), also compute the streak:
+```bash
+python3 scripts/projects/persistent_issue_days.py days "<substring>" --max-days 30
 ```
 
-Stay under 4000 chars. Never skip this step — Niloy expects the heartbeat every day.
+**Compose the message in this priority order, keep only what survives dedup:**
+
+1. **NEW system failures** (not in today's briefing) — full detail. Example: heal-check discovers the Cloudflare deploy 401 gate is missing, briefing said nothing about it → full flag.
+2. **NEW-today issues that Niloy hasn't seen yet** (day count = 1) — full detail.
+3. **Persistent issues** (day count ≥ 2, already in today's briefing) — collapse to ONE line at the bottom, day-count only, no re-description.
+4. **Green tick summary** — one line, only what heal-check independently verified (dashboard 401, sheets fresh, watchdog alive, MCPs healthy).
+
+**Message shapes:**
+
+Silent day — nothing new, everything green:
+```
+🩺 HEAL <DD Mon> · ✅ 0 new issues
+```
+(Yes, one line. That's it. This is the whole message on a healthy day.)
+
+Persistent-only day — no new issues, but known ones still open:
+```
+🩺 HEAL <DD Mon> · 0 new
+🚨 Persistent (day N): <issue1> · <issue2>
+```
+
+New-issue day — heal-check found something the morning didn't flag:
+```
+🩺 HEAL <DD Mon> · N NEW
+
+🔴 <new_issue_1> — <one-line detail + suggested action>
+[additional 🔴 or ⚠️ lines for other genuinely new items]
+
+🚨 Persistent (day N): <issue1> · <issue2>
+```
+
+**Hard rules:**
+- Never re-describe an issue that's already in today's briefing. Never. Use the day-N reference instead.
+- No "healed" section — auto-heals go into the audit trail (STEP 7), not Telegram. If a heal recovered something, Niloy sees it in the next briefing.
+- No dashboard URL. No "N/13 pipeline files fresh". No "MCPs green" enumeration. Those are internal telemetry — omit unless a specific check FAILED.
+- Target under 500 bytes on quiet days, under 1500 bytes on eventful ones (was 1184 for a fully-duplicated day).
+- Never skip this step — the heartbeat is important, but the heartbeat can and should be one line.
 
 **Gmail fallback (if Telegram call fails or returns error):**
 If `mcp__plugin_telegram_telegram__reply` fails for any reason, immediately call `mcp__gmail__create_draft` with:

@@ -594,7 +594,7 @@ Do NOT add Telegram or Gmail draft lines here — Steps 8 and 9 each append thei
 
 ---
 
-## STEP 8 — Send ONE consolidated Telegram
+## STEP 8 — Send ONE consolidated Telegram (compact format — 2026-08-13 redesign)
 
 **UNCONDITIONAL:** Run this step regardless of what happened in Steps 1–7. A partial or incomplete briefing still goes out — never skip this step.
 
@@ -606,11 +606,72 @@ grep -q 'Telegram: ✅' _outputs/briefing-$(date +%F).md 2>/dev/null && echo ALR
 ```
 If output is `ALREADY_SENT`: skip this step entirely. Log "Step 8 skipped — Telegram already sent (duplicate run guard)." Go to Step 9.
 
+**Compose a NEW compact Telegram message — do NOT dump the full Step-4 briefing file.** The briefing file is the rich record (for Gmail draft + Sonal/Niloy skim later); Telegram is the *actionable summary*. Target 2500–3500 bytes (was 6700+ under the old dump-briefing pattern).
+
+**Composition rules (2026-08-13 redesign):**
+
+1. **Every fact appears ONCE.** The cash figure in the header line means it is NOT repeated in RECEIVABLES or the action bullets. OD headroom lives in the ONE action bullet that recommends the draw, nowhere else.
+2. **Actions first, context second.** `🎯 TOP 3 TODAY` is the leader — three most-consequential single-owner actions extracted from Step 4's `📋 ONE ACTION PER FLAG` list.
+3. **Suppress housekeeping**: no dashboard URL (dashboard is always live — a broken one is the heal-check's job to alert), no "N txns parsed", no "MCPs green", no "202 deals · region known 120/202", no "deploy ✨ success" self-narration.
+4. **Suppress verified false positives inline.** If Step 5H drift is manually verified as a name-mismatch false positive, do NOT ship it. Add a private note in the briefing file, not Telegram.
+5. **Persistent issues collapse to one line at the bottom.** Anything that has been in ≥2 consecutive morning briefings (use the helper below) becomes `🚨 PERSISTENT (day N): X · Y · Z` — do NOT re-describe or re-explain. Nothing new to Niloy = nothing to spell out.
+
+**Persistent-issue day counter** — for each candidate persistent issue (typically: Notion down, HDFC parser gap, Cloudflare deploy fail, sheet stale, Bigin auth fail), compute the streak:
+```bash
+cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain
+python3 scripts/projects/persistent_issue_days.py days "Notion connector" --max-days 30
+python3 scripts/projects/persistent_issue_days.py days "unparseable HDFC" --max-days 30
+```
+If the returned integer is ≥2, put the issue in the collapsed `🚨 PERSISTENT` line with the day count. If it's 1 (new today) or 0 (not present), put full detail in the appropriate action bullet.
+
+**Compact Telegram template — use this shape, adapt bullet counts to today's reality:**
+
+```
+🌅 FIRST RAIN · [Wkday DD Mon]
+
+🎯 TOP 3 TODAY
+1. [Owner] — [action] ([one-liner why: amount / due date])
+2. [Owner] — [action]
+3. [Owner] — [action]
+
+💰 Op ₹XL [🔴/🟠/✅] · Treasury ₹X.XCr · OD ₹X.XCr free · Runway Xmo
+
+📥 COLLECT ₹XL · N inv
+[Top 2-3 open by size/urgency, one line each: Client ₹X.XL (Nd)]
+🟡 Unmatched credits ₹XL — Sonal verify vs Tally (compact list if any)
+
+📤 PAY THIS WEEK
+[Overdue total + vendor count + next big obligation]
+
+🏗 PROJECTS
+[N deals slipping — top 2 named + count. FRBIS overdue-cut count.]
+
+⚠️ NEW ISSUES [omit section entirely if nothing new today]
+- [only issues NOT already flagged in prior morning briefings]
+
+🚨 PERSISTENT (day N): [issue1] · [issue2] · [issue3]
+```
+
+Rules for each block:
+- `🎯 TOP 3`: exactly 3, ranked by consequence (cash > payables > receivables > pipeline > FRBIS). If fewer than 3 real actions today, drop to 2 or 1 — do NOT pad with "monitor" items.
+- `💰` line: single-line finance pulse. Emoji is 🔴 if op cash < floor, 🟠 if within 20% of floor, ✅ otherwise. No "unchanged" — always show current value.
+- `📥 COLLECT`: total + count on header line; top 2-3 individual receivables only. `🟡 Unmatched credits` sub-line only if any exist this run.
+- `📤 PAY`: aggregate view. Individual vendors only if any single one is > ₹5L overdue.
+- `🏗 PROJECTS`: aggregate counts + top 2 by delay days.
+- `⚠️ NEW ISSUES`: **omit the entire section if there are no genuinely new issues today**. New = wasn't in yesterday's briefing.
+- `🚨 PERSISTENT`: single line, `·` separated. Include only issues with day-count ≥ 2. Order by day-count descending.
+
+**Do NOT include** in the Telegram (these belong in the briefing file only):
+- FINANCE PULSE detail block (drift counts, HDFC txn count, dashboard URL) — those go in the briefing file's `📊 FINANCE PULSE` section but NOT in Telegram.
+- Full receivables enumeration (top 2-3 only in Telegram)
+- Full FRBIS pipeline breakdown (aggregate line only in Telegram)
+- DATA HEALTH block — that's for the briefing file. The heal-check catches system-level failures separately.
+
 Call `mcp__plugin_telegram_telegram__reply` with:
 - chat_id: `"8770250893"` (string, not number)
-- text: briefing (Step 4) + finance pulse (Step 6), concatenated
+- text: the compact message composed above
 
-Telegram's 4096-char limit auto-splits into 2 parts — expected.
+Telegram's 4096-char limit: the new compact format targets under 3500 bytes so it fits in a single message.
 This is the ONLY Telegram message sent in this entire run.
 
 After the call (success or failure), append the result to the briefing file:
