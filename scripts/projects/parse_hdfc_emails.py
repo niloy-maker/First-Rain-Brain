@@ -408,6 +408,11 @@ def parse_hdfc_email(message: dict) -> dict | None:
     if txn and txn.get("direction") in ("credit", "debit"):
         blob = f"{message.get('subject', '')} {message.get('snippet', '')}"
         if _is_internal_transfer(blob):
+            # Preserve the original credit/debit signal so the downstream cashflow
+            # builder can net OD draws (credit into 0247) against OD repays
+            # (debit from 0247) to estimate live OD utilization when Sonal's sheet
+            # hasn't caught up intraday. Without this, both legs look identical.
+            txn["originalDirection"] = txn["direction"]
             txn["type"] = "INTERNAL_TRANSFER"
             txn["direction"] = "internal_transfer"
             txn["purpose"] = "Internal OD<->CA fund transfer (own account)"

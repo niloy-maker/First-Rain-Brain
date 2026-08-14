@@ -20,6 +20,7 @@ Usage:
 """
 
 import json
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -140,6 +141,8 @@ def _load_finance():
         if cp.get("cash") is not None:
             finance["cash"] = cp["cash"]
         finance["_cash_alerts"] = cp.get("alerts", [])
+        # Daily balance history — feeds ACTUAL month-end rows in the FY view
+        finance["cashHistory"] = cp.get("history", [])
 
     # --- Receivables (new) ---
     if RECEIVABLES_JSON.exists():
@@ -149,19 +152,33 @@ def _load_finance():
         # still marks as "Open". These have nothing to chase and create false
         # overdue alerts. Sonal's sheet is the permanent fix; this filter
         # prevents noise until she marks them Closed.
+        # Open book only: drop rows Sonal has marked Closed/paid and paise
+        # residues (<₹1) — a settled invoice with a ₹0.16 rounding artifact
+        # is float noise, not a receivable (it rendered as a 68d-overdue
+        # ESCALATE on the Collect tab, caught 06-Aug-2026).
         finance["receivables"] = [
             r for r in all_recv
-            if float(r.get("balance", r.get("amount", 0)) or 0) > 0
+            if (r.get("status", "") or "").lower() not in ("paid", "closed")
+            and float(r.get("balance", r.get("amount", 0)) or 0) >= 1
         ]
+        # Full invoice history (incl. settled rows) — the revenue projection
+        # nets deals against invoiced-to-date, and a PAID invoice is exactly
+        # the proof a deal's cash already arrived. Filtering to balance>0
+        # here would un-net every settled deal (bug found 05-Aug-2026:
+        # ₹3.6Cr of already-collected deals re-projected into the current month).
+        finance["receivablesAll"] = all_recv
 
     # --- Payables (new) ---
     if PAYABLES_JSON.exists():
         pv = json.loads(PAYABLES_JSON.read_text())
         all_pay = pv.get("payables", [])
-        # Suppress paid rows (balance = 0) — same as receivables filter.
+        # Open book only: drop rows marked paid and paise residues (<₹1) —
+        # same guard as receivables (a ₹0.28 'paid' SWD row rendered as
+        # 35d-late on the Pay tab, caught 06-Aug-2026).
         finance["payables"] = [
             p for p in all_pay
-            if float(p.get("balance", p.get("amount", 0)) or 0) > 0
+            if (p.get("status", "") or "").lower() != "paid"
+            and float(p.get("balance", p.get("amount", 0)) or 0) >= 1
         ]
 
     # --- Statutory (new) ---
@@ -219,11 +236,16 @@ def _compute_derived(bigin, sheet, finance):
     all_regions = sorted({_REGION_NAME_MAP.get(r, r) for r in raw_regions} - {"Unknown"})
     all_industries = sorted({d.get("industry") for d in deals if d.get("industry")})
 
-    # Pipeline totals by account for concentration
+    # Pipeline totals by account for concentration.
+    # Concentration uses the LIVE pipeline (lost/junk excluded) — including
+    # dead deals in the denominator diluted Secure from ~53% to 37% and
+    # contradicted the CLAUDE.md 25%-breach rule (fix 07-Aug-2026, Niloy).
     account_totals = {}
     pipeline_total = 0.0
     saltwater_total = 0.0
     for d in deals:
+        if d.get("bucket") in ("lost", "junk"):
+            continue
         amt = float(d.get("amount") or 0)
         pipeline_total += amt
         name = d.get("account_name") or ""
@@ -237,6 +259,127 @@ def _compute_derived(bigin, sheet, finance):
 
     saltwater_pct = (saltwater_total / pipeline_total) if pipeline_total > 0 else 0.0
 
+    # TRUE vendor concentration: largest fabricator's share of tracked project
+    # CP (Sonal's Projects sheet). The Health card previously displayed the
+    # international-revenue share mislabeled as vendor share (fix 07-Aug-2026).
+    vendor_cp: dict[str, float] = {}
+    for p in projects:
+        fab = _canon_vendor(p.get("fabricator"))
+        cp_amt = float(p.get("variable_cost_cp", p.get("variableCost", 0)) or 0)
+        if fab and cp_amt > 0:
+            vendor_cp[fab] = vendor_cp.get(fab, 0.0) + cp_amt
+    vendor_cp_total = sum(vendor_cp.values())
+    if vendor_cp_total > 0:
+        _top_fab = max(vendor_cp, key=vendor_cp.get)
+        vendor_top_name, vendor_top_cp = _top_fab, vendor_cp[_top_fab]
+        vendor_conc = vendor_top_cp / vendor_cp_total
+    else:
+        vendor_top_name, vendor_top_cp, vendor_conc = "", 0.0, 0.0
+
+    # Full vendor CP breakdown, split India / International by project region
+    # (for the Health tab Vendor Concentration card, Niloy 07-Aug-2026).
+    _fab_regions: dict[str, dict] = {}
+    for p in projects:
+        fab = _canon_vendor(p.get("fabricator"))
+        cp_amt = float(p.get("variable_cost_cp", p.get("variableCost", 0)) or 0)
+        if not fab or cp_amt <= 0:
+            continue
+        reg = (p.get("region") or "Unknown")
+        e = _fab_regions.setdefault(fab, {"cp": 0.0, "n": 0, "regions": {}})
+        e["cp"] += cp_amt
+        e["n"] += 1
+        e["regions"][reg] = e["regions"].get(reg, 0.0) + cp_amt
+    vendor_breakdown = {"india": [], "international": [], "indiaTotal": 0.0,
+                        "intlTotal": 0.0, "totalCp": vendor_cp_total}
+    for fab, e in sorted(_fab_regions.items(), key=lambda x: -x[1]["cp"]):
+        is_india = max(e["regions"], key=e["regions"].get) == "India"
+        row = {
+            "name": fab,
+            "cp": e["cp"],
+            "n": e["n"],
+            "pct": (e["cp"] / vendor_cp_total) if vendor_cp_total else 0.0,
+            "regions": ", ".join(sorted(r for r in e["regions"] if r != "India")),
+        }
+        if is_india:
+            vendor_breakdown["india"].append(row)
+            vendor_breakdown["indiaTotal"] += e["cp"]
+        else:
+            vendor_breakdown["international"].append(row)
+            vendor_breakdown["intlTotal"] += e["cp"]
+
+    # FORWARD vendor exposure — the scored risk (Niloy 07-Aug-2026): if this
+    # vendor walks tomorrow, how much of the committed book is exposed?
+    #   open payables (any project) + un-invoiced CP of UPCOMING deliveries.
+    # A raised invoice is attributed to its best-matching project so the same
+    # rupee is never counted as both payable and remaining CP.
+    # NOTE (Niloy 07-Aug-2026): NOT scored. With no fabricator assignments on
+    # future projects yet, "forward exposure" degenerates into the payables
+    # queue (₹91.6L of ₹93.3L was open dues for delivered work) — cash timing,
+    # not dependency. Shown as labeled context; the scored metric stays the
+    # structural 12-month CP mix. Becomes scorable when future projects carry
+    # a fabricator column in Sonal's sheet (or Bigin adds one at CP stage).
+    _cur_mk_fwd = datetime.now().strftime("%Y-%m")
+    norm_pays_fwd = finance.get("payables", []) or []
+    open_dues: dict[str, float] = {}
+    prj_rows_fwd = [(p, _sig_tokens(f"{p.get('company', '')} {p.get('project', '')}",
+                                    _SHOW_STOPWORDS)) for p in projects]
+    attributed_cp: dict[int, float] = {}
+    for pay in norm_pays_fwd:
+        amt = float(pay.get("amount", pay.get("balance", 0)) or 0)
+        if amt <= 0:
+            continue
+        vk = _canon_vendor(pay.get("vendor"))
+        open_dues[vk] = open_dues.get(vk, 0.0) + amt
+        p_tok = _sig_tokens(pay.get("showProject", "") or "", _SHOW_STOPWORDS)
+        best_i, best_ov = None, 0
+        for idx, (_p, toks) in enumerate(prj_rows_fwd):
+            ov = len(p_tok & toks)
+            if ov > best_ov:
+                best_i, best_ov = idx, ov
+        if best_i is not None:
+            attributed_cp[best_i] = attributed_cp.get(best_i, 0.0) + amt
+    upcoming_uninvoiced = 0.0
+    for idx, (p, _toks) in enumerate(prj_rows_fwd):
+        mk_d = _parse_delivery_month(str(p.get("delivery_month") or "").strip())
+        if not mk_d or mk_d < _cur_mk_fwd:
+            continue
+        cp_amt = float(p.get("variable_cost_cp", p.get("variableCost", 0)) or 0)
+        upcoming_uninvoiced += max(0.0, cp_amt - attributed_cp.get(idx, 0.0))
+    dues_total = sum(open_dues.values())
+    if dues_total > 0:
+        _dues_top = max(open_dues, key=open_dues.get)
+        dues_top_name, dues_top_amt = _dues_top, open_dues[_dues_top]
+    else:
+        dues_top_name, dues_top_amt = "", 0.0
+
+    # Bigin Won deals genuinely ABSENT from Sonal's Projects sheet — matched
+    # with the same token+amount approach as the invoice matcher. The old JS
+    # 5-char name-prefix match missed "MEE'26"↔"Middle East Energy" and
+    # "STAI"↔"Sugar Expo", double-counting ₹26.3L of YTD (fix 07-Aug-2026).
+    won_not_in_sheet = []
+    prj_match_rows = [(_sig_tokens(p.get("company", "") or "", _CO_STOPWORDS),
+                      _sig_tokens(p.get("project", "") or "", _SHOW_STOPWORDS),
+                      float(p.get("sales_sp", p.get("sales", 0)) or 0))
+                     for p in projects]
+    for d in deals:
+        if d.get("bucket") != "won":
+            continue
+        amt = float(d.get("amount") or 0)
+        d_co = _sig_tokens(d.get("account_name", "") or "", _CO_STOPWORDS)
+        d_show = _sig_tokens(d.get("deal", "") or "", _SHOW_STOPWORDS)
+        matched = False
+        for p_co, p_show, p_sales in prj_match_rows:
+            if not (d_co & p_co):
+                continue
+            overlap = len(d_show & p_show)
+            amt_close = (amt > 0 and p_sales > 0
+                         and abs(amt - p_sales) / max(amt, p_sales) < 0.12)
+            if overlap >= 1 or amt_close:
+                matched = True
+                break
+        if not matched:
+            won_not_in_sheet.append(d.get("id"))
+
     # Total receivables outstanding from Secure/international
     receivables = finance.get("receivables", [])
     saltwater_outstanding = sum(
@@ -249,7 +392,11 @@ def _compute_derived(bigin, sheet, finance):
     top_actions = []
     today = datetime.now().date()
     for r in receivables:
+        if r.get("status") == "Closed":
+            continue
         bal = r.get("balance", r.get("amount", 0))
+        if bal < 1:
+            continue
         try:
             due = datetime.fromisoformat(r["dueDate"]).date()
             overdue = (today - due).days
@@ -293,6 +440,16 @@ def _compute_derived(bigin, sheet, finance):
         "pipelineTotal": pipeline_total,
         "saltwaterConcentration": saltwater_pct,
         "saltwaterOutstanding": saltwater_outstanding,
+        "vendorConcentration": vendor_conc,
+        "vendorTopFabricator": vendor_top_name,
+        "vendorTopCp": vendor_top_cp,
+        "vendorCpTotal": vendor_cp_total,
+        "vendorCpBreakdown": vendor_breakdown,
+        "vendorOpenDuesTop": dues_top_name,
+        "vendorOpenDuesTopAmt": dues_top_amt,
+        "vendorOpenDuesTotal": dues_total,
+        "vendorUpcomingUninvoiced": upcoming_uninvoiced,
+        "wonDealIdsNotInSheet": won_not_in_sheet,
         "topActions": top_actions,
     }
 
@@ -399,8 +556,15 @@ def _normalize_payable(p: dict) -> dict:
     # invoice (template) ← invoiceNo (xlsx parser)
     if "invoice" not in out:
         out["invoice"] = out.get("invoiceNo", out.get("invoiceRef", "")) or ""
-    # Normalise flexibility to the 3 CSS class values the template expects
-    flex_raw = (out.get("flexibility") or "can-delay-7d").lower().strip()
+    # Normalise flexibility to the 3 CSS class values the template expects.
+    # Blank dropdown → fall back to the Flex_Note text: Sonal writes
+    # "Rigid cannot delay" there while leaving the dropdown empty, which
+    # used to silently default every rigid payable to can-delay-7d and
+    # zero the must-pay lever (designed Jul-2026, applied 06-Aug-2026).
+    flex_raw = (out.get("flexibility") or "").lower().strip()
+    if not flex_raw:
+        note = (out.get("flexNote") or "").lower()
+        flex_raw = "must-pay" if ("rigid" in note or "cannot delay" in note) else "can-delay-7d"
     out["flexibility"] = _FLEX_MAP.get(flex_raw, "can-delay-7d")
     return out
 
@@ -468,6 +632,56 @@ def _derive_od_from_sms(imessage_data: dict) -> "dict | None":
         'source': 'hdfc_sms',
         'rawBalance': raw_balance,
     }
+
+
+def _derive_od_delta_from_email_transfers(bank_txn: Optional[dict], since_date: str) -> "dict | None":
+    """
+    Estimate net OD utilization added since `since_date` (YYYY-MM-DD) by netting
+    HDFC email-parsed internal-transfer legs on account 0247:
+
+        OD draw    = internal transfer CREDIT into 0247 (from OD 0241)  → +delta
+        OD repay   = internal transfer DEBIT from 0247 (to OD 0241)      → -delta
+
+    Requires the parser to have preserved `originalDirection` on the txn.
+    Returns {'delta': INR, 'latestDate': 'YYYY-MM-DD', 'legs': [...]} or None
+    if there is no relevant activity on/after `since_date`.
+
+    Filter uses date >= since_date (not strictly greater) because sheet snapshots
+    carry a date but no timestamp — Sonal's morning entry can pre-date an
+    afternoon OD draw on the same calendar day (real 13-Aug-2026 scenario).
+    Consequence: if Sonal updates the sheet AFTER a same-day transfer, we
+    over-count. The builder guards against that by only applying the override
+    when the implied OD strictly EXCEEDS Sonal's odUtilized — never below.
+    """
+    if not bank_txn or not since_date:
+        return None
+    txns = bank_txn.get("transactions") or []
+    net = 0.0
+    latest = since_date
+    legs = []
+    for t in txns:
+        if t.get("type") != "INTERNAL_TRANSFER":
+            continue
+        if str(t.get("account") or "") != "0247":
+            continue
+        d = str(t.get("date") or "")[:10]
+        if d < since_date:
+            continue
+        orig = t.get("originalDirection")
+        amt = float(t.get("amount") or 0)
+        if orig == "credit":
+            net += amt
+            legs.append({"date": d, "amount": amt, "leg": "od_draw"})
+        elif orig == "debit":
+            net -= amt
+            legs.append({"date": d, "amount": amt, "leg": "od_repay"})
+        else:
+            continue
+        if d > latest:
+            latest = d
+    if not legs:
+        return None
+    return {"delta": net, "latestDate": latest, "legs": legs}
 
 
 def _reconcile_bank_balance(bank_txn: Optional[dict]) -> dict:
@@ -542,7 +756,8 @@ def _reconcile_bank_balance(bank_txn: Optional[dict]) -> dict:
 
 def _compute_sweep(op_cash: float, monthly_burn: float,
                    od_facility: float, od_utilized: float,
-                   receivables: list = None, payables: list = None) -> tuple[dict, dict]:
+                   receivables: list = None, payables: list = None,
+                   statutory: list = None) -> tuple[dict, dict]:
     """
     Returns (sweepConfig, treasurySweep) dicts for the dashboard Overview card.
 
@@ -629,7 +844,9 @@ def _compute_sweep(op_cash: float, monthly_burn: float,
     expected_inflows = sum(
         float(r.get("balance", r.get("amount", 0)) or 0)
         for r in recv_list
-        if (r.get("daysLeft", r.get("daysOD", 0)) or 0) <= 30
+        if (r.get("status", "") or "").lower() not in ("paid", "closed")
+        and float(r.get("balance", r.get("amount", 0)) or 0) >= 1
+        and (r.get("daysLeft", r.get("daysOD", 0)) or 0) <= 30
     )
 
     # Expected outflows: payables due within 30d (daysLeft <= 30, negative daysLeft = overdue)
@@ -638,7 +855,10 @@ def _compute_sweep(op_cash: float, monthly_burn: float,
     vendor_due_30d = 0.0
     salary_keywords = {"salary", "payroll", "staff", "wages", "remuneration"}
     for p in pay_list:
-        days_left = float(p.get("daysLeft", p.get("daysToDue", 999)) or 999)
+        # Explicit missing-check: daysLeft == 0 means due TODAY, not missing.
+        # (`0 or 999` silently excluded a ₹9.5L same-day payable — fix 05-Aug-2026.)
+        _dl = p.get("daysLeft", p.get("daysToDue"))
+        days_left = 999.0 if _dl is None else float(_dl)
         amt = float(p.get("amount", p.get("balance", 0)) or 0)
         vendor = (p.get("vendor", p.get("vendorName", "")) or "").lower()
         if days_left <= 30:
@@ -647,7 +867,20 @@ def _compute_sweep(op_cash: float, monthly_burn: float,
             else:
                 vendor_due_30d += amt
 
-    expected_outflows = salary_due_30d + vendor_due_30d
+    # Statutory dues within 30d — unpaid only ('filed' = already paid).
+    # daysLeft <= 30 includes negatives: overdue unpaid tax is an immediate
+    # cash-out. -999 is the missing-date sentinel from _normalize_statutory.
+    statutory_due_30d = 0.0
+    for s in (statutory or []):
+        if (s.get("status", "") or "").lower() == "filed":
+            continue
+        s_days = s.get("daysLeft", s.get("daysToDue"))
+        if s_days is None or float(s_days) <= -900:
+            continue
+        if float(s_days) <= 30:
+            statutory_due_30d += float(s.get("amount", s.get("amountPayable", 0)) or 0)
+
+    expected_outflows = salary_due_30d + vendor_due_30d + statutory_due_30d
 
     # Net 30d position
     net_position_30d = op_cash + expected_inflows - expected_outflows
@@ -677,7 +910,9 @@ def _compute_sweep(op_cash: float, monthly_burn: float,
     if has_flow_data:
         flow_context = (
             f" Net 30d position: {_fmt(net_position_30d)} "
-            f"(+{_fmt(expected_inflows)} receivables − {_fmt(expected_outflows)} payables"
+            f"(+{_fmt(expected_inflows)} receivables − "
+            f"{_fmt(salary_due_30d + vendor_due_30d)} payables"
+            + (f" − {_fmt(statutory_due_30d)} statutory" if statutory_due_30d > 0 else "")
             + (f", incl. {_fmt(salary_due_30d)} salary" if salary_due_30d > 0 else "")
             + ")."
         )
@@ -855,7 +1090,9 @@ def _compute_levers(receivables: list, payables: list,
     for r in receivables:
         bal = r.get("balance", r.get("amount", 0)) or 0
         days_od = r.get("daysOD", 0) or 0
-        if r.get("status", "").lower() == "paid":
+        if r.get("status", "").lower() in ("paid", "closed"):
+            continue
+        if bal < 1:
             continue
         if days_od <= 30:
             certain += bal
@@ -970,21 +1207,6 @@ _MONTH_LABELS = [
     "January 2027", "February 2027", "March 2027",
 ]
 
-_QUARTER_META = [
-    ("Q1", "Apr – Jun 2026",
-     "Revenue from won deals and receivable settlements. Payroll + vendor pressure; "
-     "Carl Bechem collection expected."),
-    ("Q2", "Jul – Sep 2026",
-     "Mid-year ramp. July pipeline bulge from Bigin confirmed deals. "
-     "Saltwater diversification targeted — share drops below 55%."),
-    ("Q3", "Oct – Dec 2026",
-     "Peak exhibition season. Revenue 35%+ above Q1. "
-     "Saltwater at 45% target. New fabricator preferred."),
-    ("Q4", "Jan – Mar 2027",
-     "Post-peak cooldown. Secure Meters renewal critical Q4. "
-     "If not closed, Q1 FY27-28 will face same cash strain."),
-]
-
 # Vendor cost as share of monthly revenue when Bigin data is available.
 # Exhibition build: 38% margin floor → ~55-62% CP. We use 55% (slightly optimistic).
 _VENDOR_PCT = 0.55
@@ -1004,35 +1226,96 @@ def _compute_cashflow(
     monthly_burn_overrides: Optional[dict] = None,
     monthly_close_revenue: Optional[dict] = None,
     monthly_statutory: Optional[dict] = None,
+    start_month: Optional[str] = None,
+    actual_month_end: Optional[dict] = None,
+    actual_flows: Optional[dict] = None,
 ) -> tuple[dict, list, list, dict]:
     """
-    Compute 12-month cash flow projection for FY 2026-27.
+    Compute the FY (Apr-Mar) 12-month cash flow, quarter-framed.
+
+    Elapsed months (before start_month) render as ACTUALS: month-end
+    operating cash from Sonal's Cash_Position history — balances, never
+    modeled flows. Forecast months run from start_month, opening at
+    op_cash (today's operating cash).
+
+    This keeps the FY quarter framing Niloy wants (06-Aug-2026) without
+    the original defect (05-Aug-2026: replaying elapsed modeled months on
+    top of a today-dated balance double-counted ₹1.16Cr).
     Returns (annual, cashflow_months, quarters, extrapolation)
     """
-    # Receivables: map expectedDate (or dueDate) → expected collection this month
+    start_mk = start_month or datetime.now().strftime("%Y-%m")
+    # FY window: Apr..Mar of the fiscal year containing start_mk
+    fy_year = int(start_mk[:4]) - (1 if int(start_mk[5:7]) < 4 else 0)
+    window = [_shift_month(f"{fy_year:04d}-04", i) for i in range(12)]
+    end_mk = window[-1]
+    actuals = actual_month_end or {}
+
+    # Receivables: OPEN balances only (Closed/paid rows are settled — their
+    # cash is already banked; paise residues are float noise, not money).
+    # Past expected dates roll forward to the window start: money not yet
+    # received is still expected, soonest = this month.
     recv_expected: dict[str, float] = {}
     for r in receivables:
-        if r.get("status", "").lower() == "paid":
+        if (r.get("status", "") or "").lower() in ("paid", "closed"):
+            continue
+        bal = float(r.get("balance", 0) or 0)
+        if bal < 1:
             continue
         expected = r.get("expectedDate") or r.get("dueDate")
-        if expected:
-            mk = str(expected)[:7]
-            recv_expected[mk] = recv_expected.get(mk, 0) + float(r.get("balance", 0) or 0)
+        if not expected:
+            continue
+        mk = max(str(expected)[:7], start_mk)
+        if mk > end_mk:
+            continue
+        recv_expected[mk] = recv_expected.get(mk, 0) + bal
 
     burn_overrides = monthly_burn_overrides or {}
     default_payroll = payroll_monthly or 2_550_000
 
+    _MN = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
     cashflow_months = []
     running_cash = op_cash
+    prev_actual = None
+    forecast_idx = 0
 
-    for i, mk in enumerate(_FY_MONTHS):
+    for i, mk in enumerate(window):
         qn = (i // 3) + 1
         yr, mo = int(mk[:4]), int(mk[5:])
-        next_mo = mo + 1 if mo < 12 else 1
-        next_yr = yr if mo < 12 else yr + 1
-        _MN = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-        period = f"{_MN[mo]} {str(yr)[2:]} – {_MN[next_mo]} {str(next_yr)[2:]}"
+        period = f"{_MN[mo]} {str(yr)[2:]}"
+
+        # ── Elapsed month → ACTUAL row ───────────────────────────────────────
+        # Business flows are REAL data: Closed-Won SP by close month (Bigin —
+        # the YTD-closed story), delivered-project CP (Projects sheet), actual
+        # payroll (Notes) and statutory actually paid (filed rows). Closing
+        # balance is the bank-stated month-end. Activity net (In − Out) and
+        # cash movement can differ within a month (collection/payment timing)
+        # — closing is always the bank truth.
+        if mk < start_mk:
+            af = (actual_flows or {}).get(mk, {})
+            a_in = float(af.get("inPipeline", 0) or 0)
+            a_vend = float(af.get("outVendors", 0) or 0)
+            a_pay = float(af.get("outPayroll", 0) or 0)
+            a_stat = float(af.get("outStatutory", 0) or 0)
+            closing = actuals.get(mk)
+            if closing is not None:
+                prev_actual = closing
+            cashflow_months.append({
+                "label": f"Month {i + 1}",
+                "period": period,
+                "q": qn,
+                "inRecv": 0.0,
+                "inPipeline": a_in,
+                "outVendors": a_vend,
+                "outPayroll": a_pay,
+                "outStatutory": a_stat,
+                "net": a_in - (a_vend + a_pay + a_stat),
+                "confidence": "ACTUAL",
+                "actual": True,
+                "closingCash": closing if closing is not None else (prev_actual or 0.0),
+            })
+            continue
 
         in_pipeline = float(monthly_revenue.get(mk, 0) or 0)
         in_recv = float(recv_expected.get(mk, 0) or 0)
@@ -1062,13 +1345,10 @@ def _compute_cashflow(
         net = total_in - total_out
         running_cash += net
 
-        # Confidence: near-term confirmed data → HIGH; mid → MEDIUM; far-out → LOW
-        if mk <= "2026-06":
-            confidence = "HIGH"
-        elif mk <= "2026-09":
-            confidence = "MEDIUM"
-        else:
-            confidence = "LOW"
+        # Confidence: relative to the FORECAST start (first 3 forecast months
+        # HIGH, next 3 MEDIUM, rest LOW) — never keyed to calendar dates.
+        confidence = "HIGH" if forecast_idx < 3 else ("MEDIUM" if forecast_idx < 6 else "LOW")
+        forecast_idx += 1
 
         cashflow_months.append({
             "label": f"Month {i + 1}",
@@ -1084,16 +1364,22 @@ def _compute_cashflow(
             "closingCash": running_cash,
         })
 
-    # Quarterly summaries
+    # Quarterly summaries — rolling 3-month groups from the window
     quarters = []
     for qn in range(1, 5):
         q_months = [m for m in cashflow_months if m["q"] == qn]
         conf_order = {"HIGH": 3, "MEDIUM": 2, "LOW": 1}
-        q_conf = min((m["confidence"] for m in q_months),
-                     key=lambda c: conf_order.get(c, 0))
-        label, period_str, notes = _QUARTER_META[qn - 1]
+        # Mixed quarters show their weakest FORECAST confidence; a quarter of
+        # pure history is ACTUAL.
+        forecast_confs = [m["confidence"] for m in q_months if m["confidence"] != "ACTUAL"]
+        q_conf = (min(forecast_confs, key=lambda c: conf_order.get(c, 0))
+                  if forecast_confs else "ACTUAL")
+        q_keys = window[(qn - 1) * 3: qn * 3]
+        period_str = (f"{_MN[int(q_keys[0][5:])]} {q_keys[0][:4]} – "
+                      f"{_MN[int(q_keys[-1][5:])]} {q_keys[-1][:4]}")
+        notes = ""  # hardcoded FY narratives dropped — they drifted from live data
         quarters.append({
-            "label": label,
+            "label": f"Q{qn}",
             "period": period_str,
             "net": sum(m["net"] for m in q_months),
             "inRecv": sum(m["inRecv"] for m in q_months),
@@ -1105,31 +1391,47 @@ def _compute_cashflow(
             "notes": notes,
         })
 
-    # Annual summary
+    # Annual summary. totalIn/totalOut are FORECAST flows (actual rows carry
+    # balances, not flow detail, so they contribute 0 here); netAnnual spans
+    # the whole FY (actual month deltas + forecast nets). The FY-end closing
+    # is the last forecast month's chained balance.
     total_in = sum(m["inRecv"] + m["inPipeline"] for m in cashflow_months)
     total_out = sum(m["outVendors"] + m["outPayroll"] + m["outStatutory"]
                    for m in cashflow_months)
+    # FY totals: YTD actuals (Closed-Won SP / real costs) + forecast flows.
+    # netAnnual = In − Out (activity view). closingProjection is the CASH
+    # projection (today's balance + forecast nets) — they differ by design:
+    # elapsed activity ≠ elapsed cash movement (collection/payment timing).
     net_annual = total_in - total_out
 
     annual = {
         "totalIn": total_in,
         "totalOut": total_out,
         "netAnnual": net_annual,
-        "closingProjection": op_cash + net_annual,
+        "closingProjection": cashflow_months[-1]["closingCash"] if cashflow_months else op_cash,
     }
 
     extrapolation = {
         "basis": (
-            "Bigin Won + Existing Confirmed deals split 75% advance (close month) + "
-            "25% balance (close month + 1, net-30) + "
-            "receivable expected collection dates (GSheet). "
-            "Vendor cost: actual project CP from Sonal's Projects sheet → "
-            "55% of close-month revenue for months without tracked projects → "
-            "₹0 for months with no work activity. "
-            "Payroll = CONFIG_MONTHLY_BURN (Notes tab). "
-            "Statutory = scheduled obligations from Statutory tab (no flat default)."
+            f"FY {fy_year}-{str(fy_year + 1)[2:]} view (Apr–Mar), quarter-framed. "
+            f"Months before {start_mk} are ACTUALS: inflow = Closed-Won SP by close "
+            "month (Bigin — the YTD-closed figure), outflows = delivered-project CP "
+            "(Projects sheet) + actual payroll (Notes) + statutory paid (filed rows); "
+            "closing balance = bank-stated month-end from Cash_Position history. "
+            "Activity net and cash movement can differ within a month — collections "
+            "lag billing; the closing balance is always the bank truth. "
+            f"Forecast from {start_mk} opens at current operating cash. Forecast inflows: UNINVOICED "
+            "portion of Bigin Won + Existing Confirmed deals (deal value − "
+            "invoiced-to-date from Receivables sheet, split 75% advance at close "
+            "month / 25% balance next month; late uninvoiced deals roll into the "
+            "current month) + open receivable balances at expected collection "
+            "dates (past-due rolls forward). Vendor outflow: open vendor payables "
+            "by DUE month (overdue → current month) + project CP net of invoices "
+            "already raised → 55% of close-month revenue where nothing is tracked. "
+            "Payroll = CONFIG_MONTHLY_BURN (Notes). Statutory = UNPAID scheduled "
+            "obligations only (filed = paid, excluded)."
         ),
-        "confidence": "Months 1–3: HIGH (Bigin confirmed) · Months 4–6: MEDIUM (pipeline weighted) · Months 7–12: LOW (estimated)",
+        "confidence": "Elapsed months: ACTUAL (bank-stated) · first 3 forecast months: HIGH · next 3: MEDIUM · rest: LOW",
         "assumptions": (
             "Payroll stable at current headcount. No large capex. "
             "Saltwater delivery per Bigin close dates. Secure Meters renewal Q4. No black swan."
@@ -1181,21 +1483,29 @@ def _parse_delivery_month(raw: str) -> Optional[str]:
     return None
 
 
-def _monthly_statutory_from_obligations(obligations: list) -> dict:
+def _monthly_statutory_from_obligations(obligations: list,
+                                        start_mk: str = _FY27_START,
+                                        end_mk: str = _FY27_END) -> dict:
     """
-    Sum amountPayable by due month from the Statutory sheet tab.
-    Returns {YYYY-MM: total_amount} covering only FY 2026-27.
-    Replaces the flat ₹2.5L/month assumption — pulls actual data from
-    sheet_statutory.json. Months with no entries get ₹0 (the caller may
-    leave them blank rather than assume a default).
+    Sum UNPAID amountPayable by due month from the Statutory sheet tab.
+    Returns {YYYY-MM: total_amount} within [start_mk, end_mk].
+    status == 'filed' means already paid — replaying it would double-deduct
+    (fix 05-Aug-2026: ₹56.9L of paid GST/TDS was being re-subtracted).
+    Unpaid overdue obligations roll forward to the window start — overdue
+    tax is an immediate cash-out, not history.
     """
     monthly: dict[str, float] = {}
     for o in obligations:
+        if (o.get("status", "") or "").lower() == "filed":
+            continue
         due = o.get("dueDate")
         if not due:
             continue
         mk = _parse_delivery_month(str(due).strip())
-        if not mk or mk < _FY27_START or mk > _FY27_END:
+        if not mk:
+            continue
+        mk = max(mk, start_mk)
+        if mk > end_mk:
             continue
         amount = float(o.get("amountPayable", 0) or 0)
         if amount <= 0:
@@ -1204,19 +1514,95 @@ def _monthly_statutory_from_obligations(obligations: list) -> dict:
     return monthly
 
 
-def _monthly_vendor_from_projects(projects: list) -> dict:
+# One vendor, two sheet spellings — canonicalize before any aggregation.
+# Niloy 07-Aug-2026: "Rahul & Exporacle are same". Long-term fix is a single
+# name in Sonal's sheet; this map keeps the dashboard right meanwhile.
+_VENDOR_ALIASES = {
+    "rahul": "Rahul (Exporacle)",
+    "exporacle": "Rahul (Exporacle)",
+}
+
+
+def _canon_vendor(name) -> str:
+    n = (name or "").strip()
+    return _VENDOR_ALIASES.get(n.lower(), n)
+
+
+# Generic tokens that never disambiguate a show or a company — excluded from
+# fuzzy matching so "Sugar Expo" ↔ "Sugar Expo" matches on "sugar", not "expo".
+_SHOW_STOPWORDS = {"expo", "show", "exhibition", "india", "international",
+                   "edition", "tech", "the", "and", "live", "world", "trade",
+                   "centre", "center", "insider", "showcase"}
+_CO_STOPWORDS = {"pvt", "private", "ltd", "limited", "llp", "company", "india",
+                 "lubricants", "lubricant"}
+
+
+def _sig_tokens(s: str, stop: set) -> set:
+    """Significant lowercase tokens of a name (≥3 chars, no digits-led, no stopwords)."""
+    s = re.sub(r"[^a-z0-9 ]", " ", (s or "").lower().replace("'", " "))
+    return {t for t in s.split()
+            if t and t not in stop and len(t) >= 3 and not t[0].isdigit()}
+
+
+def _monthly_vendor_outflow(projects: list, payables: list,
+                            start_mk: str = _FY27_START,
+                            end_mk: str = _FY27_END) -> dict:
     """
-    Sum variable_cost_cp by delivery month from the Projects sheet tab.
-    Returns {YYYY-MM: total_cp} covering only FY 2026-27.
-    This replaces the manual Monthly_Vendor_Outflow_YYYY-MM Notes entries.
+    Committed-first vendor outflow by month within [start_mk, end_mk]:
+      1. OPEN vendor payables bucketed by DUE month — raised invoices are the
+         authoritative near-term cash-out. Overdue/undated → start month.
+      2. Project CP (delivery month, in-window) NET of invoices already raised
+         against the same project — the invoice supersedes the estimate, so
+         the same build cost is never counted twice.
+    (Fix 05-Aug-2026: the forecast previously never read the payables tab —
+    ₹62L of committed August dues were invisible and CP was booked one month
+    after the real due dates.)
     """
     monthly: dict[str, float] = {}
-    for p in projects:
-        mk = _parse_delivery_month(str(p.get("delivery_month") or "").strip())
-        if not mk or mk < _FY27_START or mk > _FY27_END:
+
+    # 1. Open payables by due month
+    open_pay = []
+    for p in payables or []:
+        if (p.get("status", "") or "").lower() == "paid":
             continue
-        cp = float(p.get("variable_cost_cp", p.get("variableCost", 0)) or 0)
-        monthly[mk] = monthly.get(mk, 0.0) + cp
+        amt = float(p.get("amount", p.get("balance", 0)) or 0)
+        if amt <= 0:
+            continue
+        due = p.get("due") or p.get("dueDate") or ""
+        mk = _parse_delivery_month(str(due).strip()) if due else None
+        mk = max(mk, start_mk) if mk else start_mk
+        if mk > end_mk:
+            continue
+        monthly[mk] = monthly.get(mk, 0.0) + amt
+        open_pay.append((p, amt))
+
+    # 2. Attribute each open payable to its single best-matching project
+    #    (shared show names must not net one invoice against many projects).
+    prj_rows = [(prj, _sig_tokens(f"{prj.get('company', '')} {prj.get('project', '')}",
+                                  _SHOW_STOPWORDS))
+                for prj in (projects or [])]
+    invoiced_cp: dict[int, float] = {}
+    for p, amt in open_pay:
+        p_tok = _sig_tokens(p.get("showProject", "") or "", _SHOW_STOPWORDS)
+        if not p_tok:
+            continue
+        best_i, best_ov = None, 0
+        for idx, (_prj, toks) in enumerate(prj_rows):
+            ov = len(p_tok & toks)
+            if ov > best_ov:
+                best_i, best_ov = idx, ov
+        if best_i is not None:
+            invoiced_cp[best_i] = invoiced_cp.get(best_i, 0.0) + amt
+
+    # 3. Remaining (un-invoiced) CP for in-window deliveries
+    for idx, (prj, _toks) in enumerate(prj_rows):
+        mk = _parse_delivery_month(str(prj.get("delivery_month") or "").strip())
+        if not mk or mk < start_mk or mk > end_mk:
+            continue  # elapsed delivery: cost already paid or sits in payables above
+        cp = float(prj.get("variable_cost_cp", prj.get("variableCost", 0)) or 0)
+        remaining = max(0.0, cp - invoiced_cp.get(idx, 0.0))
+        if remaining > 0:
+            monthly[mk] = monthly.get(mk, 0.0) + remaining
     return monthly
 
 
@@ -1235,31 +1621,73 @@ _REVENUE_SPLIT_ADVANCE = 0.75
 _REVENUE_SPLIT_BALANCE = 0.25
 
 
-def _monthly_revenue_from_bigin(deals):
+def _match_invoiced_to_deals(deals: list, receivables: list) -> dict:
+    """
+    Match Receivables-sheet invoice rows to Bigin revenue-stage deals and
+    return {deal_id: total invoiced SP}. Matching = company-token overlap
+    (required) + show-token overlap ×2 + amount-within-12% bonus; each
+    invoice nets against its single best-scoring deal only.
+
+    Validated 05-Aug-2026 against all 22 live invoice rows: every row maps
+    to the correct deal (VITAFOODS ASIA correctly unmatched — no deal).
+    """
+    cand = []
+    for d in deals:
+        if (d.get("stage") or "").strip().lower() not in REVENUE_STAGES:
+            continue
+        cand.append({
+            "id": d.get("id"),
+            "amount": float(d.get("amount") or 0),
+            "co": _sig_tokens(d.get("account_name", "") or "", _CO_STOPWORDS),
+            "show": _sig_tokens(d.get("deal", "") or "", _SHOW_STOPWORDS),
+        })
+    invoiced: dict = {}
+    for r in receivables:
+        sp = float(r.get("spTotal") or 0)
+        if sp <= 0:
+            continue
+        r_co = _sig_tokens(r.get("client", "") or "", _CO_STOPWORDS)
+        r_show = _sig_tokens(r.get("showProject", "") or "", _SHOW_STOPWORDS)
+        best, best_score = None, 0.0
+        for c in cand:
+            if not (r_co & c["co"]):
+                continue
+            overlap = len(r_show & c["show"])
+            amt_close = c["amount"] > 0 and abs(sp - c["amount"]) / c["amount"] < 0.12
+            score = overlap * 2 + (1 if amt_close else 0)
+            if score > best_score:
+                best, best_score = c, score
+        if best is not None and best_score >= 1:
+            invoiced[best["id"]] = invoiced.get(best["id"], 0.0) + sp
+    return invoiced
+
+
+def _monthly_revenue_from_bigin(deals, receivables: list = None,
+                                start_mk: str = _FY27_START,
+                                end_mk: str = _FY27_END):
     """
     Group Won + Existing Confirmed deals from Bigin into projected CASH
-    inflow months using First Rain's standard 75/25 payment-terms model:
-       - 75% advance → close_month
-       - 25% balance → close_month + 1 (within 30 days post-close)
+    inflow months, NET of what has already been invoiced.
 
-    Key = "YYYY-MM", value = projected cash inflow for that month.
+    For each deal: projectable = max(0, deal amount − invoiced-to-date from
+    the Receivables sheet). The invoiced portion's remaining cash is carried
+    by the receivables expected-collection stream — projecting the full deal
+    AND its invoice balance double-counted ₹22.5L (fix 05-Aug-2026).
 
-    Only inflows that fall within FY 2026-27 (Apr 2026 – Mar 2027) are
-    retained. This means the 25% balance from a Mar'27 close lands in
-    Apr'27 (FY28) and is dropped; Dec'26 close splits 75/Dec + 25/Jan'27
-    so Q4 (Jan–Mar 2027) inflows pull from the prior-quarter Bigin deals.
+    The projectable remainder splits 75% advance at the close month / 25%
+    balance the month after. Close months already elapsed roll forward to
+    the window start — contracted money not yet invoiced or received is
+    still expected, soonest = this month.
 
-    Deals with no close date go to the undated list only.
-
-    Stages included:
-      - "Closed Won 26-27" — delivered / invoiced
-      - "Existing Confirmed" — contracted, execution upcoming
-
-    Notes-tab Monthly_Revenue_YYYY-MM entries override individual months.
+    Returns (monthly cash dict, undated deal list, monthly_close dict where
+    monthly_close = projectable revenue bucketed at its rolled close month,
+    used downstream for the 55% vendor-cost fallback).
     """
-    monthly: dict[str, float] = {}        # cash inflow by month (75/25 split)
-    monthly_close: dict[str, float] = {}  # gross revenue at close month (for vendor calc)
+    monthly: dict[str, float] = {}
+    monthly_close: dict[str, float] = {}
     undated: list[dict] = []
+
+    invoiced_by_deal = _match_invoiced_to_deals(deals, receivables or [])
 
     for d in deals:
         stage = (d.get("stage") or "").strip().lower()
@@ -1276,26 +1704,24 @@ def _monthly_revenue_from_bigin(deals):
                 "exec": d.get("exec"),
             })
             continue
+
+        projectable = max(0.0, amount - invoiced_by_deal.get(d.get("id"), 0.0))
+        if projectable <= 0:
+            continue  # fully invoiced — receivables carry the remaining cash
+
         close_month = str(close)[:7]  # "YYYY-MM-DD" → "YYYY-MM"
-        balance_month = _shift_month(close_month, 1)
+        adv_mk = max(close_month, start_mk)
+        bal_mk = max(_shift_month(close_month, 1), start_mk)
 
-        # Track gross revenue at close month — used to compute vendor cost
-        # (work happens at close month, so CP hits that month regardless of
-        # when the customer pays).
-        if _FY27_START <= close_month <= _FY27_END:
-            monthly_close[close_month] = (
-                monthly_close.get(close_month, 0.0) + amount
+        # Projectable revenue at (rolled) close month — vendor 55% fallback base
+        if adv_mk <= end_mk:
+            monthly_close[adv_mk] = monthly_close.get(adv_mk, 0.0) + projectable
+            monthly[adv_mk] = (
+                monthly.get(adv_mk, 0.0) + projectable * _REVENUE_SPLIT_ADVANCE
             )
-
-        # 75% advance cash — at close month
-        if _FY27_START <= close_month <= _FY27_END:
-            monthly[close_month] = (
-                monthly.get(close_month, 0.0) + amount * _REVENUE_SPLIT_ADVANCE
-            )
-        # 25% balance cash — month after close
-        if _FY27_START <= balance_month <= _FY27_END:
-            monthly[balance_month] = (
-                monthly.get(balance_month, 0.0) + amount * _REVENUE_SPLIT_BALANCE
+        if bal_mk <= end_mk:
+            monthly[bal_mk] = (
+                monthly.get(bal_mk, 0.0) + projectable * _REVENUE_SPLIT_BALANCE
             )
 
     return monthly, undated, monthly_close
@@ -1807,18 +2233,82 @@ def _compose_cashflow(bigin, sheet, momentum, drift, imessage_data: dict = None)
 
     derived = _compute_derived(bigin, sheet, finance)
 
-    # Monthly revenue: auto from Bigin Won deals, overridden by Notes manual entries
-    bigin_monthly_revenue, undated_won, bigin_monthly_close = _monthly_revenue_from_bigin(bigin.get("deals", []))
+    # FY quarter view (Niloy 06-Aug-2026): window = Apr..Mar of the current
+    # fiscal year. Forecast buckets run current month .. FY end; elapsed
+    # months come from actual balance history instead.
+    cur_mk = datetime.now().strftime("%Y-%m")
+    _fy_year = int(cur_mk[:4]) - (1 if int(cur_mk[5:7]) < 4 else 0)
+    window_end = f"{_fy_year + 1:04d}-03"
+
+    # Month-end ACTUAL operating cash per elapsed month (skip demo rows).
+    actual_month_end: dict[str, float] = {}
+    for h in sorted(finance.get("cashHistory") or [], key=lambda x: str(x.get("date", ""))):
+        mk_h = str(h.get("date", ""))[:7]
+        oc = h.get("operatingCash")
+        if mk_h and oc is not None and "demo" not in str(h.get("notes", "")).lower():
+            actual_month_end[mk_h] = float(oc)  # latest reading per month wins
+
+    # ACTUAL business flows for elapsed months — real data, not modeling:
+    #   inPipeline   = Closed-Won SP by close month (Bigin = SOT, ₹5.6Cr YTD)
+    #   outVendors   = delivered-project CP by delivery month (Sonal's sheet)
+    #   outPayroll   = actual monthly burn (Notes per-month entries)
+    #   outStatutory = statutory actually paid, by due month (status = filed)
+    actual_flows: dict[str, dict] = {}
+    def _af(mk_a):
+        return actual_flows.setdefault(
+            mk_a, {"inPipeline": 0.0, "outVendors": 0.0, "outPayroll": 0.0, "outStatutory": 0.0})
+    _fy_start = f"{_fy_year:04d}-04"
+    for d in bigin.get("deals", []):
+        if (d.get("stage") or "").strip().lower() != "closed won 26-27":
+            continue
+        # Stage defines FY membership: pre-April closes (booked entering the
+        # year) and undated CW deals roll into April so YTD always equals the
+        # full Closed-Won 26-27 total in Bigin.
+        close = d.get("close")
+        mk_c = max(str(close)[:7], _fy_start) if close else _fy_start
+        if mk_c < cur_mk:
+            _af(mk_c)["inPipeline"] += float(d.get("amount") or 0)
+    for prj in sheet.get("projects", []) or []:
+        mk_p = _parse_delivery_month(str(prj.get("delivery_month") or "").strip())
+        if mk_p and mk_p < cur_mk:
+            _af(mk_p)["outVendors"] += float(
+                prj.get("variable_cost_cp", prj.get("variableCost", 0)) or 0)
+    _burn_notes = finance.get("notesMonthlyBurn") or {}
+    _burn_default = finance.get("monthlyBurn") or 0
+    for s_o in finance.get("statutory", []) or []:
+        if (s_o.get("status", "") or "").lower() != "filed":
+            continue
+        mk_s = _parse_delivery_month(str(s_o.get("dueDate") or "").strip())
+        amt_s = float(s_o.get("amountPayable", 0) or 0)
+        if mk_s and mk_s < cur_mk and amt_s > 0:
+            _af(mk_s)["outStatutory"] += amt_s
+    _mk_iter = f"{_fy_year:04d}-04"
+    while _mk_iter < cur_mk:  # every elapsed FY month gets actual payroll
+        _af(_mk_iter)["outPayroll"] = float(_burn_notes.get(_mk_iter) or _burn_default or 0)
+        _mk_iter = _shift_month(_mk_iter, 1)
+
+    # Monthly revenue: Bigin Won deals NET of invoiced-to-date (receivables
+    # carry the invoiced cash), overridden by Notes manual entries
+    bigin_monthly_revenue, undated_won, bigin_monthly_close = _monthly_revenue_from_bigin(
+        bigin.get("deals", []),
+        receivables=finance.get("receivablesAll") or norm_receivables,
+        start_mk=cur_mk, end_mk=window_end,
+    )
     notes_overrides = finance.get("notesMonthlyRevenue", {})
     monthly_revenue = {**bigin_monthly_revenue, **notes_overrides}  # Notes wins on conflict
 
-    # Monthly vendor outflow: auto from Projects variable_cost_cp (no manual entry needed)
-    monthly_vendor_outflow = _monthly_vendor_from_projects(sheet.get("projects", []))
-    # Gross close-month revenue → used for vendor cost estimation (work happens
-    # at close month, so CP hits that month regardless of cash timing).
+    # Monthly vendor outflow: open payables by due month + project CP net of
+    # raised invoices (committed-first — fix 05-Aug-2026)
+    monthly_vendor_outflow = _monthly_vendor_outflow(
+        sheet.get("projects", []), norm_payables, cur_mk, window_end,
+    )
+    # Projectable close-month revenue → used for vendor cost estimation where
+    # nothing is tracked (55% fallback).
     monthly_close_revenue = bigin_monthly_close
-    # Monthly statutory: auto from Statutory sheet tab (was flat ₹2.5L/month)
-    monthly_statutory = _monthly_statutory_from_obligations(finance.get("statutory", []))
+    # Monthly statutory: unpaid scheduled obligations only (filed = paid)
+    monthly_statutory = _monthly_statutory_from_obligations(
+        finance.get("statutory", []), cur_mk, window_end,
+    )
 
     # Bank transactions (auto-parsed from HDFC emails by parse_hdfc_emails.py)
     bank_txn = {}
@@ -1888,6 +2378,37 @@ def _compose_cashflow(bigin, sheet, momentum, drift, imessage_data: dict = None)
     else:
         cash["odSource"] = "sheet"
 
+    # ── Email-derived OD delta since anchor (final override, conservative) ─────
+    # Sonal typically updates the sheet AM; if an intraday OD→CA sweep happens
+    # after her snapshot, sheet.odUtilized stays 0 for the rest of the day.
+    # HDFC email cache captures the credit leg immediately — net those internal
+    # transfers on 0247 and, if implied OD > current best estimate, override.
+    # This is one-way (only up, never down) so we never silently understate OD.
+    email_od_note = None
+    anchor_date = (cash.get("odDate") or "")[:10] or sheet_date or ""
+    email_od = _derive_od_delta_from_email_transfers(bank_txn, anchor_date)
+    if email_od and email_od["delta"] > 0:
+        current_od = cash.get("odUtilized", 0) or 0
+        implied_od = current_od + email_od["delta"]
+        if implied_od > current_od:
+            cash["odUtilized"] = implied_od
+            cash["odSource"] = "email_transfers"
+            cash["odDate"] = email_od["latestDate"]
+            od_source = "email_transfers"   # propagate to FR output
+            email_od_note = {
+                "priorOd": current_od,
+                "priorSource": sms_od_note and "hdfc_sms" or "sheet",
+                "delta": email_od["delta"],
+                "impliedOd": implied_od,
+                "latestLegDate": email_od["latestDate"],
+                "anchorDate": anchor_date,
+                "legs": email_od["legs"],
+                "deltaFormatted": f"+₹{email_od['delta']/1e5:.1f}L OD draw since {anchor_date} (intraday, sheet not updated)",
+            }
+            print(f"  ✉ HDFC email internal-transfer override: OD ₹{current_od/1e5:.2f}L (per {sms_od_note and 'hdfc_sms' or 'sheet'}) "
+                  f"+ ₹{email_od['delta']/1e5:.2f}L net draws since {anchor_date} "
+                  f"→ ₹{implied_od/1e5:.2f}L (latest leg: {email_od['latestDate']})")
+
     # ── Sweep advisory & levers ───────────────────────────────────────────────
     op_cash = cash.get("operatingCash", 0) or 0
     od_facility = cash.get("odLimit", cash.get("odFacility", 0)) or 0
@@ -1908,6 +2429,7 @@ def _compose_cashflow(bigin, sheet, momentum, drift, imessage_data: dict = None)
     sweep_config, treasury_sweep = _compute_sweep(
         op_cash, monthly_burn, od_facility, od_utilized,
         receivables=norm_receivables, payables=norm_payables,
+        statutory=norm_statutory,
     )
     levers = _compute_levers(
         norm_receivables, norm_payables,
@@ -1920,6 +2442,9 @@ def _compose_cashflow(bigin, sheet, momentum, drift, imessage_data: dict = None)
         monthly_burn_overrides=finance.get("notesMonthlyBurn", {}),
         monthly_close_revenue=monthly_close_revenue,
         monthly_statutory=monthly_statutory,
+        start_month=cur_mk,
+        actual_month_end=actual_month_end,
+        actual_flows=actual_flows,
     )
 
     # ── Pipeline coverage by execution month (spec 2026-07-06) ──────────────
@@ -1945,6 +2470,7 @@ def _compose_cashflow(bigin, sheet, momentum, drift, imessage_data: dict = None)
             "odUtilized": od_utilized,
             "odSource": od_source,
             "smsOdReconcile": sms_od_note,
+            "emailOdReconcile": email_od_note,
             "monthlyBurn": monthly_burn,
 
             # Working capital (normalised field aliases added above)
@@ -1967,6 +2493,16 @@ def _compose_cashflow(bigin, sheet, momentum, drift, imessage_data: dict = None)
             "pipelineTotal": derived["pipelineTotal"],
             "saltwaterConcentration": derived["saltwaterConcentration"],
             "saltwaterOutstanding": derived["saltwaterOutstanding"],
+            "vendorConcentration": derived["vendorConcentration"],
+            "vendorTopFabricator": derived["vendorTopFabricator"],
+            "vendorTopCp": derived["vendorTopCp"],
+            "vendorCpTotal": derived["vendorCpTotal"],
+            "vendorCpBreakdown": derived["vendorCpBreakdown"],
+            "vendorOpenDuesTop": derived["vendorOpenDuesTop"],
+            "vendorOpenDuesTopAmt": derived["vendorOpenDuesTopAmt"],
+            "vendorOpenDuesTotal": derived["vendorOpenDuesTotal"],
+            "vendorUpcomingUninvoiced": derived["vendorUpcomingUninvoiced"],
+            "wonDealIdsNotInSheet": derived["wonDealIdsNotInSheet"],
             "topActions": derived["topActions"],
             "execNames": EXEC_NAMES,
 
@@ -2041,6 +2577,21 @@ def _compose_cashflow(bigin, sheet, momentum, drift, imessage_data: dict = None)
     }
 
 
+LISTING_JSON = Path("data/projects/listing_readiness.json")
+
+
+def _load_listing_readiness():
+    """IPO-tab payload written by read_lr_tabs.py (LR tabs in Sonal's sheet).
+
+    Absent/unreadable → None: the IPO tab renders its pending state. Never
+    fabricate a fallback here — blanks stay blanks (listing-readiness rule).
+    """
+    try:
+        return json.loads(LISTING_JSON.read_text())
+    except Exception:
+        return None
+
+
 def _render_dashboard(cashflow):
     if not TEMPLATE_PATH.exists():
         raise FileNotFoundError(f"Dashboard template not found at {TEMPLATE_PATH}")
@@ -2113,6 +2664,9 @@ def build_from_files():
     imessage_data = _load_imessage_txns()
 
     cashflow = _compose_cashflow(bigin_classified, sheet, momentum, drift, imessage_data=imessage_data)
+
+    # ── Listing readiness (IPO tab) — refreshed by read_lr_tabs.py each sync ──
+    cashflow["IPO"] = _load_listing_readiness()
 
     # Attach iMessage data to cashflow output
     cashflow["imessageBankData"] = imessage_data
