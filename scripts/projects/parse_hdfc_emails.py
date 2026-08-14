@@ -389,6 +389,11 @@ def _is_internal_transfer(text: str) -> bool:
         return True
     if "first rain" in low and ("fund trf" in low or "fund transfer" in low or "ft-" in low):
         return True
+    # Own funding entity — appears verbatim in HDFC "New Deposit Alert" narrations
+    # when an OD draw lands in 0247. E.g. "Reference Details: FIRST RAIN EXH-Fund".
+    # Caught 14-Aug-2026 after a ₹7.5L OD draw got mis-tagged as an external receipt.
+    if "first rain exh" in low:
+        return True
     return False
 
 

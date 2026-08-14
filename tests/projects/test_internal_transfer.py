@@ -80,6 +80,41 @@ class TestEmailInternalTransfer(unittest.TestCase):
         self.assertIsNotNone(txn)
         self.assertEqual(txn["direction"], "credit")
 
+    # --- 14-Aug-2026: "FIRST RAIN EXH-Fund" narration in "New Deposit Alert" template
+    # was slipping through as external credit. Rule required "fund trf"/"fund transfer"/"ft-"
+    # as a separate token; the compound "EXH-Fund" matched none of them, so a ₹7.5L OD
+    # draw got tagged as a client receipt. Broadened helper to catch "first rain exh".
+
+    def test_first_rain_exh_fund_narration_is_internal(self):
+        # Bare narration — no "OD to CA", no "fund transfer" phrase, just "EXH-Fund"
+        self.assertTrue(eml._is_internal_transfer("FIRST RAIN EXH-Fund"))
+        self.assertTrue(eml._is_internal_transfer("Reference Details: FIRST RAIN EXH-Fund"))
+
+    def test_new_deposit_alert_with_exh_fund_flips_to_internal(self):
+        # Real 13-Aug-2026 message shape. Before the fix this parsed as direction=credit
+        # and inflated receivables by ₹7,50,000.
+        msg = {
+            "id": "m3",
+            "sender": "alerts@hdfcbank.bank.in",
+            "subject": "❗ New Deposit Alert: Check your A/c balance now!",
+            "snippet": ("Dear Customer, You have received a credit in your HDFC Bank account. "
+                        "Details of the transaction: Amount received: INR 7,50000.00 "
+                        "Account: XX0247 Date: 13-AUG-2026 "
+                        "Reference Details: FIRST RAIN EXH-Fund"),
+        }
+        txn = eml.parse_hdfc_email(msg)
+        self.assertIsNotNone(txn)
+        self.assertEqual(txn["direction"], "internal_transfer")
+        self.assertEqual(txn["type"], "INTERNAL_TRANSFER")
+        self.assertEqual(txn["amount"], 750000.0)
+        self.assertEqual(txn["account"], "0247")
+
+    def test_first_rain_alone_without_exh_stays_credit_unless_transfer_phrase(self):
+        # Guardrail: the broadening keys on "first rain exh" specifically, not "first rain"
+        # alone — else a hypothetical client called "First Rain Something Ltd" would break.
+        # A bare "first rain" without "exh" and without a transfer phrase must NOT flip.
+        self.assertFalse(eml._is_internal_transfer("NEFT from FIRST RAIN INDIA CLIENT LTD"))
+
 
 if __name__ == "__main__":
     unittest.main()
