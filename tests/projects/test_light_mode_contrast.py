@@ -77,5 +77,33 @@ class TestLightTokens(unittest.TestCase):
         self.assertLessEqual(lum(tok["text-tertiary"]), lum(tok["text-muted"]))
 
 
+class TestDarkTokens(unittest.TestCase):
+    """Dark theme must define its own status text colours (it used to inherit the light theme's)."""
+
+    def block(self):
+        m = re.search(r'\[data-theme="dark"\]\{(.*?)--shadow-xs', T, re.S)
+        self.assertIsNotNone(m)
+        return dict(re.findall(r"--([\w-]+):(#[0-9a-fA-F]{6})", m.group(1)))
+
+    def test_dark_defines_its_own_status_text_colours(self):
+        tok = self.block()
+        for c in ("green", "amber", "red", "blue"):
+            self.assertIn(c, tok, f"dark theme must define --{c}")
+
+    def test_dark_text_meets_aa_on_surface_page_and_tints(self):
+        tok = self.block()
+        for c in ("accent", "green", "amber", "red", "blue", "text-primary", "text-secondary", "text-tertiary", "text-muted"):
+            for bg in ("surface", "bg-primary", "bg-secondary"):
+                self.assertGreaterEqual(ratio(tok[c], tok[bg]), 4.5, f"dark --{c} on --{bg}")
+        for c in ("green", "amber", "red", "blue"):
+            self.assertGreaterEqual(ratio(tok[c], tok[c + "-bg"]), 4.5, f"dark --{c} on its tint")
+
+    def test_solid_status_pills_use_dark_text_in_dark_theme(self):
+        for cls in (".v8-mom-row-days.overdue", ".v8-lever-pill-tag", ".v10-stuck-days"):
+            self.assertIn('[data-theme="dark"] ' + cls, T, f"{cls} needs dark text on the bright dark-theme status colour")
+        self.assertGreaterEqual(ratio("#1a0d0a", self.block()["red"]), 4.5)
+        self.assertGreaterEqual(ratio("#1a0d0a", self.block()["amber"]), 4.5)
+
+
 if __name__ == "__main__":
     unittest.main()

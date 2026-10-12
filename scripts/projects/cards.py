@@ -49,7 +49,7 @@ CONFIG_KEYS = {
 STATUTORY_CATEGORIES = {"gst", "income tax", "tds", "tcs", "advance tax", "statutory", "pf", "pt"}
 # Obligations the issuer's 5X category covers when paid on the portals.
 CARD_ELIGIBLE_RE = re.compile(r"GST|TDS|TCS|INCOME|ADVANCE", re.I)
-STALE_AFTER_DAYS = 2
+STALE_AFTER_DAYS = 3   # Sonal may skip weekends: Fri update must not read stale on Monday morning
 
 
 def _num(v, default=0.0) -> float:
@@ -339,11 +339,17 @@ def health_issues(block: dict | None, present_in_sheet: bool) -> list[str]:
 
 # ---------- delta (midday / EOD) ----------
 
+def _txn_key(t: dict) -> str:
+    return f"{t['date']}|{t['card']}|{int(t['amt'])}|{t['desc'][:40]}"
+
+
 def snapshot(block: dict | None) -> dict:
     if not block:
         return {}
     return {"outstanding": block["totals"]["outstanding"],
             "dueKeys": sorted(f"{g['card']}|{g['date']}|{int(g['amt'])}" for g in block["dueItems"]),
+            "txnKeys": sorted(_txn_key(t) for t in block["txns"]),
+            "clearedKeys": sorted(_txn_key(t) for t in block["txns"] if t.get("clearedOn")),
             "txnCount": len(block["txns"]), "asOf": block.get("asOf")}
 
 
@@ -360,6 +366,21 @@ def delta_lines(block: dict | None, last: dict | None) -> list[str]:
         lines.append(f"💳 card outstanding {'+' if d_out > 0 else '−'}{_fmt(abs(d_out))} → {_fmt(cur['outstanding'])} of {_fmt(block['totals']['limit'])}")
     new_due = [g for g in block["dueItems"] if f"{g['card']}|{g['date']}|{int(g['amt'])}" not in set(last.get("dueKeys", []))]
     lines += [f"💳 {due_line(g)}" for g in new_due]
+    # New spends / newly cleared bills (only once the baseline snapshot carries them, so an
+    # older snapshot never causes a flood of "new" lines).
+    if "txnKeys" in last:
+        seen, cleared_before = set(last["txnKeys"]), set(last.get("clearedKeys", []))
+        holders = {c["last4"]: (c.get("holder") or "").split(" ")[0] for c in block["cards"]}
+        new_tx = [t for t in block["txns"] if _txn_key(t) not in seen]
+        for t in new_tx[:3]:
+            who = f"{holders.get(t['card'], '')} ·{t['card']}".strip()
+            when = f", clear by {_dfmt(t['clearBy'])}" if t.get("clearBy") else ""
+            lines.append(f"💳 new card spend {who} {_fmt(t['amt'])} · {t['desc']}{when}")
+        if len(new_tx) > 3:
+            lines.append(f"💳 +{len(new_tx) - 3} more new card spends")
+        paid = [t for t in block["txns"] if t.get("clearedOn") and _txn_key(t) in seen and _txn_key(t) not in cleared_before]
+        if paid:
+            lines.append(f"✅ card bill cleared: {_fmt(sum(t['amt'] for t in paid))} across {len(paid)} spend(s)")
     return lines
 
 

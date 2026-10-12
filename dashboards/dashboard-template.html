@@ -54,9 +54,11 @@
   --bg-primary:#0f0f0e;--bg-secondary:#1a1a18;--bg-tertiary:#25251f;
   --surface:#1a1a18;
   --text-primary:#faf9f6;--text-secondary:#d0cfc9;
-  --text-tertiary:#9d9b92;--text-muted:#6a6860;
+  --text-tertiary:#a8a69d;--text-muted:#8f8d84;
   --accent:#f07a3a;--accent-hover:#ff8c52;
   --accent-light:#2a1810;--accent-border:#5a3018;
+  /* status TEXT colours: dark theme needs its own bright set (the light-theme values are too dark here) */
+  --green:#5fb98a;--amber:#f0b44c;--red:#ff8a73;--blue:#7fb0ff;
   --green-bg:#0f2418;--green-border:#1d5236;
   --amber-bg:#241a08;--amber-border:#5a421a;
   --red-bg:#2a1010;--red-border:#5a2422;
@@ -67,6 +69,8 @@
   --shadow-md:0 2px 8px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.25);
   --shadow-lg:0 8px 24px rgba(0,0,0,.5),0 2px 8px rgba(0,0,0,.3);
 }
+/* solid status pills: dark theme's status colours are bright, so their text must be dark */
+[data-theme="dark"] .v8-mom-row-days.overdue,[data-theme="dark"] .v8-lever-pill-tag,[data-theme="dark"] .v10-stuck-days{color:#1a0d0a}
 
 html{-webkit-text-size-adjust:100%;height:100%}
 body{
@@ -3364,7 +3368,7 @@ body{
       +   '<b style="color:var(--text-primary)">Funding order:</b> for any card-payable item, exhaust card limit first (' + fmt(T.available) + ' available now), then size the OD draw to the remaining net gap.<br>'
       +   '<b style="color:var(--text-primary)">Clear-by rule:</b> each spend must be cleared by use date + ' + (A.floatDaysMax - A.clearBufferDays) + ' days (' + A.floatDaysMax + 'd float − ' + A.clearBufferDays + 'd buffer), never later than HDFC\'s bill due date. Due items inside ' + A.priorityWindowDays + ' days (or overdue) appear in Priority today and the daily Telegram.<br>'
       +   '<b style="color:var(--text-primary)">Cash view:</b> card bills are shown as due items here and in Priority today; they are not yet netted into the cash forecast / runway.<br>'
-      +   '<b style="color:var(--text-primary)">Guardrails:</b> alert at ≥' + A.utilisationAlertPct + '% utilisation · alert when due within ' + A.priorityWindowDays + ' days · alert if gateway fee ≥ reward % · stale-data alert if Credit_Cards as_of_date is &gt;2 days old.'
+      +   '<b style="color:var(--text-primary)">Guardrails:</b> alert at ≥' + A.utilisationAlertPct + '% utilisation · alert when due within ' + A.priorityWindowDays + ' days · alert if gateway fee ≥ reward % · stale-data alert if Credit_Cards as_of_date is &gt;3 days old.'
       + '</div>'
       + '<div class="cc-sec">What Sonal enters in the Cashflow Master sheet</div>'
       + '<div class="cc-scroll"><table class="cc-tbl">'
@@ -4427,7 +4431,7 @@ body{
   document.getElementById("page-telegram").innerHTML =
     '<div class="page-title">Daily <em>briefing</em></div>'
     + '<div class="page-sub">Telegram summary sent 08:00 IST</div>'
-    + '<div class="telegram-banner">' + esc(FR.telegramBriefing || "(No briefing)") + '</div>';
+    + '<div class="telegram-banner">' + esc((FR.telegramBriefing || "(No briefing)").replace(/🏥 Health \d+\/100 · [A-F]/, '🏥 Health ' + healthScore + '/100 · ' + healthGrade)) + '</div>';
 
   /* SOURCES */
   var srcHtml = '<div class="page-title">Data <em>sources</em></div>'

@@ -130,6 +130,17 @@ class TestComputeCards(unittest.TestCase):
         self.assertEqual(b["asOfAgeDays"], 7)
         self.assertTrue(any("old" in w for w in b["warnings"]))
 
+    def test_weekend_gap_is_not_stale_but_four_days_is(self):
+        r = raw()
+        for c in r["cards"]:
+            c["as_of_date"] = "2026-10-09"           # Friday
+        monday = C.compute_cards(r, date(2026, 10, 12))
+        self.assertEqual(monday["asOfAgeDays"], 3)
+        self.assertFalse(any("old" in w for w in monday["warnings"]))
+        self.assertEqual([i for i in C.health_issues(monday, True) if "stale" in i], [])
+        tuesday = C.compute_cards(r, date(2026, 10, 13))
+        self.assertTrue(any("old" in w for w in tuesday["warnings"]))
+
 
 class TestFundingOrderPlan(unittest.TestCase):
     TODAY = date(2026, 10, 12)
@@ -307,6 +318,40 @@ class TestTextHelpers(unittest.TestCase):
         self.assertTrue(any("Pay HDFC card" in l for l in C.delta_lines(b, {"outstanding": b["totals"]["outstanding"], "dueKeys": []})))
 
 
+class TestDeltaSpendsAndCleared(unittest.TestCase):
+    TODAY = date(2026, 10, 12)
+    TX = {"date": "2026-10-01", "card_last4": "9986", "description": "GST payment", "category": "GST", "amount": 40000}
+
+    def blk(self, txns):
+        return C.compute_cards(raw(txns=txns), self.TODAY)
+
+    def test_new_spend_reported_even_if_outstanding_unchanged(self):
+        base = self.blk([self.TX])
+        snap = C.snapshot(base)
+        new = dict(self.TX, date="2026-10-12", description="TDS challan", amount=90000)
+        lines = C.delta_lines(self.blk([self.TX, new]), snap)
+        self.assertEqual(len(lines), 1)
+        self.assertIn("new card spend Monica ·9986 ₹90K · TDS challan", lines[0])
+
+    def test_newly_cleared_bill_reported_once(self):
+        snap = C.snapshot(self.blk([self.TX]))
+        paid = dict(self.TX, cleared_on="2026-10-12")
+        lines = C.delta_lines(self.blk([paid]), snap)
+        self.assertEqual(lines, ["✅ card bill cleared: ₹40K across 1 spend(s)"])
+        self.assertEqual(C.delta_lines(self.blk([paid]), C.snapshot(self.blk([paid]))), [])
+
+    def test_old_snapshot_without_txn_keys_never_floods(self):
+        old = {"outstanding": 410000.0, "dueKeys": []}   # snapshot saved before this feature (no txnKeys)
+        self.assertEqual(C.delta_lines(self.blk([self.TX, dict(self.TX, amount=1000)]), old), [])
+
+    def test_more_than_three_new_spends_are_summarised(self):
+        snap = C.snapshot(self.blk([]))
+        many = [dict(self.TX, amount=1000 * (i + 1), description=f"s{i}") for i in range(5)]
+        lines = C.delta_lines(self.blk(many), snap)
+        self.assertEqual(len(lines), 4)
+        self.assertIn("+2 more new card spends", lines[-1])
+
+
 class TestTemplateContract(unittest.TestCase):
     T = (ROOT / "dashboards" / "dashboard-template.html").read_text()
 
@@ -356,6 +401,11 @@ class TestSyncSkillsIncludeCards(unittest.TestCase):
     def test_skills_never_ask_for_full_card_numbers(self):
         for n in ("first-rain-monday-sync", "first-rain-heal-check", "first-rain-midday-refresh", "first-rain-eod-refresh"):
             self.assertNotRegex(self.skill(n), r"\b\d{4}\s\d{4}\s\d{4}\s\d{4}\b", n)
+
+    def test_alerts_tab_health_line_uses_the_dashboard_score(self):
+        # the Python briefing uses a simplified score; the Alerts tab must show the real one
+        tpl = (ROOT / "dashboards" / "dashboard-template.html").read_text()
+        self.assertIn("'🏥 Health ' + healthScore + '/100 · ' + healthGrade", tpl)
 
 
 class TestNoSecretsInRepoFiles(unittest.TestCase):

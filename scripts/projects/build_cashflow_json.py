@@ -2210,7 +2210,7 @@ def _build_sources(bigin, sheet, finance, bank_txn, imessage_data=None, cards_bl
     # ── Credit cards (Sheet tabs) ────────────────────────────────────────────
     if cards_block:
         _age = cards_block.get("asOfAgeDays")
-        _stale = _age is None or _age > 2
+        _stale = _age is None or _age > cards_mod.STALE_AFTER_DAYS
         sources.append({
             "name": "Credit Cards (Sheet: Credit_Cards / Card_Txns)",
             "detail": (f"{len(cards_block['cards'])} cards · {len(cards_block['txns'])} spends · as of {cards_block.get('asOf') or '—'}"
