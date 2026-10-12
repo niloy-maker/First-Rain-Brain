@@ -44,21 +44,37 @@ class TestPriorityPanelContrast(unittest.TestCase):
 
 
 class TestLightTokens(unittest.TestCase):
-    def tokens(self):
-        m = re.search(r":root\{\s*--bg-primary:[^}]*?--text-tertiary:(#[0-9a-fA-F]{6});--text-muted:(#[0-9a-fA-F]{6});", T, re.S)
+    def block(self):
+        m = re.search(r":root\{(.*?)--shadow-xs", T, re.S)
         self.assertIsNotNone(m)
-        return m.group(1), m.group(2)
+        return dict(re.findall(r"--([\w-]+):(#[0-9a-fA-F]{6})", m.group(1)))
 
-    def test_muted_and_tertiary_text_meet_aa_on_white_and_secondary_bg(self):
-        tert, muted = self.tokens()
-        for name, col in (("tertiary", tert), ("muted", muted)):
-            self.assertGreaterEqual(ratio(col, "#ffffff"), 4.5, f"--text-{name} fails AA on white")
-            self.assertGreaterEqual(ratio(col, "#f3f3ef"), 4.5, f"--text-{name} fails AA on --bg-secondary")
+    def test_no_pure_white_or_glaring_backgrounds(self):
+        tok = self.block()
+        for name in ("surface", "bg-primary", "bg-secondary", "bg-tertiary"):
+            self.assertNotIn(tok[name].lower(), ("#ffffff", "#fff"), f"--{name} must not be pure white")
+            self.assertLessEqual(lum(tok[name]), 0.93, f"--{name} is too bright for comfortable reading")
+        # cards must stay lighter than the page so they still lift off it
+        self.assertGreater(lum(tok["surface"]), lum(tok["bg-primary"]))
+
+    def test_all_text_tokens_meet_aa_on_every_background(self):
+        tok = self.block()
+        for tname in ("text-primary", "text-secondary", "text-tertiary", "text-muted"):
+            for bname in ("surface", "bg-primary", "bg-secondary", "bg-tertiary"):
+                self.assertGreaterEqual(ratio(tok[tname], tok[bname]), 4.5, f"--{tname} on --{bname} below AA")
+
+    def test_status_colours_meet_aa_on_surface_and_their_tint(self):
+        tok = self.block()
+        for c in ("accent", "green", "amber", "red", "blue"):
+            self.assertGreaterEqual(ratio(tok[c], tok["surface"]), 4.5, f"--{c} on surface")
+            bg = tok.get(c + "-bg") or tok.get(c + "-light")
+            self.assertGreaterEqual(ratio(tok[c], bg), 4.5, f"--{c} on its tint")
 
     def test_hierarchy_preserved(self):
-        tert, muted = self.tokens()
-        self.assertLess(lum("#4a4a4a"), lum(tert))     # secondary darker than tertiary
-        self.assertLess(lum(tert), lum(muted))         # tertiary darker than muted
+        tok = self.block()
+        self.assertLess(lum(tok["text-primary"]), lum(tok["text-secondary"]))
+        self.assertLess(lum(tok["text-secondary"]), lum(tok["text-tertiary"]))
+        self.assertLessEqual(lum(tok["text-tertiary"]), lum(tok["text-muted"]))
 
 
 if __name__ == "__main__":

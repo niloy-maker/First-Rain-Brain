@@ -17,20 +17,22 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root{
-  --bg-primary:#f9f9f8;--bg-secondary:#f3f3ef;--bg-tertiary:#ebebea;
-  --surface:#ffffff;
-  --text-primary:#1a1a1a;--text-secondary:#4a4a4a;
-  --text-tertiary:#5f5f5f;--text-muted:#6e6e6e;   /* WCAG AA on white/#f3f3ef (was #757575/#a0a0a0 = 2.6:1) */
+  /* Soft warm-paper light theme (12-Oct-2026): no pure white — cards #f8f6f0 on page #efece4.
+     Every text token below is WCAG AA (>=4.5:1) on surface, page and secondary backgrounds. */
+  --bg-primary:#efece4;--bg-secondary:#e7e3d9;--bg-tertiary:#ddd8cb;
+  --surface:#f8f6f0;
+  --text-primary:#1a1a1a;--text-secondary:#444340;
+  --text-tertiary:#52504b;--text-muted:#5d5a54;
 
-  --accent:#cc4b00;--accent-hover:#b34200;
-  --accent-light:#fff2ec;--accent-border:#f5c9b0;
+  --accent:#ad3f00;--accent-hover:#963500;
+  --accent-light:#f6e6da;--accent-border:#e8bfa3;
 
-  --green:#1d7a4a;--green-bg:#f0faf5;--green-border:#a7e0c3;
-  --amber:#9a6400;--amber-bg:#fefbf0;--amber-border:#f0d78f;
-  --red:#c0392b;--red-bg:#fff5f5;--red-border:#f5b8b8;
-  --blue:#1a56aa;--blue-bg:#f0f5ff;--blue-border:#b3cdf5;
+  --green:#176a40;--green-bg:#e6f2ea;--green-border:#a3d4b8;
+  --amber:#8a5800;--amber-bg:#f6eed6;--amber-border:#e3cc8a;
+  --red:#b5311f;--red-bg:#f8e6e0;--red-border:#e7b5a8;
+  --blue:#1a56aa;--blue-bg:#e5edf8;--blue-border:#a9c3ea;
 
-  --border:#e5e5e3;--border-strong:#d0d0ce;
+  --border:#d9d5c9;--border-strong:#c3beaf;
 
   --shadow-xs:0 1px 2px rgba(0,0,0,.04);
   --shadow-sm:0 1px 4px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04);
