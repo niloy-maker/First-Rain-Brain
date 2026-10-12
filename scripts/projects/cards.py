@@ -101,8 +101,11 @@ def _config(raw_cfg: dict) -> dict:
     return A
 
 
-def bill_due(stmt_day: int, due_gap_days: int, use: date) -> date:
-    """HDFC bill due date for a spend made on `use` (statement on stmt_day, due stmt + gap)."""
+def bill_due(stmt_day: int | None, due_gap_days: int | None, use: date) -> date | None:
+    """HDFC bill due date for a spend made on `use` (statement on stmt_day, due stmt + gap).
+    None when the card's statement cycle has not been entered in the sheet yet."""
+    if not stmt_day or not due_gap_days:
+        return None
     def stmt_in(y, m):
         return date(y, m, min(int(stmt_day), calendar.monthrange(y, m)[1]))
     st = stmt_in(use.year, use.month)
@@ -117,6 +120,8 @@ def clear_by(card: dict, use: date, A: dict) -> tuple[date, str]:
     win = A["floatDaysMax"] - A["clearBufferDays"]
     rule = use + timedelta(days=win)
     bd = bill_due(card["stmtDay"], card["dueGapDays"], use)
+    if bd is None:
+        return rule, f"use + {win}d, statement day not set"
     return (bd, "HDFC bill due") if bd < rule else (rule, f"use + {win}d")
 
 
@@ -155,8 +160,8 @@ def compute_cards(raw: dict | None, today: date | None = None, statutory: list |
             "limit": limit, "outstanding": outstanding,
             "available": _num(r.get("available"), max(0.0, limit - outstanding)) or max(0.0, limit - outstanding),
             "points": int(_num(r.get("reward_points"))),
-            "stmtDay": int(_num(r.get("statement_day"), 15)) or 15,
-            "dueGapDays": int(_num(r.get("due_gap_days"), 25)) or 25,
+            "stmtDay": int(_num(r.get("statement_day"), 0)) or None,
+            "dueGapDays": int(_num(r.get("due_gap_days"), 0)) or None,
             "activated": _iso(r.get("activated_on")),
             "welcomeTarget": _num(r.get("welcome_spend_target")),
             "welcomeDeadline": _iso(r.get("welcome_deadline")),
@@ -185,8 +190,11 @@ def compute_cards(raw: dict | None, today: date | None = None, statutory: list |
         c["earliestClearBy"] = ({"date": mine[0]["clearBy"], "days": mine[0]["clearByDays"], "basis": mine[0]["basis"]}
                                 if mine else None)
         nxt = bill_due(c["stmtDay"], c["dueGapDays"], today)
-        st = nxt - timedelta(days=c["dueGapDays"])
-        c["nextStatement"], c["nextDue"] = st.isoformat(), nxt.isoformat()
+        if nxt is None:
+            c["nextStatement"], c["nextDue"] = None, None
+        else:
+            c["nextStatement"] = (nxt - timedelta(days=c["dueGapDays"])).isoformat()
+            c["nextDue"] = nxt.isoformat()
         spent = sum(t["amt"] for t in txns if t["card"] == c["last4"])
         c["welcomeSpent"] = spent
         c["welcomePct"] = min(100, round(spent / c["welcomeTarget"] * 100)) if c["welcomeTarget"] else None
@@ -219,6 +227,9 @@ def compute_cards(raw: dict | None, today: date | None = None, statutory: list |
         warnings.append("no as_of_date on Credit_Cards")
     elif age > STALE_AFTER_DAYS:
         warnings.append(f"Credit_Cards as_of_date is {age}d old")
+    for c in cards:
+        if not c["stmtDay"] or not c["dueGapDays"]:
+            warnings.append(f"card ·{c['last4']}: statement_day / due_gap_days not set — clear-by uses the 48-day rule only")
     if totals["utilPct"] >= A["utilisationAlertPct"]:
         warnings.append(f"utilisation {totals['utilPct']}% >= {A['utilisationAlertPct']:.0f}% alert")
     if not A["gatewayFeeVerified"]:
@@ -315,6 +326,9 @@ def health_issues(block: dict | None, present_in_sheet: bool) -> list[str]:
     age = block.get("asOfAgeDays")
     if age is None or age > STALE_AFTER_DAYS:
         issues.append(f"Credit_Cards as_of_date stale ({'unset' if age is None else f'{age}d old'})")
+    for w in block.get("warnings", []):
+        if "statement_day" in w:
+            issues.append(w)
     for g in block.get("dueItems", []):
         if g["days"] <= 3:
             issues.append(due_line(g))

@@ -1,6 +1,1 @@
-date,card_last4,description,category,amount,linked_obligation,challan_ref,points_earned,notes
-2026-09-18,3079,GST payment - Aug-26 RCM,GST,60000,GSTR-3B Aug-26,,750,DEMO DATA
-2026-10-07,9986,TDS challan - Sep-26,Income tax,138000,TDS Sep-26,,1725,DEMO DATA
-2026-10-09,3079,GST payment - RCM liability,GST,112000,GSTR-3B Sep-26,,1400,DEMO DATA
-2026-10-10,3079,Flight - show travel (SmartBuy),Travel,78000,,,975,DEMO DATA
-2026-10-11,3079,Hotel - show stay (SmartBuy),Travel,22000,,,275,DEMO DATA
+date,card_last4,description,category,amount,linked_obligation,challan_ref,points_earned,notes,cleared_on

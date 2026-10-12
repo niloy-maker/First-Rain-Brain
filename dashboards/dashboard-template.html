@@ -3333,7 +3333,7 @@ body{
     var h2 = '<div class="page-title"><em>Credit Cards</em>' + ccDemoTag + '</div>'
       + '<div class="page-sub">HDFC BizBlack Metal ×' + cards.length + ' · ' + fmt(T.limit) + ' combined limit · for statutory + business travel' + (CCB.asOf ? ' · as of ' + ccFmtD(CCB.asOf) : '') + '</div>'
       + (CCB.isDemo ? '<div class="cc-note"><b>DEMO DATA:</b> the Credit_Cards / Card_Txns tabs still hold placeholder rows (marked DEMO). Sonal to replace with actuals — this banner and the DEMO tags clear automatically.</div>' : '')
-      + ((CCB.warnings || []).filter(function(w){ return /stale|utilisation/.test(w); }).map(function(w){ return '<div class="cc-note"><b>⚠</b> ' + esc(w) + '</div>'; }).join(''))
+      + ((CCB.warnings || []).filter(function(w){ return /stale|utilisation|statement_day/.test(w); }).map(function(w){ return '<div class="cc-note"><b>⚠</b> ' + esc(w) + '</div>'; }).join(''))
       + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px">'
       +   '<div class="stat"><div class="stat-label">Outstanding</div><div class="stat-val amber">' + fmt(T.outstanding) + '</div><div class="stat-hint">' + T.utilPct + '% of limit</div></div>'
       +   '<div class="stat"><div class="stat-label">Available</div><div class="stat-val green">' + fmt(T.available) + '</div><div class="stat-hint">spendable now</div></div>'
@@ -3347,7 +3347,7 @@ body{
         + '<div class="cc-kv"><span>Outstanding</span><b>' + fmt(c.outstanding) + '</b></div>'
         + '<div class="cc-bar"><i class="' + lv + '" style="width:' + Math.min(c.utilPct, 100) + '%"></i></div>'
         + '<div class="cc-kv"><span>Available / Limit</span><b>' + fmt(c.available) + ' / ' + fmt(c.limit) + '</b></div>'
-        + '<div class="cc-kv"><span>Next statement → due</span><b>' + ccFmtD(c.nextStatement) + ' → ' + ccFmtD(c.nextDue) + '</b></div>'
+        + '<div class="cc-kv"><span>Next statement → due</span><b>' + (c.nextStatement ? ccFmtD(c.nextStatement) + ' → ' + ccFmtD(c.nextDue) : '— (statement day not set)') + '</b></div>'
         + '<div class="cc-kv"><span>Earliest clear-by</span><b>' + (e ? ccFmtD(e.date) + ' · ' + e.days + 'd' : '—') + '</b></div>'
         + '<div class="cc-kv"><span>Reward points</span><b>' + c.points.toLocaleString('en-IN') + '</b></div>'
         + (c.welcomePct != null ? '<div class="cc-kv"><span>Welcome spend ' + fmt(c.welcomeTarget) + (c.welcomeDeadline ? ' by ' + ccFmtD(c.welcomeDeadline) : '') + '</span><b>' + (c.welcomePct >= 100 ? '✓ done' : c.welcomePct + '%') + '</b></div><div class="cc-bar"><i style="width:' + c.welcomePct + '%"></i></div>' : '')

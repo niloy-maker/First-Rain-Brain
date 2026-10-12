@@ -171,6 +171,44 @@ class TestFundingOrderPlan(unittest.TestCase):
         self.assertGreaterEqual(date.fromisoformat(route["clearBy"]), self.TODAY)
 
 
+class TestStatementCycleNotSet(unittest.TestCase):
+    """Real baseline: statement day / due gap unknown until Sonal enters them from the HDFC statement."""
+    TODAY = date(2026, 10, 12)
+
+    def blank_cycle(self, txns=None):
+        r = raw(txns=txns or [])
+        for c in r["cards"]:
+            c.pop("statement_day"); c.pop("due_gap_days")
+        return C.compute_cards(r, self.TODAY)
+
+    def test_no_made_up_statement_dates(self):
+        b = self.blank_cycle()
+        for c in b["cards"]:
+            self.assertIsNone(c["stmtDay"]); self.assertIsNone(c["dueGapDays"])
+            self.assertIsNone(c["nextStatement"]); self.assertIsNone(c["nextDue"])
+        self.assertTrue(any("statement_day" in w for w in b["warnings"]))
+
+    def test_clear_by_falls_back_to_the_48_day_rule(self):
+        d, basis = C.clear_by({"stmtDay": None, "dueGapDays": None}, date(2026, 10, 7), A)
+        self.assertEqual(d, date(2026, 11, 24))
+        self.assertIn("statement day not set", basis)
+
+    def test_spend_still_gets_a_clear_by(self):
+        b = self.blank_cycle([{"date": "2026-09-20", "card_last4": "9986", "description": "x", "category": "GST", "amount": 5000}])
+        self.assertEqual(b["txns"][0]["clearBy"], "2026-11-07")
+        self.assertEqual(b["dueItems"], [])
+
+    def test_health_reports_missing_cycle(self):
+        issues = C.health_issues(self.blank_cycle(), True)
+        self.assertTrue(any("statement_day" in i for i in issues))
+
+    def test_clean_baseline_has_no_demo_and_no_due_items(self):
+        r = raw()
+        b = C.compute_cards(r, self.TODAY)
+        self.assertFalse(b["isDemo"])
+        self.assertEqual(b["dueItems"], [])
+
+
 class TestSheetReader(unittest.TestCase):
     def wb(self, cards_rows=None, txn_rows=None, cfg_rows=None, tabs=True):
         from openpyxl import Workbook

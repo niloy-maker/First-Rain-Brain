@@ -1,8 +1,8 @@
 key,value,note
-card_reward_pct_effective,1.25,DEMO - illustrative effective reward %; confirm from card T&C
+card_reward_pct_effective,,UNCONFIRMED - enter the effective reward % from the HDFC BizBlack T&C (blank = dashboard shows it as unconfirmed)
 card_gateway_fee_pct,,"UNVERIFIED - check fee on payment.gst.gov.in and income-tax e-portal card payments; if fee > reward %, do not route tax via card"
 card_float_days_max,55,Max interest-free days per HDFC welcome letter
 card_clear_buffer_days,7,"Clear card spend by use date + (float - buffer) = 48d, never later than HDFC bill due date"
 card_priority_window_days,7,Card dues within this many days (or overdue) show in Priority today
-card_utilisation_alert_pct,70,Alert when combined utilisation reaches this %
+card_utilisation_alert_pct,90,Alert when combined utilisation reaches this %
 card_funding_order,cards > OD > treasury,"Policy (Niloy 12-Oct-2026): exhaust card limits first for card-payable items, then OD, treasury last"
