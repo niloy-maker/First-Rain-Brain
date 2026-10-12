@@ -91,7 +91,7 @@ body{
   width:var(--sidebar-w);flex-shrink:0;
   background:var(--bg-secondary);border-right:1px solid var(--border);
   display:flex;flex-direction:column;height:100vh;overflow:hidden;
-  transition:transform var(--t-slow);z-index:200;
+  transition:transform var(--t-slow),width var(--t-slow);z-index:200;
 }
 .sb-head{padding:18px 16px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
 .sb-wordmark{
@@ -127,6 +127,30 @@ body{
 }
 .sb-badge.ok{background:var(--green-bg);color:var(--green);border-color:var(--green-border)}
 .sb-footer{padding:12px 16px;border-top:1px solid var(--border);font-size:11px;color:var(--text-muted);flex-shrink:0}
+
+
+/* ═══ SIDEBAR COLLAPSE (desktop) — icon rail; mobile keeps its drawer ═══ */
+.tb-collapse{display:none;align-items:center;justify-content:center;width:32px;height:32px;flex-shrink:0;background:none;border:1px solid transparent;border-radius:var(--r-sm);cursor:pointer;color:var(--text-secondary);transition:background var(--t),border-color var(--t)}
+.tb-collapse:hover{background:var(--bg-secondary);border-color:var(--border)}
+.tb-collapse:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tb-collapse svg{transition:transform var(--t-slow)}
+.app.sb-collapsed .tb-collapse svg{transform:scaleX(-1)}
+@media(min-width:901px){
+  .tb-collapse{display:inline-flex}
+  .app.sb-collapsed .sidebar{width:64px}
+  .app.sb-collapsed .sb-head{padding:14px 8px 10px;text-align:center}
+  .app.sb-collapsed .sb-wordmark{font-size:0;line-height:1}
+  .app.sb-collapsed .sb-wordmark::before{content:"FR";font-size:18px;font-style:italic;color:var(--accent);display:block}
+  .app.sb-collapsed .sb-tagline,.app.sb-collapsed #sb-sync-label,.app.sb-collapsed .sb-footer{display:none}
+  .app.sb-collapsed .sb-sync{justify-content:center;margin-top:8px}
+  .app.sb-collapsed .sb-scroll{padding:8px 6px}
+  .app.sb-collapsed .sb-section{font-size:0;padding:0;margin:8px 10px 6px;border-top:1px solid var(--border)}
+  .app.sb-collapsed .sb-section:first-child{border-top:none;margin-top:0}
+  .app.sb-collapsed .sb-btn{position:relative;justify-content:center;font-size:0;gap:0;padding:10px 0}
+  .app.sb-collapsed .sb-icon{font-size:17px;width:20px;height:20px;opacity:.85;display:inline-flex;align-items:center;justify-content:center}
+  .app.sb-collapsed .sb-badge{position:absolute;top:5px;right:8px;margin:0;padding:0;width:8px;height:8px;font-size:0;border-radius:50%}
+  .app.sb-collapsed .sb-badge.ok{display:none}
+}
 
 /* ═══ MAIN ═══ */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
@@ -1989,6 +2013,7 @@ body{
 <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 
 <div class="app">
+<script>try{if(localStorage.getItem("fr_sb_collapsed")==="1")document.querySelector(".app").classList.add("sb-collapsed")}catch(e){}</script>
 
 <aside class="sidebar" id="sidebar">
   <div class="sb-head">
@@ -2005,6 +2030,9 @@ body{
 
 <div class="main">
   <header class="topbar">
+    <button class="tb-collapse" id="sb-collapse-btn" onclick="toggleSidebarCollapse()" aria-label="Collapse sidebar" aria-expanded="true" aria-controls="sidebar" title="Collapse sidebar  ( [ )">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/><polyline points="15.5 9.5 13 12 15.5 14.5"/></svg>
+    </button>
     <button class="tb-menu" onclick="openSidebar()" aria-label="Open menu">
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
@@ -2228,7 +2256,7 @@ body{
       var badge = "";
       if (n.crit > 0) badge = '<span class="sb-badge">' + n.crit + '</span>';
       else if (n.count != null) badge = '<span class="sb-badge ok">' + n.count + '</span>';
-      sbHtml += '<button class="sb-btn" data-page="' + n.id + '" onclick="window._nav(\'' + n.id + '\')">'
+      sbHtml += '<button class="sb-btn" data-page="' + n.id + '" title="' + esc(n.label.replace(/ [A-F]$/, '')) + '" onclick="window._nav(\'' + n.id + '\')">'
         + '<span class="sb-icon">' + esc(n.icon) + '</span>'
         + esc(n.label)
         + badge
@@ -2262,6 +2290,29 @@ body{
 
   window.openSidebar = function(){document.getElementById("sidebar").classList.add("open");document.getElementById("overlay").classList.add("on");};
   window.closeSidebar = function(){document.getElementById("sidebar").classList.remove("open");document.getElementById("overlay").classList.remove("on");};
+
+  // Desktop sidebar collapse (icon rail). State persists in localStorage when available.
+  function _sbSyncBtn(){
+    var app = document.querySelector(".app"), b = document.getElementById("sb-collapse-btn");
+    if (!app || !b) return;
+    var c = app.classList.contains("sb-collapsed");
+    b.setAttribute("aria-expanded", c ? "false" : "true");
+    b.setAttribute("aria-label", c ? "Expand sidebar" : "Collapse sidebar");
+    b.title = (c ? "Expand sidebar" : "Collapse sidebar") + "  ( [ )";
+  }
+  window.toggleSidebarCollapse = function(){
+    var c = document.querySelector(".app").classList.toggle("sb-collapsed");
+    try { localStorage.setItem("fr_sb_collapsed", c ? "1" : "0"); } catch (e) {}
+    _sbSyncBtn();
+    setTimeout(function(){ window.dispatchEvent(new Event("resize")); }, 280);
+  };
+  _sbSyncBtn();
+  document.addEventListener("keydown", function(e){
+    if (e.key !== "[" || e.metaKey || e.ctrlKey || e.altKey) return;
+    var t = e.target, tag = t && t.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || (t && t.isContentEditable)) return;
+    window.toggleSidebarCollapse();
+  });
 
   // All-vendor CP breakdown, India vs International (bars scaled to the
   // largest vendor; label shows true share of total CP).
