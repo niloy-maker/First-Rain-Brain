@@ -20,7 +20,7 @@
   --bg-primary:#f9f9f8;--bg-secondary:#f3f3ef;--bg-tertiary:#ebebea;
   --surface:#ffffff;
   --text-primary:#1a1a1a;--text-secondary:#4a4a4a;
-  --text-tertiary:#757575;--text-muted:#a0a0a0;
+  --text-tertiary:#5f5f5f;--text-muted:#6e6e6e;   /* WCAG AA on white/#f3f3ef (was #757575/#a0a0a0 = 2.6:1) */
 
   --accent:#cc4b00;--accent-hover:#b34200;
   --accent-light:#fff2ec;--accent-border:#f5c9b0;
@@ -269,6 +269,19 @@ body{
 .ov-col-priority .action-card:last-child{margin-bottom:0}
 .ov-col-priority .action-text{color:rgba(255,255,255,.82)}
 .ov-col-priority .action-card.critical .action-text{color:#fff}
+/* Priority sits on a dark navy panel in BOTH themes. The generic tinted states
+   (.action-card.critical etc.) use light backgrounds in light mode, which made the
+   forced-white text invisible (12-Oct-2026). Keep every state a dark translucent tint. */
+.ov-col-priority .action-card.critical{background:rgba(255,92,72,.20)}
+.ov-col-priority .action-card.warning{background:rgba(245,166,35,.18)}
+.ov-col-priority .action-card.watch{background:rgba(255,255,255,.10)}
+.ov-col-priority .action-card.success{background:rgba(95,185,138,.18)}
+.ov-col-priority .action-card.warning .action-text,.ov-col-priority .action-card.watch .action-text,.ov-col-priority .action-card.success .action-text{color:rgba(255,255,255,.92)}
+.ov-col-priority .pri-more-btn{color:rgba(255,255,255,.82);border-color:rgba(255,255,255,.25)}
+.ov-col-priority .section-label em{color:#f5aa7a}
+.acct-strip .pri-more-btn{color:rgba(255,255,255,.82);border-color:rgba(255,255,255,.25)}
+.acct-strip .pri-more-btn:hover{background:rgba(255,255,255,.10);color:#fff}
+.ov-col-priority .pri-more-btn:hover{background:rgba(255,255,255,.10);color:#fff}
 
 /* ═══ RUNWAY ═══ */
 .runway-banner{
