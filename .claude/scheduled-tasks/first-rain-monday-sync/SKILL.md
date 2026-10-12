@@ -437,6 +437,17 @@ Then READ `data/projects/pipeline_health.json` (small file — safe to pull into
 
 Do NOT run classify_pipeline.py, read_cashflow_xlsx.py, parse_hdfc_emails.py, parse_hdfc_imessages.py, compute_momentum.py, drift_check.py, or build_cashflow_json.py by hand — the orchestrator owns them. The 5F / 5F2 / 5J sub-steps below are now **INTERPRETATION-ONLY**: read the orchestrator's output files and fold the findings into the briefing.
 
+**5-CARDS — Credit-card data (HDFC BizBlack ×2, added 2026-10-12; informational — never blocks the run)**
+
+The Cashflow Master has three card tabs (`Credit_Cards`, `Card_Txns`, `Card_Config`). They are inside the xlsx that the 5C Drive pull already downloads; 5-ORCH's sheet stage parses them to `data/projects/sheet_cards.json` and the dashboard renders them from `FR.cards` (Overview strip, Cards tab, Statutory card plan, Priority today). Do NOT pull or parse them separately. After 5-ORCH, run:
+```bash
+cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain
+python3 scripts/projects/cards.py line     # one-line pulse for Steps 6/8 (empty output = tabs absent → omit every card line)
+python3 scripts/projects/cards.py due      # card bills whose clear-by date is within 7 days or overdue
+python3 scripts/projects/cards.py health   # exit 1 + lines = issues (DEMO data, stale as_of_date, high utilisation, tabs missing)
+```
+Policies (Niloy, 2026-10-12): funding order is **cards first → OD → treasury last** for card-payable items (GST, income tax/TDS, SmartPay bills, travel); each card spend must be cleared by **use date + 48 days (55 − 7), never later than HDFC's bill due date**. When recommending an OD draw for a card-payable item, net the available card limit first. Card dues are actions: 🔴 ≤3 days/overdue, 🟠 ≤7 days. Never state or store a full card number — last 4 digits only.
+
 **5F — HDFC cross-reference (interpretation only — parser already run by 5-ORCH)**
 Read the orchestrator's output `data/projects/sheet_bank_transactions.json`, then cross-reference transactions against sheet data:
 
@@ -563,6 +574,7 @@ Drift: N ALERT · N WARNING
   [list each ALERT item: • ALERT — description]
   [list each WARNING item: • WARNING — description]
 HDFC: N snapshots · Credits ₹X.XL · Debits ₹Y.YL · Net ₹Z.ZL
+Cards: [`cards.py line` output] [+ one line per `cards.py due` item] [+ `cards.py health` issues] (omit the whole line if `cards.py line` is empty)
 Dashboard: https://firstrain-dashboard.pages.dev ✅ live (deploy ✨ success) | ⚠️ deploy failed — stale
 ```
 
@@ -635,6 +647,7 @@ If the returned integer is ≥2, put the issue in the collapsed `🚨 PERSISTENT
 3. [Owner] — [action]
 
 💰 Op ₹XL [🔴/🟠/✅] · Treasury ₹X.XCr · OD ₹X.XCr free · Runway Xmo
+💳 [`cards.py line` output — omit this line if empty]
 
 📥 COLLECT ₹XL · N inv
 [Top 2-3 open by size/urgency, one line each: Client ₹X.XL (Nd)]
@@ -653,8 +666,9 @@ If the returned integer is ≥2, put the issue in the collapsed `🚨 PERSISTENT
 ```
 
 Rules for each block:
-- `🎯 TOP 3`: exactly 3, ranked by consequence (cash > payables > receivables > pipeline > FRBIS). If fewer than 3 real actions today, drop to 2 or 1 — do NOT pad with "monitor" items.
+- `🎯 TOP 3`: exactly 3, ranked by consequence (cash > payables > receivables > pipeline > FRBIS). Card dues from `cards.py due` rank with payables: a 🔴 card due (≤3 days/overdue) outranks routine receivable chasing; phrase it `Sonal — clear HDFC card ·3079 ₹60K by 16 Oct`. If a card due is in TOP 3 do NOT list it again under PAY THIS WEEK (every fact once). If fewer than 3 real actions today, drop to 2 or 1 — do NOT pad with "monitor" items.
 - `💰` line: single-line finance pulse. Emoji is 🔴 if op cash < floor, 🟠 if within 20% of floor, ✅ otherwise. No "unchanged" — always show current value.
+- `💳` line: exactly the output of `python3 scripts/projects/cards.py line` (it already carries `[DEMO]` while the sheet rows are placeholders). Never expand it into a ledger — one line only. The ledger lives on the dashboard Cards tab.
 - `📥 COLLECT`: total + count on header line; top 2-3 individual receivables only. `🟡 Unmatched credits` sub-line only if any exist this run.
 - `📤 PAY`: aggregate view. Individual vendors only if any single one is > ₹5L overdue.
 - `🏗 PROJECTS`: aggregate counts + top 2 by delay days.
@@ -682,6 +696,8 @@ printf -- '- Telegram: ✅ sent %s\n' "$(date '+%H:%M IST')" >> _outputs/briefin
 printf -- '- Telegram: ❌ failed %s — [error]\n' "$(date '+%H:%M IST')" >> _outputs/briefing-$(date +%F).md
 ```
 Also save any error text to `_outputs/telegram-failed-[date].md`.
+
+**Card baseline for the midday/EOD deltas:** after the Telegram step (success or failure) run `cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain && python3 scripts/projects/cards.py mark-sent`. This records what Niloy has already been told about the cards, so midday/EOD only report what changed.
 
 ---
 

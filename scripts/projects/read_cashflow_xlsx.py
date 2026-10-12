@@ -23,6 +23,7 @@ Tabs handled here:
   5. Statutory           → data/projects/sheet_statutory.json (manual schedule)
   6. Notes               → data/projects/sheet_notes.json
   7. Projects            → data/projects/sheet_projects.json
+  8. Credit_Cards/Card_Txns/Card_Config (optional) → data/projects/sheet_cards.json
 
 Source priority:
   1. CLI arg (path to xlsx)
@@ -585,6 +586,97 @@ def parse_projects(wb) -> dict:
     }
 
 
+# ---------- 9. Credit cards (Credit_Cards / Card_Txns / Card_Config) ----------
+
+def _tab_rows_optional(wb, name) -> tuple[list[str], list[list]]:
+    """Like _load_tab but returns ([], []) when the tab does not exist (cards are optional)."""
+    if name not in wb.sheetnames:
+        return [], []
+    return _load_tab(wb, name)
+
+
+def _iso_or_blank(v: Any) -> str:
+    dt = _parse_date(v)
+    return dt.isoformat() if dt else ""
+
+
+def _last4(v: Any) -> str:
+    """Card last-4 as a zero-padded string. Sheets stores '0247'-style values as numbers."""
+    if v is None:
+        return ""
+    if isinstance(v, float) and v.is_integer():
+        v = int(v)
+    s = str(v).strip()
+    return s.zfill(4) if s.isdigit() else s
+
+
+def parse_cards(wb) -> dict:
+    """Credit_Cards + Card_Txns + Card_Config -> sheet_cards.json.
+
+    Tabs are OPTIONAL: when Credit_Cards is absent/empty the payload has
+    present=False and the dashboard hides the cards UI. Only last-4 digits are
+    stored; full PAN/CVV must never appear in the sheet or in this output.
+    """
+    warnings: list[str] = []
+    ch, crow = _tab_rows_optional(wb, "Credit_Cards")
+    th, trow = _tab_rows_optional(wb, "Card_Txns")
+    kh, krow = _tab_rows_optional(wb, "Card_Config")
+
+    cards = []
+    for row in crow:
+        d = _row_dict(ch, row)
+        last4 = _last4(d.get("card_last4"))
+        if not last4:
+            continue
+        if len(last4) != 4 or not last4.isdigit():
+            # Never echo the offending value: it may be a full card number pasted by mistake.
+            warnings.append(f"Credit_Cards: card_last4 must be exactly 4 digits (got a {len(last4)}-character value) — row skipped; "
+                            "clear that cell and enter the last 4 digits only")
+            continue
+        cards.append({
+            "card_last4": last4, "card_holder": _clean(d.get("card_holder")),
+            "product": _clean(d.get("product")),
+            "credit_limit": _to_float(d.get("credit_limit")), "outstanding": _to_float(d.get("outstanding")),
+            "available": _to_float(d.get("available")), "reward_points": _to_float(d.get("reward_points")),
+            "statement_day": _to_int(d.get("statement_day")), "due_gap_days": _to_int(d.get("due_gap_days")),
+            "activated_on": _iso_or_blank(d.get("activated_on")),
+            "welcome_spend_target": _to_float(d.get("welcome_spend_target")),
+            "welcome_deadline": _iso_or_blank(d.get("welcome_deadline")),
+            "as_of_date": _iso_or_blank(d.get("as_of_date")),
+            "updated_by": _clean(d.get("updated_by")), "notes": _clean(d.get("notes")),
+        })
+
+    txns = []
+    for row in trow:
+        d = _row_dict(th, row)
+        dt = _parse_date(d.get("date"))
+        amt = _to_float(d.get("amount"))
+        if not dt or amt <= 0:
+            continue
+        cleared = _parse_date(d.get("cleared_on"))
+        txns.append({
+            "date": dt.isoformat(), "card_last4": _last4(d.get("card_last4")),
+            "description": _clean(d.get("description")), "category": _clean(d.get("category")),
+            "amount": amt, "linked_obligation": _clean(d.get("linked_obligation")),
+            "challan_ref": _clean(d.get("challan_ref")), "points_earned": _to_float(d.get("points_earned")),
+            "cleared_on": cleared.isoformat() if cleared else "",
+            "updated_by": _clean(d.get("updated_by")), "notes": _clean(d.get("notes")),
+        })
+
+    config = {}
+    for row in krow:
+        d = _row_dict(kh, row)
+        key = _clean(d.get("key"))
+        if key:
+            config[key] = d.get("value")
+
+    return {
+        "present": bool(cards),
+        "cards": cards, "txns": txns, "config": config,
+        "meta": _meta(len(cards) + len(txns), warnings),
+    }
+
+
 # ---------- Orchestrator ----------
 
 TAB_PARSERS = [
@@ -595,6 +687,7 @@ TAB_PARSERS = [
     ("Statutory",          "sheet_statutory.json",        parse_statutory_manual),
     ("Notes",              "sheet_notes.json",            parse_notes),
     ("Projects",           "sheet_projects.json",         parse_projects),
+    ("Credit_Cards",       "sheet_cards.json",            parse_cards),
 ]
 
 

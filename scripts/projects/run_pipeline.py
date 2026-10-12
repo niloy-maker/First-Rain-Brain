@@ -117,6 +117,20 @@ def dashboard_issues(html_path, data_path=None):
     issues = []
     if "{{CASHFLOW_JSON}}" in html:
         issues.append("placeholder {{CASHFLOW_JSON}} not substituted")
+    # UI-design contract (06/07-Aug-2026): grouped Collect/Pay/Statutory,
+    # priority + txn expanders, Health vendor breakdown. If a marker is
+    # missing, the render came from a stale/reverted template — flag it so
+    # the heal-check surfaces the regression instead of Sonal discovering it.
+    # Only enforced on real renders (identified by the injected cfo-data
+    # payload) so synthetic test fixtures aren't held to the UI contract.
+    # (Full marker list + rationale: tests/projects/test_dashboard_contract.py)
+    if 'id="cfo-data"' in html:
+        for marker in ("priGroups", "_renderPayList", "_renderRecList",
+                       "_renderStatList", "vcp-grid", "sort-toggle",
+                       "CCB", "page-cards"):
+            if marker not in html:
+                issues.append(f"dashboard missing UI marker '{marker}' — "
+                              "rendered from stale template?")
     if data_path is not None:
         dp = Path(data_path)
         if not ph.is_nonempty(dp):
@@ -138,6 +152,9 @@ def build_stages():
               input_required_keys=("deals", "meta")),
         Stage("sheet", "read_cashflow_xlsx.py",
               "data/projects/sheet_cash_position.json", "sheet",
+              input_path="data/projects/_cache/cashflow_master.xlsx", input_max_age=24.0),
+        Stage("listing", "read_lr_tabs.py",
+              "data/projects/listing_readiness.json", "listing",
               input_path="data/projects/_cache/cashflow_master.xlsx", input_max_age=24.0),
         Stage("hdfc_email", "parse_hdfc_emails.py",
               "data/projects/sheet_bank_transactions.json", "hdfc",

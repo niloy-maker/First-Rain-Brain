@@ -193,6 +193,28 @@ the Python transform block that shapes the response into raw.json.
 
 Grep-canary: heal-check should also `grep -q 'Project_Month' ~/.claude/scheduled-tasks/first-rain-monday-sync/SKILL.md` — if that fails, add to 🔴 failure list "SKILL COQL regressed — Project_Month dropped from morning-sync SKILL Step 5A".
 
+## STEP 4D — Credit-card data health (added 2026-10-12; prevents silent card blackout / stale card data)
+
+The dashboard's Cards section, Statutory card plan and Priority-today card dues all come from `FR.cards`, built from the sheet tabs `Credit_Cards` / `Card_Txns` / `Card_Config`.
+```bash
+cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain && python3 scripts/projects/cards.py health; echo "exit=$?"
+python3 - <<'PY'
+import json
+raw=json.load(open('data/projects/sheet_cards.json'))
+fr=json.load(open('data/projects/cashflow.json'))['FR']
+print('sheet_present', raw.get('present'), '| FR.cards built', bool(fr.get('cards')))
+PY
+```
+- Exit 0 and (`sheet_present` == `FR.cards built`) → silent.
+- **`sheet_present True` but `FR.cards built False`** → 🔴 "cards block failed to build" (the cards UI is hidden on the live dashboard). Re-run `python3 scripts/projects/run_pipeline.py` once; if still false, report it.
+- Each line printed by `cards.py health` is a candidate issue for STEP 6 and goes through the same already-in-today dedup:
+  - "tabs missing/empty" → 🟠 cards hidden — usually a stale xlsx cache: re-pull the sheet per STEP 2's heal path, then re-run the pipeline.
+  - "cards still on DEMO data" → expected until Sonal enters real values; report it ONLY through the `🚨 Persistent (day N)` line, never as a fresh daily item.
+  - "as_of_date stale" → 🟠 Sonal to update `Credit_Cards` (outstanding, points, as_of_date).
+  - "Pay HDFC card … overdue / due in ≤3d" → 🔴 (normally already in the morning briefing → dedup suppresses it).
+  - "card utilisation … ≥ alert" → 🟠.
+- Never print or store a full card number in any alert — last 4 digits only.
+
 ## STEP 5 — Schedule sanity
 Use `mcp__scheduled-tasks__list_scheduled_tasks` to confirm `first-rain-monday-sync` is enabled and `lastRunAt` is within the last 90 minutes. If `lastRunAt` is stale or `enabled=false`, add to failure list (P0).
 
@@ -252,6 +274,8 @@ For persistent issues (day count ≥ 2), also compute the streak:
 ```bash
 python3 scripts/projects/persistent_issue_days.py days "<substring>" --max-days 30
 ```
+
+**Credit-card issues from STEP 4D are candidate issues like any other** — filter each through `already-in-today` (card dues and the stale/utilisation lines normally appear in the morning briefing's `Cards:` line, so they are suppressed here).
 
 **Compose the message in this priority order, keep only what survives dedup:**
 

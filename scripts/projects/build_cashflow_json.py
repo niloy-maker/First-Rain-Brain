@@ -34,6 +34,7 @@ from classify_pipeline import classify, _match_industry
 from read_sheet_projects import read_sheet
 from compute_momentum import compute as compute_momentum
 from drift_check import check as drift_check
+import cards as cards_mod
 
 
 TEMPLATE_PATH = Path("dashboards/dashboard-template.html")
@@ -1820,7 +1821,7 @@ def _build_telegram_briefing(
     op_cash, monthly_burn, treasury, od_facility, od_utilized,
     norm_receivables, norm_statutory, treasury_sweep, cf_annual,
     secure_concentration, saltwater_concentration, health_score=None,
-    norm_projects=None, bank_latest_balance=None, pipeline_coverage=None
+    norm_projects=None, bank_latest_balance=None, pipeline_coverage=None, cards_block=None
 ) -> str:
     """Generate the plaintext daily briefing shown on the Alerts tab."""
     from datetime import datetime
@@ -2000,6 +2001,17 @@ def _build_telegram_briefing(
         if cov.get("dataAvailable") and miss:
             lines.append(f"⚠️ {miss} live deals missing execution month — coverage understated.")
 
+    # ── Credit cards ─────────────────────────────────────────────────────────
+    if cards_block:
+        lines.append("")
+        lines.append("💳 CREDIT CARDS" + (" (DEMO DATA)" if cards_block.get("isDemo") else ""))
+        lines.append(f"• {cards_mod.pulse_line(cards_block).replace(' [DEMO]', '')}")
+        for g in cards_block.get("dueItems", []):
+            lines.append(f"• {'🔴' if g['severity'] == 'red' else '🟠'} {cards_mod.due_line(g)}")
+        plan = cards_block.get("statutoryPlan", {})
+        if plan.get("cardRoutable"):
+            lines.append(f"• Funding order: cards first ({fmt(plan['cardRoutable'])} of unpaid GST/TDS routable), then OD")
+
     # ── Health ───────────────────────────────────────────────────────────────
     lines.append("")
     lines.append(f"🏥 Health {score}/100 · {grade}")
@@ -2007,7 +2019,7 @@ def _build_telegram_briefing(
     return "\n".join(lines)
 
 
-def _build_sources(bigin, sheet, finance, bank_txn, imessage_data=None) -> list:
+def _build_sources(bigin, sheet, finance, bank_txn, imessage_data=None, cards_block=None) -> list:
     """Build the 5 source status cards shown on the Data tab.
     Each card includes: name, detail, ok (bool), status ('ok'|'stale'|'failed'),
     lastAccessed (ISO str or ''), lastAccessedFmt (human-readable).
@@ -2194,6 +2206,19 @@ def _build_sources(bigin, sheet, finance, bank_txn, imessage_data=None) -> list:
         "lastAccessed": sms_ts_raw,
         "lastAccessedFmt": sms_ts_fmt,
     })
+
+    # ── Credit cards (Sheet tabs) ────────────────────────────────────────────
+    if cards_block:
+        _age = cards_block.get("asOfAgeDays")
+        _stale = _age is None or _age > 2
+        sources.append({
+            "name": "Credit Cards (Sheet: Credit_Cards / Card_Txns)",
+            "detail": (f"{len(cards_block['cards'])} cards · {len(cards_block['txns'])} spends · as of {cards_block.get('asOf') or '—'}"
+                       + (" · DEMO DATA" if cards_block.get("isDemo") else "")),
+            "ok": not _stale, "status": "stale" if _stale else "ok",
+            "lastAccessed": datetime.now().astimezone().isoformat(),
+            "lastAccessedFmt": f"{datetime.now().strftime('%-d %b · %H:%M IST')} (now)",
+        })
 
     # ── Telegram Bot (static — briefing always generated) ────────────────────
     now_fmt = datetime.now().strftime("%-d %b · %H:%M IST")
@@ -2453,6 +2478,21 @@ def _compose_cashflow(bigin, sheet, momentum, drift, imessage_data: dict = None)
         bigin.get("deals", []), datetime.now().date(), floor=coverage_floor
     )
 
+    # Credit cards (optional Credit_Cards / Card_Txns / Card_Config tabs). A failure here
+    # must never take the dashboard down — the cards UI simply stays hidden.
+    cards_block = None
+    try:
+        cards_raw = json.loads(Path("data/projects/sheet_cards.json").read_text())
+        cards_block = cards_mod.compute_cards(cards_raw, statutory=norm_statutory)
+    except (OSError, ValueError):
+        cards_block = None
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠ cards block failed ({e}) — cards UI hidden this run")
+        cards_block = None
+    if cards_block:
+        print(f"  💳 cards: {len(cards_block['cards'])} cards · {len(cards_block['txns'])} spends · "
+              f"{cards_mod.pulse_line(cards_block)}")
+
     return {
         "FR": {
             # Project / pipeline data (field-name aliases + region expansion applied)
@@ -2471,6 +2511,7 @@ def _compose_cashflow(bigin, sheet, momentum, drift, imessage_data: dict = None)
             "odSource": od_source,
             "smsOdReconcile": sms_od_note,
             "emailOdReconcile": email_od_note,
+            "cards": cards_block,
             "monthlyBurn": monthly_burn,
 
             # Working capital (normalised field aliases added above)
@@ -2550,6 +2591,7 @@ def _compose_cashflow(bigin, sheet, momentum, drift, imessage_data: dict = None)
                 norm_projects=[_normalize_project(p) for p in sheet.get("projects", [])],
                 bank_latest_balance=bank_txn.get("latestBalance"),
                 pipeline_coverage=pipeline_coverage_meta,
+                cards_block=cards_block,
             ),
 
             "meta": {
@@ -2572,7 +2614,7 @@ def _compose_cashflow(bigin, sheet, momentum, drift, imessage_data: dict = None)
             "generated_at": datetime.now().astimezone().isoformat(),
             "extrapolation": cf_extrapolation,
             "lastRefresh": datetime.now().strftime("%d %b %Y · %H:%M IST"),
-            "sources": _build_sources(bigin, sheet, finance, bank_txn, imessage_data),
+            "sources": _build_sources(bigin, sheet, finance, bank_txn, imessage_data, cards_block=cards_block),
         }
     }
 

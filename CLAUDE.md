@@ -27,6 +27,7 @@ Enforced by Hooks (100% deterministic). Do not override.
 - Only Niloy writes vault files
 - FirstRain-Intel/CLAUDE.md is a separate file — never overwrite it
 - Dashboard deploys → ALWAYS `bash scripts/deploy_dashboard.sh` — NEVER raw `wrangler pages deploy` (defaults to Preview env, leaves Production stale)
+- Credit cards (HDFC BizBlack ·9986 Monica, ·3079 Niloy) → store/echo LAST 4 DIGITS ONLY. Never write a full card number, expiry or CVV to any file, sheet, log, alert or commit. Funding order for card-payable items: cards → OD → treasury; clear each spend by use-date + 48d (never past HDFC bill due).
 - HDFC email cache → NEVER hand-merge new threads into `data/projects/_cache/hdfc_emails.json`. Always re-fetch the full window via the morning sync's Gmail MCP call. Surgical merges leave gaps that drift the bank-balance reconciliation (caught 16-Jun-2026 with a ₹23L overshoot).
 
 ## NOTION MCP — PRODUCTION TRACKER

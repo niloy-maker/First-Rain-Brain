@@ -226,6 +226,7 @@ Flag as DELTA if NOT already in MIDDAY UPDATE (and `SHEET_FRESH = true` for shee
 - **🆕 New receivable**: row in fresh sheet not present in morning → "New receivable: [Client] ₹X.XL"
 - **✅ Payable paid**: any Pending row in morning now Paid/Cleared → "Payable cleared: [Vendor] ₹X.XL"
 - **🆕 New payable**: payable row in fresh sheet not in morning → "New payable: [Vendor] ₹X.XL"
+- **💳 Card delta** (credit cards, added 2026-10-12 — works with or without a fresh download, it reads the parsed card tabs): run `cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain && python3 scripts/projects/cards.py delta`. Each printed line is a DELTA (new card spend / outstanding change / a card bill newly inside its 7-day clear-by window). Empty output = nothing to report. The helper compares against the last-sent snapshot, so it never repeats a card due already told to Niloy. Policies (Niloy, 2026-10-12): funding order is **cards first → OD → treasury last** for card-payable items (GST, income tax/TDS, SmartPay bills, travel); each card spend must be cleared by **use date + 48 days (55 − 7), never later than HDFC's bill due date**. Card dues are actions: 🔴 ≤3 days/overdue, 🟠 ≤7 days.
 
 Skip: treasury fluctuations < ₹10,000; date-only changes; Notes-only changes.
 
@@ -280,7 +281,7 @@ Exclude rent, lease, or non-project income from all delta flags. Only project in
 
 ## STEP 4 — Compile deltas
 
-Collect all flagged deltas from Steps 1–3D (Gmail · Notion · HDFC · Bigin · Sheet · FRBIS). Categorise each as:
+Collect all flagged deltas from Steps 1–3D (Gmail · Notion · HDFC · Bigin · Sheet · Cards · FRBIS). Categorise each as:
 - ✅ RESOLVED — something marked urgent/pending is now done or paid
 - 🔄 UPDATED — status changed but action still needed
 - 🆕 NEW — arrived after the midday check cut-off
@@ -375,9 +376,11 @@ Cap at 800 characters. If more than 5 deltas, prioritise: resolved payments > ne
 ```
 🌆 First Rain — EOD Check [DD Mon]
 All quiet since midday — no new changes.
-(Gmail · Notion · HDFC · Bigin · Sheet · FRBIS checked)
+(Gmail · Notion · HDFC · Bigin · Sheet · Cards · FRBIS checked)
 Dashboard: [✅ live — refreshed | ⚠️ deploy failed — STALE]
 ```
+
+**Card baseline:** after composing/sending this Telegram (success or failure) run `cd ~/Desktop/Andrej_Karpathy_Obsidian_FirstRain_Brain && python3 scripts/projects/cards.py mark-sent` so tomorrow's morning briefing and the next sync only report what changed. Card deltas are normal delta bullets (e.g. `💳 Pay HDFC card Niloy Debnath ·3079 · ₹60K · due in 3d (clear by 16 Oct)`) — one line each, no ledger.
 
 **If Telegram call fails:** Wait 30 seconds, retry once. If retry also fails: call `mcp__gmail__create_draft` with to: `["niloy@firstrain.co.in"]`, subject: `⚠️ EOD Update [date] — Telegram MCP down`, body: [same content as the Telegram message]. Log "Telegram failed — Gmail fallback draft created."
 

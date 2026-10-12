@@ -1,0 +1,3 @@
+card_last4,card_holder,product,credit_limit,outstanding,available,reward_points,statement_day,due_gap_days,activated_on,welcome_spend_target,welcome_deadline,as_of_date,updated_by,notes
+9986,Monica Debnath,HDFC BizBlack Metal,400000,138000,262000,1725,15,25,2026-09-15,150000,2026-12-27,2026-10-12,DEMO,"DEMO DATA - replace with actuals; last 4 digits only, never full card number/CVV"
+3079,Niloy Debnath,HDFC BizBlack Metal,400000,272000,128000,3400,21,25,2026-09-15,150000,2026-12-27,2026-10-12,DEMO,"DEMO DATA - replace with actuals; last 4 digits only, never full card number/CVV"

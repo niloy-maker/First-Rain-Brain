@@ -319,6 +319,13 @@ body{
 .action-icon{flex:0 0 auto;font-size:14px;line-height:1.4;padding-top:1px}
 .action-text{font-size:12px;color:var(--text-secondary);flex:1;line-height:1.55}
 .action-card.critical .action-text{color:var(--text-primary);font-weight:500}
+.pri-extra.pri-hidden{display:none}
+.pri-more-btn{
+  width:100%;background:transparent;border:1px solid var(--border);color:var(--text-tertiary);
+  border-radius:var(--r);padding:9px;font-size:12px;cursor:pointer;margin-top:2px;
+  font-family:inherit;transition:background var(--t);
+}
+.pri-more-btn:hover{background:var(--bg-secondary)}
 
 /* ═══ TREASURY SWEEP (bidirectional — outward deploys surplus, inward monitors deficit) ═══ */
 .sweep-card{
@@ -685,6 +692,8 @@ body{
 .conf-chip.high{color:var(--green);background:var(--green-bg)}
 .conf-chip.medium{color:var(--amber);background:var(--amber-bg)}
 .conf-chip.low{color:var(--text-muted);background:var(--bg-secondary);border-color:var(--border-strong)}
+.conf-chip.actual{color:var(--text-tertiary);background:var(--bg-secondary);border-color:var(--border-strong)}
+.month-card.actual{opacity:.78}
 
 /* ═══ LIST ═══ */
 .list-row{display:flex;justify-content:space-between;align-items:flex-start;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;gap:12px;min-height:44px;box-shadow:var(--shadow-xs);transition:box-shadow var(--t)}
@@ -704,6 +713,53 @@ body{
 
 /* Show project name inline on Collect tab — between invoice no and exec */
 .list-row-proj{color:var(--text-secondary);font-weight:500}
+
+/* ═══ PAY TAB — vendor grouping + sort toggle ═══ */
+.pay-toolbar{display:flex;justify-content:flex-end;margin-bottom:10px}
+.sort-toggle{display:flex;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--r);padding:3px;gap:3px}
+.sort-toggle button{border:none;background:transparent;color:var(--text-tertiary);border-radius:6px;padding:5px 12px;font-size:11px;cursor:pointer;font-family:inherit;transition:background var(--t),color var(--t)}
+.sort-toggle button.on{background:var(--surface);color:var(--text-primary);box-shadow:var(--shadow-xs)}
+.vendor-group{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;box-shadow:var(--shadow-xs);overflow:hidden}
+.vendor-group.critical{border-left:3px solid var(--red)}
+.vendor-group.warning{border-left:3px solid var(--amber)}
+.vendor-group-head{display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;min-height:44px}
+.vendor-group-name{flex:1;min-width:0;font-size:13px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vendor-group-count{color:var(--text-muted);font-weight:400;font-size:11px}
+.vendor-group-amt{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-size:20px;font-weight:400;letter-spacing:-.01em;color:var(--text-primary);flex:0 0 auto}
+.vendor-group.critical .vendor-group-amt{color:var(--red)}
+.vendor-group.warning .vendor-group-amt{color:var(--amber)}
+.vendor-chev{color:var(--text-muted);font-size:14px;transition:transform var(--t)}
+.vendor-group.open .vendor-chev{transform:rotate(90deg)}
+.vendor-group-body{display:none;border-top:1px solid var(--border);padding:6px 14px 10px;background:var(--bg-secondary)}
+.vendor-group.open .vendor-group-body{display:block}
+.vendor-inv{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--border)}
+.vendor-inv:last-child{border-bottom:none}
+.vendor-inv-l{min-width:0;font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vendor-inv-r{flex:0 0 auto;font-size:12px;font-weight:500;color:var(--text-primary)}
+.due-head{display:flex;justify-content:space-between;align-items:baseline;margin:14px 0 6px}
+.due-head-label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted)}
+.due-head-total{font-size:12px;color:var(--amber);font-weight:500}
+.pay-foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--text-tertiary)}
+.pay-foot .heavy{color:var(--amber)}
+.est-tag{font-size:9px;font-weight:600;letter-spacing:.06em;color:var(--text-muted);border:1px solid var(--border-strong);border-radius:4px;padding:0 4px}
+.stat-filed{opacity:.55}
+
+/* Vendor CP breakdown (Health · Vendor Concentration card) */
+.vcp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:12px}
+.vcp-col{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px}
+.vcp-col-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;gap:8px}
+.vcp-col-title{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted)}
+.vcp-col-total{font-size:12px;font-weight:500;color:var(--text-secondary);white-space:nowrap}
+.vcp-row{margin-bottom:7px}
+.vcp-row:last-child{margin-bottom:0}
+.vcp-row-top{display:flex;justify-content:space-between;gap:8px;font-size:12px;margin-bottom:3px}
+.vcp-name{color:var(--text-primary);font-weight:500;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vcp-name span{color:var(--text-muted);font-weight:400;font-size:10px}
+.vcp-val{flex:0 0 auto;color:var(--text-secondary)}
+.vcp-bar{height:5px;background:var(--border);border-radius:99px;overflow:hidden}
+.vcp-bar-fill{height:100%;border-radius:99px;background:var(--accent)}
+.vcp-bar-fill.warn{background:var(--amber)}
+.vcp-bar-fill.breach{background:var(--red)}
 
 .empty-state{text-align:center;padding:40px 16px;color:var(--text-muted)}
 .empty-state-icon{font-size:28px;color:var(--green);margin-bottom:8px}
@@ -1886,6 +1942,32 @@ body{
 }
 
 </style>
+
+<style id="cc-css">
+.demo-tag{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.08em;background:#b45309;color:#fff;border-radius:4px;padding:2px 5px;margin-left:6px;vertical-align:middle}
+.cc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-bottom:18px}
+.cc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;box-shadow:var(--shadow-xs)}
+.cc-card-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;gap:8px}
+.cc-card-name{font-size:13px;font-weight:700;color:var(--text-primary)}
+.cc-card-num{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--text-muted);letter-spacing:.08em}
+.cc-bar{height:7px;border-radius:6px;background:var(--bg-secondary);overflow:hidden;margin:6px 0 10px}
+.cc-bar>i{display:block;height:100%;border-radius:6px;background:var(--green)}
+.cc-bar>i.warn{background:var(--amber)}.cc-bar>i.danger{background:var(--red)}
+.cc-kv{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--text-secondary);padding:3px 0}
+.cc-kv b{color:var(--text-primary);font-weight:600;text-align:right}
+.cc-sec{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);margin:22px 0 8px}
+.cc-note{font-size:12px;line-height:1.5;color:var(--text-secondary);background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:10px;padding:10px 12px;margin:10px 0}
+.cc-note b{color:var(--amber)}
+.cc-plan{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;margin-bottom:14px;box-shadow:var(--shadow-xs)}
+.cc-plan h4{margin:0 0 8px;font-size:13px;color:var(--text-primary)}
+.cc-chip{display:inline-block;font-size:11px;font-weight:600;border-radius:999px;padding:3px 9px;margin:2px 4px 2px 0;border:1px solid var(--border);background:var(--bg-secondary);color:var(--text-primary)}
+.cc-chip.card{background:var(--green-bg);border-color:var(--green-border);color:var(--green)}
+.cc-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.cc-tbl th{text-align:left;color:var(--text-muted);font-weight:600;text-transform:uppercase;font-size:10px;letter-spacing:.05em;padding:6px 8px;border-bottom:1px solid var(--border)}
+.cc-tbl td{padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:top}
+.cc-tbl td code{font-size:11px;color:var(--text-primary)}
+.cc-scroll{overflow-x:auto}
+</style>
 </head>
 <body>
 
@@ -1930,10 +2012,53 @@ body{
     <section class="page" id="page-receivables"></section>
     <section class="page" id="page-payables"></section>
     <section class="page" id="page-statutory"></section>
+    <section class="page" id="page-cards"></section>
     <section class="page" id="page-health"></section>
     <section class="page" id="page-projects"></section>
     <section class="page" id="page-telegram"></section>
     <section class="page" id="page-sources"></section>
+    <section class="page" id="page-ipo">
+      <div class="page-title">Listing <em>readiness</em></div>
+      <div class="page-sub">Benchmark: PROPSHOP · NSE Emerge · <span id="lr-period">—</span> <span class="lr-chip lr-amber" id="lr-live-chip" style="margin-left:6px"></span></div>
+      <div class="lr-banner"><span class="lr-ico">▲</span><span id="lr-banner-text"></span></div>
+      <div class="lr-grid-top">
+        <div class="lr-card">
+          <h2>Readiness score</h2>
+          <div class="lr-score-big"><span class="lr-score-num" id="lr-score-num">—</span><span class="lr-score-den">/100</span></div>
+          <span class="lr-chip lr-amber" id="lr-score-chip"></span>
+          <div class="lr-meter"><div class="lr-fill" id="lr-score-fill" style="width:0%"></div></div>
+          <div class="lr-score-note">Σ(score × weight) / Σ(weight), clamped 0–1 per metric. Revenue quality carries <b>44 of 100</b>. Frozen definitions: _context/listing-readiness-definitions.md.</div>
+        </div>
+        <div class="lr-card">
+          <h2>Biggest lever</h2>
+          <div id="lr-lever-main"></div>
+          <div id="lr-lever-rest"></div>
+        </div>
+        <div class="lr-card lr-ps-card">
+          <h2>PropShop · benchmark ticker</h2>
+          <div id="lr-ps-body"></div>
+        </div>
+      </div>
+      <div class="lr-card" style="margin-bottom:14px">
+        <h2>Weight allocation — 100 points</h2>
+        <div class="lr-wbar" id="lr-wbar"></div>
+        <div class="lr-wcap">Revenue quality (B) carries <b>44 of 100</b> — concentration, repeat behaviour and order-book visibility are what re-rate a project business.</div>
+      </div>
+      <div class="lr-card" style="margin-bottom:14px">
+        <h2>Thirteen metrics <span class="lr-chip lr-gray" id="lr-period-chip" style="margin-left:8px"></span></h2>
+        <div class="lr-tbl-wrap"><table id="lr-mtable"><thead><tr>
+          <th style="width:24%">Metric</th><th style="width:14%">First Rain</th><th style="width:25%">Floor → target</th>
+          <th class="lr-num" style="width:6%">Wt</th><th class="lr-num" style="width:8%">Score</th><th style="width:23%">PropShop</th>
+        </tr></thead><tbody></tbody></table></div>
+      </div>
+      <div class="lr-card">
+        <h2>Hard gates — SEBI ICDR · NSE Emerge <span class="lr-chip lr-gray" style="margin-left:8px">statuses set by /listing-readiness gate reviews</span></h2>
+        <div class="lr-gates-grid" id="lr-gates"></div>
+        <div class="lr-gate-foot">Gates are re-verified against current SEBI ICDR and NSE Emerge text on every /listing-readiness full run. Any gate moving from <b>pass</b> to <b>risk</b> is a live breach in the same register as the margin floors and the Secure concentration cap.</div>
+      </div>
+      <div class="lr-foot" id="lr-foot"></div>
+      <div class="lr-tip" id="lr-tip"></div>
+    </section>
   </div>
 </div>
 
@@ -2019,13 +2144,22 @@ body{
   var overduePct = totalRecv > 0 ? overdue30 / totalRecv : 0;
   var totalPay = (FR.payables || []).reduce(function(s,p){return s+(p.amount||p.balance||0);},0);
   var apArRatio = totalRecv > 0 ? totalPay / totalRecv : 0;
-  var statOverdue = (FR.statutory || []).filter(function(s){return s.daysLeft<0||s.daysLeft<5;}).length;
-  var criticalStatCount = (FR.statutory || []).filter(function(s){return s.daysLeft<0;}).length;
-  var totalStat = (FR.statutory || []).reduce(function(s,x){return s+(x.amount||x.amountPayable||0);},0);
+  // status "filed" = already paid — never counts as overdue, outstanding, or 30d-due
+  var statUnpaid = (FR.statutory || []).filter(function(s){return (s.status||"").toLowerCase() !== "filed";});
+  var statOverdue = statUnpaid.filter(function(s){return s.daysLeft<0||s.daysLeft<5;}).length;
+  var criticalStatCount = statUnpaid.filter(function(s){return s.daysLeft<0;}).length;
+  var totalStat = statUnpaid.reduce(function(s,x){return s+(x.amount||x.amountPayable||0);},0);
+  var statDue30 = statUnpaid.filter(function(s){return s.daysLeft != null && s.daysLeft > -900 && s.daysLeft <= 30;}).reduce(function(s,x){return s+(x.amount||x.amountPayable||0);},0);
 
   var dim1 = runwayMonths >= 6 ? 25 : runwayMonths >= 3 ? 22 : runwayMonths >= 2 ? 15 : runwayMonths >= 1 ? 8 : 0;
   var dim2 = overduePct < 0.10 ? 20 : overduePct < 0.20 ? 15 : overduePct < 0.35 ? 10 : 5;
-  var dim3 = FR.saltwaterConcentration < 0.30 ? 20 : FR.saltwaterConcentration < 0.50 ? 12 : FR.saltwaterConcentration < 0.70 ? 5 : 2;
+  // Scored vendor metric: STRUCTURAL 12-month CP mix (who builds your
+  // stands). The open-dues queue is displayed as labeled context only —
+  // payables are cash timing, not dependency (Niloy 07-Aug-2026: a "forward
+  // exposure" score degenerated to the AP queue since future projects carry
+  // no fabricator assignment yet).
+  var vendorConc = FR.vendorConcentration != null ? FR.vendorConcentration : FR.saltwaterConcentration;
+  var dim3 = vendorConc < 0.30 ? 20 : vendorConc < 0.50 ? 12 : vendorConc < 0.70 ? 5 : 2;
   var dim4 = apArRatio < 1.5 ? 15 : apArRatio < 2.5 ? 10 : apArRatio < 4 ? 5 : 0;
   var dim5 = statOverdue === 0 ? 10 : statOverdue === 1 ? 6 : statOverdue === 2 ? 3 : 0;
   var dim6 = FR.secureConcentration < 0.25 ? 10 : FR.secureConcentration < 0.40 ? 6 : FR.secureConcentration < 0.55 ? 3 : 1;
@@ -2061,8 +2195,13 @@ body{
     { id:"health",      label:"Health " + healthGrade, icon:"💊", section:"Diagnostics" },
     { id:"projects",   label:"Projects",   icon:"🏗", section:"Diagnostics", count:(FR.projects||[]).length },
     { id:"telegram",    label:"Alerts",     icon:"📱", section:"Diagnostics" },
-    { id:"sources",     label:"Data",       icon:"🔌", section:"Diagnostics" }
+    { id:"sources",     label:"Data",       icon:"🔌", section:"Diagnostics" },
+    { id:"ipo",         label:"IPO",        icon:"📐", section:"Listing" }
   ];
+  if (FR.cards && FR.cards.present) {
+    var _ccNavAt = NAV.map(function(n){ return n.id; }).indexOf("statutory") + 1;
+    NAV.splice(_ccNavAt, 0, { id:"cards", label:"Cards", icon:"💳", section:"Working capital", count:(FR.cards.cards||[]).length, crit:(FR.cards.dueItems||[]).filter(function(g){ return g.days <= 3; }).length });
+  }
 
   var sbEl = document.getElementById("sb-nav");
   var sections = {};
@@ -2109,6 +2248,31 @@ body{
   window.openSidebar = function(){document.getElementById("sidebar").classList.add("open");document.getElementById("overlay").classList.add("on");};
   window.closeSidebar = function(){document.getElementById("sidebar").classList.remove("open");document.getElementById("overlay").classList.remove("on");};
 
+  // All-vendor CP breakdown, India vs International (bars scaled to the
+  // largest vendor; label shows true share of total CP).
+  var _vb = FR.vendorCpBreakdown;
+  var vcpExtra = '';
+  if (_vb && ((_vb.india || []).length || (_vb.international || []).length)) {
+    var _vbMax = 0;
+    (_vb.india || []).concat(_vb.international || []).forEach(function(v){ if (v.pct > _vbMax) _vbMax = v.pct; });
+    var _vcpCol = function(title, rows, total) {
+      var h = '<div class="vcp-col"><div class="vcp-col-head"><span class="vcp-col-title">' + title + '</span>'
+        + '<span class="vcp-col-total">' + fmt(total) + ' · ' + (_vb.totalCp ? Math.round(total / _vb.totalCp * 100) : 0) + '%</span></div>';
+      (rows || []).forEach(function(v){
+        var fillCls = v.pct > 0.30 ? ' breach' : v.pct > 0.20 ? ' warn' : '';
+        h += '<div class="vcp-row"><div class="vcp-row-top">'
+          + '<span class="vcp-name">' + esc(v.name) + ' <span>· ' + (v.n || 1) + (v.n > 1 ? ' projects' : ' project') + (v.regions ? ' · ' + esc(v.regions) : '') + '</span></span>'
+          + '<span class="vcp-val">' + (v.pct * 100).toFixed(1) + '% · ' + fmt(v.cp) + '</span></div>'
+          + '<div class="vcp-bar"><div class="vcp-bar-fill' + fillCls + '" style="width:' + (_vbMax ? Math.round(v.pct / _vbMax * 100) : 0) + '%"></div></div></div>';
+      });
+      return h + '</div>';
+    };
+    vcpExtra = '<div class="vcp-grid">'
+      + _vcpCol('India', _vb.india, _vb.indiaTotal)
+      + _vcpCol('International', _vb.international, _vb.intlTotal)
+      + '</div>';
+  }
+
   var dimensions = [
     { name: "Cash Runway", score: dim1, max: 25,
       description: "How many months you can survive at current burn without any new revenue collection. The single most important early-warning metric.",
@@ -2128,12 +2292,13 @@ body{
       source: "CRISIL India Construction Sector Report 2024. ReadyRatios industry benchmarks." },
     { name: "Vendor Concentration", score: dim3, max: 20,
       description: "Dependency risk. If your top fabricator tightens credit, delays a project, or walks — how exposed are you? Tightly correlates with negotiation leverage.",
-      formula: "Largest vendor's share of total Cost of Production (CP)",
+      formula: "Largest vendor's share of 12-month tracked project CP (structural mix — who builds your stands)",
       benchmark: "<30% single vendor",
       industry: "Exhibition build (global): 25-40% typical. Best-in-class: 15-25% with 3+ qualified partners. Ceiling before concentration risk: 30%.",
-      actual: (FR.saltwaterConcentration * 100).toFixed(0) + "% Saltwater (live breach — confirmed " + fmt(FR.saltwaterOutstanding || 4393658) + " outstanding 15-Apr-26)",
-      gap: FR.saltwaterConcentration > 0.30 ? ((FR.saltwaterConcentration - 0.30) * 100).toFixed(0) + " pts above ceiling. Onboard 2-3 alternate fabricators." : "Within target",
-      source: "ESSA supplier diversification guidance. Freeman vendor management framework." },
+      actual: (vendorConc * 100).toFixed(1) + "% " + esc(FR.vendorTopFabricator || "top vendor") + " (" + fmt(FR.vendorTopCp || 0) + " of " + fmt(FR.vendorCpTotal || 0) + " tracked CP) · Open-dues queue (cash timing, not dependency): " + esc(FR.vendorOpenDuesTop || "—") + " " + fmt(FR.vendorOpenDuesTopAmt || 0) + " of " + fmt(FR.vendorOpenDuesTotal || 0) + " · un-invoiced upcoming " + fmt(FR.vendorUpcomingUninvoiced || 0),
+      gap: vendorConc > 0.30 ? ((vendorConc - 0.30) * 100).toFixed(0) + " pts above ceiling. Onboard 2-3 alternate fabricators." : "Within target",
+      source: "ESSA supplier diversification guidance. Freeman vendor management framework.",
+      extra: vcpExtra },
     { name: "AP vs AR Ratio", score: dim4, max: 15,
       description: "Working capital balance. When you owe more than you're owed, you're effectively financing vendors with prayer. >2x means insolvency risk.",
       formula: "Total Accounts Payable ÷ Total Accounts Receivable",
@@ -2155,7 +2320,7 @@ body{
       formula: "Largest client's share of FY26-27 revenue",
       benchmark: "<25% single client",
       industry: "McKinsey resilient-firm benchmark: <15%. ESSA exhibition industry ceiling: <25%. Beyond 40%: strategic dependency.",
-      actual: (FR.secureConcentration * 100).toFixed(1) + "% Secure Meters (" + fmt(FR.secureRevenue || 0) + " of " + fmt(FR.pipelineTotal || 0) + " FY27 pipeline)",
+      actual: (FR.secureConcentration * 100).toFixed(1) + "% Secure Meters (" + fmt(FR.secureRevenue || 0) + " of " + fmt(FR.pipelineTotal || 0) + " live FY27 pipeline, lost/junk excluded)",
       gap: FR.secureConcentration > 0.25 ? ((FR.secureConcentration - 0.25) * 100).toFixed(0) + " pts above ceiling. Diversify pipeline." : "Within target",
       source: "ESSA industry benchmarks. McKinsey 'Why resilient firms invest differently' 2023." }
   ];
@@ -2178,6 +2343,41 @@ body{
   var odRemaining = (FR.odFacility || 0) - (FR.odUtilized || 0);
   var odPct = FR.odFacility ? Math.round((FR.odUtilized / FR.odFacility) * 100) : 0;
   var odLevel = odPct >= 90 ? 'danger' : odPct >= 60 ? 'warn' : '';
+
+  // ── Credit cards (HDFC BizBlack) — all numbers precomputed in FR.cards ──
+  var CCB = (FR.cards && FR.cards.present) ? FR.cards : null;
+  var _ccMON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function ccFmtD(iso){ var p = String(iso).slice(0,10).split('-'); return (+p[2]) + ' ' + _ccMON[(+p[1]) - 1]; }
+  function ccLabel(l4, full){
+    var c = ((CCB && CCB.cards) || []).filter(function(k){ return k.last4 === l4; })[0];
+    var n = c && c.holder ? (full ? c.holder : c.holder.split(' ')[0]) : '';
+    return (n ? n + ' ' : '') + '·' + l4;
+  }
+  var ccDemoTag = (CCB && CCB.isDemo) ? '<span class="demo-tag">DEMO</span>' : '';
+  var ccStripHtml = '';
+  if (CCB) {
+    var ccA = CCB.assumptions, ccT = CCB.totals;
+    var ccLvl = ccT.utilPct >= 90 ? 'danger' : ccT.utilPct >= ccA.utilisationAlertPct ? 'warn' : '';
+    var ccOpen = (CCB.txns || []).filter(function(t){ return t.clearBy; })
+      .slice().sort(function(a, b){ return a.clearBy < b.clearBy ? -1 : a.clearBy > b.clearBy ? 1 : 0; });
+    var ccRows = ccOpen.slice(0, 6).map(function(t){
+      var col = t.clearByDays < 0 ? '#ff8a73' : t.clearByDays <= 7 ? '#f5c97a' : 'inherit';
+      return '<div style="padding:5px 0;border-top:1px solid rgba(255,255,255,.1)">'
+        + '<div style="display:flex;justify-content:space-between;gap:10px;font-size:12px"><span style="opacity:.9">' + esc(t.desc) + '</span><b style="white-space:nowrap">' + fmtP(t.amt) + '</b></div>'
+        + '<div style="font-size:11px;opacity:.8">' + esc(ccLabel(t.card)) + ' · used ' + ccFmtD(t.date) + ' → <span style="color:' + col + ';font-weight:700">clear by ' + ccFmtD(t.clearBy) + ' · ' + t.clearByDays + 'd left</span> <span style="opacity:.6">(' + esc(t.basis) + ')</span></div></div>';
+    }).join('') + (ccOpen.length > 6 ? '<div style="font-size:11px;opacity:.6;padding-top:4px">+' + (ccOpen.length - 6) + ' more on the Cards tab</div>' : '');
+    ccStripHtml = '<div class="od-strip">'
+      + '<div class="od-strip-top"><span class="od-strip-label">Credit Cards · HDFC BizBlack ×' + CCB.cards.length + ccDemoTag + '</span><span class="od-strip-pct ' + ccLvl + '">' + ccT.utilPct + '% used</span></div>'
+      + '<div class="od-bar"><div class="od-bar-fill ' + ccLvl + '" style="width:' + Math.min(ccT.utilPct, 100) + '%"></div></div>'
+      + '<div class="od-strip-bot">'
+      +   '<div class="od-cell"><div class="od-cell-n">' + fmtP(ccT.outstanding) + '</div><div class="od-cell-l">Outstanding</div></div>'
+      +   '<div class="od-cell"><div class="od-cell-n green">' + fmtP(ccT.available) + '</div><div class="od-cell-l">Available</div></div>'
+      +   '<div class="od-cell"><div class="od-cell-n">' + fmtP(ccT.limit) + '</div><div class="od-cell-l">Limit</div></div>'
+      + '</div>'
+      + (ccOpen.length ? '<div class="acct-txn-head" style="margin-top:10px">Clear card payments by · use + ' + (ccA.floatDaysMax - ccA.clearBufferDays) + 'd (' + ccA.floatDaysMax + 'd − ' + ccA.clearBufferDays + 'd buffer)</div>' + ccRows : '')
+      + '<div class="acct-strip-meta" style="margin-top:8px">' + ccT.points.toLocaleString('en-IN') + ' reward pts · card bill is a payable — settle in full from 0247 · <b>use card limit before OD</b></div>'
+      + '</div>';
+  }
 
   // ── HDFC 0247 current-account tile (balance + latest transactions) ──
   var bankTxns = (FR.bankTransactions || []).filter(function(t){ return t.direction !== 'snapshot'; })
@@ -2203,11 +2403,10 @@ body{
     if (/DD Cancelled/i.test(c)) return 'refund received';
     return '';
   }
-  var acctTxnHtml = '';
-  bankTxns.slice(0, 4).forEach(function(t){
+  function _acctTxnRow(t) {
     var isIn = t.direction === 'credit';
     var ins = _txnInsight(t);
-    acctTxnHtml += '<div class="acct-txn">'
+    return '<div class="acct-txn">'
       + '<div class="acct-txn-dir ' + (isIn ? 'in' : 'out') + '">' + (isIn ? '↑' : '↓') + '</div>'
       + '<div class="acct-txn-body">'
       +   '<div class="acct-txn-name">' + esc(_cleanParty(t)) + '</div>'
@@ -2216,7 +2415,21 @@ body{
       + '<div class="acct-txn-amt ' + (isIn ? 'in' : 'out') + '">' + (isIn ? '+' : '−') + fmtP(t.amount || 0)
       +   '<span class="acct-txn-date">' + esc(String(t.date || '').slice(5)) + '</span></div>'
       + '</div>';
-  });
+  }
+  // Latest 4 visible; the rest of the parsed HDFC window behind a toggle
+  // (same expander pattern as the Priority list).
+  var acctTxnHtml = '';
+  bankTxns.slice(0, 4).forEach(function(t){ acctTxnHtml += _acctTxnRow(t); });
+  var _txnExtra = bankTxns.slice(4);
+  if (_txnExtra.length) {
+    acctTxnHtml += '<div class="pri-extra pri-hidden">';
+    _txnExtra.forEach(function(t){ acctTxnHtml += _acctTxnRow(t); });
+    acctTxnHtml += '</div>'
+      + '<button class="pri-more-btn" onclick="'
+      + "var ex=this.previousElementSibling;var open=ex.classList.toggle('pri-hidden')===false;"
+      + "this.textContent=open?'Show less':'Show " + _txnExtra.length + " more transactions';"
+      + '">Show ' + _txnExtra.length + ' more transactions</button>';
+  }
   var _bt = FR.bankTotals || {};
   var _internalOut = bankTxns.filter(function(t){ return /CA to OD|trf CA/i.test(String(t.counterparty || '')); })
     .reduce(function(s, t){ return s + (t.amount || 0); }, 0);
@@ -2277,6 +2490,7 @@ body{
     +     '<div class="od-cell"><div class="od-cell-n">' + fmtP(FR.odFacility) + '</div><div class="od-cell-l">Limit</div></div>'
     +   '</div>'
     + '</div>'
+    + ccStripHtml
     + acctHtml
     + '</div>';
 
@@ -2298,30 +2512,101 @@ body{
     var dB = parseInt(((b.text||"").match(/(\d+)d overdue/)||["","0"])[1]);
     return dB - dA;
   });
-  var priorityHtml = '<div class="section-label">Priority <em>today</em></div>';
+  // Group repeat-vendor actions (e.g. 8x "Pay Nandu") into one row so the
+  // list doesn't scroll forever — same vendor + same action type collapse
+  // into "{vendor} · Nx" with the amounts summed and earliest due date kept.
+  var priRows = []; // {icon, cls, text} in display order
+  var priGroups = {}; // key -> group accumulator
+  var priGroupOrder = [];
   sortedActions.forEach(function(a) {
+    var text = a.text || "";
+    var iconStr = String(a.icon || "");
+    var m;
+    if ((m = text.match(/^(Confirm|Pay) (.+?)(?: payment)? · ₹([\d,]+\.?\d*) · (due in (\d+)d|(\d+)d overdue|due (\S+))/))) {
+      var verb = m[1], vendor = m[2], amt = parseFloat(m[3].replace(/,/g, ""));
+      var dueDays = m[5] != null ? parseInt(m[5]) : (m[6] != null ? -parseInt(m[6]) : null);
+      var dueDate = m[7] || null;
+      var key = verb + "|" + vendor + "|" + (dueDays != null && dueDays < 0 ? "overdue" : "upcoming");
+      if (!priGroups[key]) {
+        priGroups[key] = { verb: verb, vendor: vendor, amt: 0, count: 0, icon: iconStr, minDueDays: null, dueDate: dueDate };
+        priGroupOrder.push(key);
+      }
+      var g = priGroups[key];
+      g.amt += amt; g.count += 1;
+      if (dueDays != null) g.minDueDays = g.minDueDays == null ? dueDays : (dueDays < 0 ? Math.max(g.minDueDays, dueDays) : Math.min(g.minDueDays, dueDays));
+    } else {
+      priRows.push({ icon: iconStr, raw: a, grouped: false });
+    }
+  });
+  priGroupOrder.forEach(function(key) {
+    var g = priGroups[key];
+    var countSuffix = g.count > 1 ? " · " + g.count + "x" : "";
+    var due = g.minDueDays == null ? (g.dueDate ? "due " + g.dueDate : "") :
+              g.minDueDays < 0 ? Math.abs(g.minDueDays) + "d overdue" :
+              (g.count > 1 ? "earliest due " + g.minDueDays + "d" : "due in " + g.minDueDays + "d");
+    var verbLabel = g.verb === "Confirm" ? "Confirm " + g.vendor + " payment" + countSuffix : "Pay " + g.vendor + countSuffix;
+    priRows.push({ icon: g.icon, raw: { icon: g.icon, text: verbLabel + " · " + fmt(g.amt) + " · " + due }, grouped: true, sortDue: g.minDueDays == null ? 0 : g.minDueDays });
+  });
+  // Re-sort: ungrouped criticals (Chase/Cash critical) first in original order,
+  // then grouped rows by urgency (overdue first, then soonest due).
+  var priCritical = priRows.filter(function(r) { return !r.grouped; });
+  var priGrouped = priRows.filter(function(r) { return r.grouped; }).sort(function(x, y) { return x.sortDue - y.sortDue; });
+  var priFinal = priCritical.concat(priGrouped);
+  if (CCB && (CCB.dueItems || []).length) {
+    // Card dues (clear-by inside the priority window, or overdue) — pinned on top, soonest first.
+    var priCard = CCB.dueItems.map(function(g){
+      var when = g.days < 0 ? Math.abs(g.days) + 'd overdue' : g.days === 0 ? 'due today' : 'due in ' + g.days + 'd';
+      var ic = g.severity === 'red' ? '🔴' : '🟠';
+      return { icon: ic, grouped: false, card: true,
+        raw: { icon: ic, text: 'Pay HDFC card ' + ccLabel(g.card, true) + ' · ' + fmt(g.amt) + ' · ' + when + ' (clear by ' + ccFmtD(g.date) + ')' } };
+    });
+    priFinal = priCard.concat(priCritical, priGrouped);
+  }
+
+  var PRI_VISIBLE = 6;
+  var priorityHtml = '<div class="section-label">Priority <em>today</em></div>';
+  function renderPriRow(r) {
+    var a = r.raw;
     var iconStr = String(a.icon || "");
     var cls = iconStr.indexOf("🔴") !== -1 ? "critical" :
               iconStr.indexOf("🟠") !== -1 ? "warning" :
               iconStr.indexOf("🟡") !== -1 ? "watch" :
               iconStr.indexOf("✅") !== -1 ? "success" : "";
-    priorityHtml += '<div class="action-card ' + cls + '">'
+    return '<div class="action-card ' + cls + '">'
       + '<div class="action-icon">' + esc(iconStr || "→") + '</div>'
       + '<div class="action-text">' + esc(a.text) + '</div>'
       + '</div>';
-  });
+  }
+  priFinal.slice(0, PRI_VISIBLE).forEach(function(r) { priorityHtml += renderPriRow(r); });
+  var priExtra = priFinal.slice(PRI_VISIBLE);
+  if (priExtra.length) {
+    priorityHtml += '<div class="pri-extra pri-hidden">';
+    priExtra.forEach(function(r) { priorityHtml += renderPriRow(r); });
+    priorityHtml += '</div>';
+    priorityHtml += '<button class="pri-more-btn" onclick="'
+      + "var ex=this.previousElementSibling;var open=ex.classList.toggle('pri-hidden')===false;"
+      + "this.textContent=open?'Show less':'Show " + priExtra.length + " more';"
+      + '">Show ' + priExtra.length + ' more</button>';
+  }
 
   ovHtml += '<div class="ov-split fade d1">'
     + '<div class="ov-col ov-col-hero">' + heroHtml + '</div>'
     + '<div class="ov-col ov-col-priority">' + priorityHtml + '</div>'
     + '</div>';
 
-  var netPosition = totalRecv - totalPay - totalStat;
+  // Net 30d = 30-day-scoped FLOWS only: open receivables − payables due ≤30d
+  // − unpaid statutory due ≤30d. (Fix 05-Aug-2026: previously summed ALL
+  // statutory incl. ₹56.9L already-paid rows and dues 3 months out → −₹1.3Cr.)
+  var totalPay30 = (FR.payables||[]).filter(function(p){
+    var dl = p.daysLeft != null ? p.daysLeft : (p.daysToDue != null ? p.daysToDue : 999);
+    return dl <= 30;
+  }).reduce(function(s,p){return s+(p.amount||p.balance||0);},0);
+  var netPosition = totalRecv - totalPay30 - statDue30;
   ovHtml += '<div class="stats-row fade d2">'
     + '<div class="stat"><div class="stat-label">Collectible</div><div class="stat-val green">' + fmt(totalRecv) + '</div><div class="stat-hint">' + (FR.receivables||[]).length + ' clients</div></div>'
     + '<div class="stat"><div class="stat-label">Payable</div><div class="stat-val red">' + fmt(totalPay) + '</div><div class="stat-hint">' + (FR.payables||[]).length + ' vendors</div></div>'
-    + '<div class="stat"><div class="stat-label">Statutory 30d</div><div class="stat-val amber">' + fmt(totalStat) + '</div><div class="stat-hint">GST + TDS</div></div>'
-    + '<div class="stat"><div class="stat-label">Net 30d</div><div class="stat-val ' + (netPosition>=0?'green':'red') + '">' + fmtSigned(netPosition) + '</div><div class="stat-hint">Position</div></div>'
+    + '<div class="stat"><div class="stat-label">Statutory 30d</div><div class="stat-val amber">' + fmt(statDue30) + '</div><div class="stat-hint">GST + TDS unpaid</div></div>'
+    + '<div class="stat"><div class="stat-label">Net 30d</div><div class="stat-val ' + (netPosition>=0?'green':'red') + '">' + fmtSigned(netPosition) + '</div><div class="stat-hint">30d flows, excl. cash</div></div>'
     + '</div>';
 
   /* TREASURY SWEEP — bidirectional recommendation card */
@@ -2559,7 +2844,7 @@ body{
   if (annual.totalIn) {
     var annCls = annual.netAnnual > 0 ? "success" : "critical";
     cfHtml += '<div class="annual-hero">'
-      + '<div class="annual-label">Annual Net Cash Flow</div>'
+      + '<div class="annual-label">FY 26-27 Net · YTD actuals + forecast</div>'
       + '<div class="annual-value ' + annCls + '">' + fmtSigned(annual.netAnnual) + '</div>'
       + '<div class="annual-breakdown">'
       +   '<div><div class="annual-breakdown-label">Inflows</div><div class="annual-breakdown-val in">+' + fmt(annual.totalIn) + '</div></div>'
@@ -2617,7 +2902,7 @@ body{
       var conf = (m.confidence || "LOW").toLowerCase();
       var totalIn = m.inRecv + m.inPipeline;
       var totalOut = m.outVendors + m.outPayroll + m.outStatutory;
-      cfHtml += '<div class="month-card ' + netCls + '">'
+      cfHtml += '<div class="month-card ' + netCls + (m.actual ? ' actual' : '') + '">'
         + '<div class="month-head" onclick="this.parentElement.classList.toggle(\'open\');">'
         +   '<div class="month-head-left"><span class="month-label">' + esc(m.label) + '</span><span class="month-period">' + esc(m.period) + '</span></div>'
         +   '<div class="month-head-right">'
@@ -2676,16 +2961,26 @@ body{
   var recSorted = (FR.receivables || []).slice().sort(function(a,b){return b.daysOD-a.daysOD;});
   var recHtml = '<div class="page-title"><em>Collect</em></div>'
     + '<div class="page-sub">' + recSorted.length + ' open · ' + fmt(totalRecv) + ' total</div>';
-  if (!recSorted.length) recHtml += '<div class="empty-state"><div class="empty-state-icon">✓</div><div class="empty-state-text">All receivables current</div></div>';
-  recSorted.forEach(function(r) {
+  if (!recSorted.length) {
+    recHtml += '<div class="empty-state"><div class="empty-state-icon">✓</div><div class="empty-state-text">All receivables current</div></div>';
+  } else {
+    recHtml += '<div class="pay-toolbar"><div class="sort-toggle">'
+      + '<button id="rec-sort-client" class="on" onclick="window._setRecSort(\'client\')">By client</button>'
+      + '<button id="rec-sort-due" onclick="window._setRecSort(\'due\')">By due date</button>'
+      + '</div></div>'
+      + '<div id="rec-list"></div>'
+      + '<div class="pay-foot" id="rec-foot"></div>';
+  }
+  document.getElementById("page-receivables").innerHTML = recHtml;
+
+  // Flat row (due-date view) — same card as the old list.
+  function _recRowHtml(r) {
     var rowCls = r.daysOD > 30 ? "critical" : r.daysOD > 7 ? "warning" : r.daysOD > 0 ? "watch" : "success";
     var pill = r.daysOD > 30 ? '<span class="tag tag-red">' + r.daysOD + 'd overdue</span>' :
                r.daysOD > 0  ? '<span class="tag tag-amber">' + r.daysOD + 'd OD</span>' :
                                '<span class="tag tag-green">on time</span>';
-    // Project name renders between invoice and exec in the sub-line.
-    // Esc the show project; skip if absent so we don't get "· ·" gaps.
     var projPart = r.showProject ? ' · <span class="list-row-proj">' + esc(r.showProject) + '</span>' : '';
-    recHtml += '<div class="list-row ' + rowCls + '">'
+    return '<div class="list-row ' + rowCls + '">'
       + '<div class="list-row-main">'
       +   '<div class="list-row-title">' + esc(r.client) + pill + '</div>'
       +   '<div class="list-row-sub">' + esc(r.invoice || "") + projPart + ' · ' + esc(r.exec || "?") + (r.dueDate ? ' · due ' + esc(r.dueDate) : '') + '</div>'
@@ -2695,28 +2990,127 @@ body{
       +   '<div class="list-row-amount-sub">' + esc(r.collectionStatus || r.status || "") + '</div>'
       + '</div>'
       + '</div>';
-  });
-  document.getElementById("page-receivables").innerHTML = recHtml;
+  }
+
+  // Client groups: worst-overdue first (chase order), then earliest due.
+  var _recGroups = [];
+  (function() {
+    var byC = {};
+    recSorted.forEach(function(r) {
+      var k = r.client || "—";
+      if (!byC[k]) { byC[k] = { client: k, rows: [], amt: 0, maxOD: 0, minDue: "9999", owners: {} }; _recGroups.push(byC[k]); }
+      byC[k].rows.push(r);
+      byC[k].amt += (r.balance || 0);
+      if ((r.daysOD || 0) > byC[k].maxOD) byC[k].maxOD = r.daysOD || 0;
+      var due = r.dueDate || "9999";
+      if (due < byC[k].minDue) byC[k].minDue = due;
+      if (r.exec) byC[k].owners[r.exec] = 1;
+    });
+    _recGroups.sort(function(a, b) {
+      return b.maxOD - a.maxOD || (a.minDue < b.minDue ? -1 : a.minDue > b.minDue ? 1 : 0) || b.amt - a.amt;
+    });
+  })();
+
+  window._recSortMode = "client";
+  window._recOpen = {};
+  window._toggleRecGroup = function(i) { window._recOpen[i] = !window._recOpen[i]; window._renderRecList(); };
+  window._setRecSort = function(m) {
+    window._recSortMode = m;
+    var bc = document.getElementById("rec-sort-client"), bd = document.getElementById("rec-sort-due");
+    if (bc) bc.className = m === "client" ? "on" : "";
+    if (bd) bd.className = m === "due" ? "on" : "";
+    window._renderRecList();
+  };
+  window._renderRecList = function() {
+    var el = document.getElementById("rec-list");
+    if (!el) return;
+    var h = "";
+    if (window._recSortMode === "client") {
+      _recGroups.forEach(function(g, i) {
+        var cls = g.maxOD > 30 ? "critical" : g.maxOD > 7 ? "warning" : g.maxOD > 0 ? "warning" : "";
+        var pill = g.maxOD > 30 ? '<span class="tag tag-red">' + g.maxOD + 'd overdue</span>' :
+                   g.maxOD > 0  ? '<span class="tag tag-amber">' + g.maxOD + 'd OD</span>' :
+                                  '<span class="tag tag-green">on time</span>';
+        var owners = Object.keys(g.owners).join(", ");
+        h += '<div class="vendor-group ' + cls + (window._recOpen[i] ? ' open' : '') + '">'
+          + '<div class="vendor-group-head" onclick="window._toggleRecGroup(' + i + ')">'
+          +   '<div class="vendor-group-name">' + esc(g.client) + ' <span class="vendor-group-count">· ' + g.rows.length + (g.rows.length > 1 ? ' invoices' : ' invoice') + (owners ? ' · ' + esc(owners) : '') + '</span></div>'
+          +   pill
+          +   '<div class="vendor-group-amt">' + fmt(g.amt) + '</div>'
+          +   '<span class="vendor-chev">›</span>'
+          + '</div>';
+        if (window._recOpen[i]) {
+          h += '<div class="vendor-group-body">';
+          g.rows.slice().sort(function(a, b) { return (b.daysOD || 0) - (a.daysOD || 0) || (b.balance || 0) - (a.balance || 0); }).forEach(function(r) {
+            h += '<div class="vendor-inv">'
+              + '<div class="vendor-inv-l">' + esc(r.showProject || r.invoice || "") + (r.dueDate ? ' · due ' + esc(String(r.dueDate).slice(5)) : '') + (r.exec ? ' · ' + esc(r.exec) : '') + '</div>'
+              + '<div class="vendor-inv-r">' + fmt(r.balance || 0) + '</div>'
+              + '</div>';
+          });
+          h += '</div>';
+        }
+        h += '</div>';
+      });
+    } else {
+      var byDue = {};
+      var dueKeys = [];
+      recSorted.forEach(function(r) {
+        var k = r.dueDate || "no date";
+        if (!byDue[k]) { byDue[k] = []; dueKeys.push(k); }
+        byDue[k].push(r);
+      });
+      dueKeys.sort();
+      dueKeys.forEach(function(dk) {
+        var rows = byDue[dk].slice().sort(function(a, b) { return (b.balance || 0) - (a.balance || 0); });
+        var tot = rows.reduce(function(s, r) { return s + (r.balance || 0); }, 0);
+        var od = (rows[0].daysOD || 0) > 0;
+        h += '<div class="due-head"><span class="due-head-label"' + (od ? ' style="color:var(--red)"' : '') + '>due ' + esc(String(dk).slice(5) || dk) + (od ? ' · overdue' : '') + '</span>'
+          + '<span class="due-head-total">' + fmt(tot) + '</span></div>';
+        rows.forEach(function(r) { h += _recRowHtml(r); });
+      });
+    }
+    el.innerHTML = h;
+    var foot = document.getElementById("rec-foot");
+    if (foot) {
+      var odTot = 0, odN = 0, big = null;
+      recSorted.forEach(function(r) {
+        if ((r.daysOD || 0) > 0) { odTot += (r.balance || 0); odN++; }
+        if (!big || (r.balance || 0) > (big.balance || 0)) big = r;
+      });
+      foot.innerHTML = '<span' + (odTot > 0 ? ' style="color:var(--red)"' : '') + '>Overdue now: ' + fmt(odTot) + (odN ? ' · ' + odN + ' invoices' : '') + '</span>'
+        + (big ? '<span class="heavy">Biggest: ' + esc((big.client || "").split(" ")[0]) + ' ' + fmt(big.balance || 0) + (big.dueDate ? ' · due ' + esc(String(big.dueDate).slice(5)) : '') + '</span>' : '');
+    }
+  };
+  if (recSorted.length) window._renderRecList();
 
   /* PAYABLES */
   var paySorted = (FR.payables || []).filter(function(p){return (p.balance||p.amount||0) > 0;}).slice().sort(function(a,b){return a.daysLeft-b.daysLeft;});
   var payHtml = '<div class="page-title"><em>Pay</em></div>'
     + '<div class="page-sub">' + paySorted.length + ' open · ' + fmt(totalPay) + ' total</div>';
-  if (!paySorted.length) payHtml += '<div class="empty-state"><div class="empty-state-icon">✓</div><div class="empty-state-text">No open payables</div></div>';
-  paySorted.forEach(function(p) {
+  if (!paySorted.length) {
+    payHtml += '<div class="empty-state"><div class="empty-state-icon">✓</div><div class="empty-state-text">No open payables</div></div>';
+  } else {
+    payHtml += '<div class="pay-toolbar"><div class="sort-toggle">'
+      + '<button id="pay-sort-vendor" class="on" onclick="window._setPaySort(\'vendor\')">By vendor</button>'
+      + '<button id="pay-sort-due" onclick="window._setPaySort(\'due\')">By due date</button>'
+      + '</div></div>'
+      + '<div id="pay-list"></div>'
+      + '<div class="pay-foot" id="pay-foot"></div>';
+  }
+  document.getElementById("page-payables").innerHTML = payHtml;
+
+  // Flat row (due-date view) — same card as the old list.
+  function _payRowHtml(p) {
     var rowCls = p.daysLeft < 0 ? "critical" : p.daysLeft <= 7 ? "warning" : p.daysLeft <= 14 ? "watch" : "";
     var pill = p.daysLeft < 0 ? '<span class="tag tag-red">' + Math.abs(p.daysLeft) + 'd late</span>' :
                p.daysLeft <= 7 ? '<span class="tag tag-amber">' + p.daysLeft + 'd left</span>' :
                                  '<span class="tag tag-neutral">' + p.daysLeft + 'd left</span>';
-    // Flexibility tag (new)
-    var flex = p.flexibility || "can-delay-7d";  // default if Sonal hasn't tagged
+    var flex = p.flexibility || "can-delay-7d";
     var flexLabels = { "must-pay": "must pay", "can-delay-7d": "delay 7d", "can-delay-30d": "delay 30d" };
     var flexTag = '<span class="flex-tag ' + flex + '">' + flexLabels[flex] + '</span>';
-    // Project name renders between invoice and approver in the sub-line,
-    // mirroring the Collect tab. Skip if absent so we don't get "· ·" gaps.
     var pProj = p.showProject ? ' · <span class="list-row-proj">' + esc(p.showProject) + '</span>' : '';
     var pApprover = p.approver ? ' · ' + esc(p.approver) : '';
-    payHtml += '<div class="list-row ' + rowCls + '">'
+    return '<div class="list-row ' + rowCls + '">'
       + '<div class="list-row-main">'
       +   '<div class="list-row-title">' + esc(p.vendor) + pill + flexTag + '</div>'
       +   '<div class="list-row-sub">' + esc(p.invoice || "") + pProj + pApprover + (p.due ? ' · due ' + esc(p.due) : '') + '</div>'
@@ -2727,31 +3121,312 @@ body{
       +   '<div class="list-row-amount-sub">' + esc(p.type || "") + '</div>'
       + '</div>'
       + '</div>';
-  });
-  document.getElementById("page-payables").innerHTML = payHtml;
+  }
+
+  // Vendor groups: sorted by urgency (earliest due) then size.
+  var _payGroups = [];
+  (function() {
+    var byV = {};
+    paySorted.forEach(function(p) {
+      var k = p.vendor || "—";
+      if (!byV[k]) { byV[k] = { vendor: k, rows: [], amt: 0, minDays: 9999, allMustPay: true }; _payGroups.push(byV[k]); }
+      byV[k].rows.push(p);
+      byV[k].amt += (p.amount || p.balance || 0);
+      var dl = p.daysLeft != null ? p.daysLeft : 9999;
+      if (dl < byV[k].minDays) byV[k].minDays = dl;
+      if ((p.flexibility || "") !== "must-pay") byV[k].allMustPay = false;
+    });
+    _payGroups.sort(function(a, b) { return a.minDays - b.minDays || b.amt - a.amt; });
+  })();
+
+  window._paySortMode = "vendor";
+  window._payOpen = {};
+  window._togglePayGroup = function(i) { window._payOpen[i] = !window._payOpen[i]; window._renderPayList(); };
+  window._setPaySort = function(m) {
+    window._paySortMode = m;
+    var bv = document.getElementById("pay-sort-vendor"), bd = document.getElementById("pay-sort-due");
+    if (bv) bv.className = m === "vendor" ? "on" : "";
+    if (bd) bd.className = m === "due" ? "on" : "";
+    window._renderPayList();
+  };
+  window._renderPayList = function() {
+    var el = document.getElementById("pay-list");
+    if (!el) return;
+    var h = "";
+    if (window._paySortMode === "vendor") {
+      _payGroups.forEach(function(g, i) {
+        var cls = g.minDays < 0 ? "critical" : g.minDays <= 7 ? "warning" : "";
+        var pill = g.minDays < 0 ? '<span class="tag tag-red">' + Math.abs(g.minDays) + 'd late</span>' :
+                   g.minDays <= 7 ? '<span class="tag tag-amber">' + (g.rows.length > 1 ? "earliest " : "") + g.minDays + 'd</span>' :
+                                    '<span class="tag tag-neutral">' + g.minDays + 'd left</span>';
+        var flexTag = g.allMustPay ? '<span class="flex-tag must-pay">must pay</span>' : '';
+        h += '<div class="vendor-group ' + cls + (window._payOpen[i] ? ' open' : '') + '">'
+          + '<div class="vendor-group-head" onclick="window._togglePayGroup(' + i + ')">'
+          +   '<div class="vendor-group-name">' + esc(g.vendor) + ' <span class="vendor-group-count">· ' + g.rows.length + (g.rows.length > 1 ? ' invoices' : ' invoice') + '</span></div>'
+          +   pill + flexTag
+          +   '<div class="vendor-group-amt">' + fmt(g.amt) + '</div>'
+          +   '<span class="vendor-chev">›</span>'
+          + '</div>';
+        if (window._payOpen[i]) {
+          h += '<div class="vendor-group-body">';
+          g.rows.slice().sort(function(a, b) { return (a.daysLeft ?? 999) - (b.daysLeft ?? 999) || (b.amount || 0) - (a.amount || 0); }).forEach(function(p) {
+            h += '<div class="vendor-inv">'
+              + '<div class="vendor-inv-l">' + esc(p.showProject || p.invoice || "") + (p.due ? ' · due ' + esc(String(p.due).slice(5)) : '') + '</div>'
+              + '<div class="vendor-inv-r">' + fmt(p.amount || p.balance || 0) + '</div>'
+              + '</div>';
+          });
+          h += '</div>';
+        }
+        h += '</div>';
+      });
+    } else {
+      var byDue = {};
+      var dueKeys = [];
+      paySorted.forEach(function(p) {
+        var k = p.due || "no date";
+        if (!byDue[k]) { byDue[k] = []; dueKeys.push(k); }
+        byDue[k].push(p);
+      });
+      dueKeys.sort();
+      dueKeys.forEach(function(dk) {
+        var rows = byDue[dk].slice().sort(function(a, b) { return (b.amount || 0) - (a.amount || 0); });
+        var tot = rows.reduce(function(s, p) { return s + (p.amount || p.balance || 0); }, 0);
+        var dl = rows[0].daysLeft;
+        h += '<div class="due-head"><span class="due-head-label">due ' + esc(String(dk).slice(5) || dk) + (dl != null ? ' · ' + (dl < 0 ? Math.abs(dl) + 'd late' : dl + 'd') : '') + '</span>'
+          + '<span class="due-head-total">' + fmt(tot) + '</span></div>';
+        rows.forEach(function(p) { h += _payRowHtml(p); });
+      });
+    }
+    el.innerHTML = h;
+    var foot = document.getElementById("pay-foot");
+    if (foot) {
+      var due7 = paySorted.filter(function(p) { return (p.daysLeft ?? 999) <= 7; }).reduce(function(s, p) { return s + (p.amount || p.balance || 0); }, 0);
+      var heavy = null, heavyAmt = 0, dueTot = {};
+      paySorted.forEach(function(p) {
+        var k = p.due || "?";
+        dueTot[k] = (dueTot[k] || 0) + (p.amount || p.balance || 0);
+        if (dueTot[k] > heavyAmt) { heavyAmt = dueTot[k]; heavy = k; }
+      });
+      foot.innerHTML = '<span>Next 7 days: ' + fmt(due7) + '</span>'
+        + (heavy ? '<span class="heavy">Heaviest day: ' + esc(String(heavy).slice(5)) + ' · ' + fmt(heavyAmt) + '</span>' : '');
+    }
+  };
+  if (paySorted.length) window._renderPayList();
 
   /* STATUTORY */
   var statSorted = (FR.statutory || []).slice().sort(function(a,b){return (a.daysLeft??a.daysToDue??0)-(b.daysLeft??b.daysToDue??0);});
+  var _statUnpaidRows = statSorted.filter(function(s){ return (s.status || "").toLowerCase() !== "filed"; });
+  var _statFiledRows = statSorted.filter(function(s){ return (s.status || "").toLowerCase() === "filed"; });
+  var _statFiledTot = _statFiledRows.reduce(function(t,s){ return t + (s.amount||s.amountPayable||0); }, 0);
   var statHtml = '<div class="page-title"><em>Statutory</em></div>'
-    + '<div class="page-sub">' + statSorted.length + ' obligations · ' + fmt(totalStat) + ' due</div>';
-  if (!statSorted.length) statHtml += '<div class="empty-state"><div class="empty-state-icon">✓</div><div class="empty-state-text">No open statutory items</div></div>';
-  statSorted.forEach(function(s) {
-    var rowCls = s.daysLeft < 0 ? "critical" : s.daysLeft <= 5 ? "warning" : s.daysLeft <= 14 ? "watch" : "";
-    var pill = s.daysLeft < 0 ? '<span class="tag tag-red">overdue ' + Math.abs(s.daysLeft) + 'd</span>' :
-               s.daysLeft <= 5 ? '<span class="tag tag-amber">' + s.daysLeft + 'd left</span>' :
-                                 '<span class="tag tag-neutral">' + s.daysLeft + 'd left</span>';
-    statHtml += '<div class="list-row ' + rowCls + '">'
+    + '<div class="page-sub">' + _statUnpaidRows.length + ' upcoming · ' + fmt(totalStat) + ' unpaid · ' + fmt(_statFiledTot) + ' filed FY-to-date</div>';
+  if (!statSorted.length) {
+    statHtml += '<div class="empty-state"><div class="empty-state-icon">✓</div><div class="empty-state-text">No open statutory items</div></div>';
+  } else {
+    statHtml += '<div class="pay-toolbar"><div class="sort-toggle">'
+      + '<button id="stat-sort-type" class="on" onclick="window._setStatSort(\'type\')">By type</button>'
+      + '<button id="stat-sort-due" onclick="window._setStatSort(\'due\')">By due date</button>'
+      + '</div></div>'
+      + '<div id="stat-list"></div>'
+      + '<div class="pay-foot" id="stat-foot"></div>';
+  }
+  document.getElementById("page-statutory").innerHTML = statHtml;
+
+  /* ── Credit cards: Statutory card-payment plan + Cards page (all from FR.cards) ── */
+  if (CCB) (function(){
+    var A = CCB.assumptions, cards = CCB.cards, txns = CCB.txns || [], plan = CCB.statutoryPlan || { rows: [] };
+    var T = CCB.totals;
+    var odFree = (FR.odFacility || 0) - (FR.odUtilized || 0);
+
+    // ---- Statutory tab: card payment plan (cards first, then OD) ----
+    var planRows = plan.rows.map(function(r){
+      var chips = r.routes.map(function(x){ return '<span class="cc-chip card">💳 ' + esc(ccLabel(x.card)) + ' ' + fmt(x.amt) + '</span>'; }).join('');
+      if (r.odAmt > 0) chips += '<span class="cc-chip">🏦 OD ' + fmt(r.odAmt) + '</span>';
+      var clr = r.routes.length ? r.routes.map(function(x){ return esc(ccLabel(x.card)) + ' clear by ' + ccFmtD(x.clearBy) + ' (' + x.days + 'd · ' + esc(x.basis) + ')'; }).join('<br>')
+        : (r.eligible ? '— card limit exhausted → OD' : '— not card-payable → OD');
+      return '<tr><td><b>' + esc(r.name) + '</b><br><span style="font-size:11px">' + esc(r.period) + ' · due ' + esc(r.due) + '</span></td><td>' + fmt(r.amount) + '</td><td>' + chips + '</td><td style="font-size:11px">' + clr + '</td></tr>';
+    }).join('');
+    var feeNote = plan.feeExceedsReward
+      ? '<div class="cc-note" style="background:var(--red-bg);border-color:var(--red-border)"><b style="color:var(--red)">Do not route tax via card:</b> the gateway fee in the sheet (' + A.gatewayFeePct + '%) is not below the effective reward (' + A.rewardPct + '%).</div>'
+      : (!plan.feeVerified ? '<div class="cc-note"><b>Check before routing:</b> the payment-gateway / convenience fee on GST (payment.gst.gov.in) and income-tax (eportal) card payments is <b>not yet confirmed</b>. If it exceeds the effective reward (' + A.rewardPct + '%' + (A.rewardPctSource === 'default' ? ', unconfirmed default' : '') + '), paying by card loses money — Sonal to enter it once in Card_Config → <code>card_gateway_fee_pct</code>.</div>' : '');
+    var planHtml = '<div class="cc-plan"><h4>💳 Card payment plan' + ccDemoTag + '</h4>'
+      + '<div style="font-size:12px;color:var(--text-primary);margin-bottom:6px"><b>Funding order (policy):</b> exhaust the card limits first, then OD, treasury last.</div>'
+      + '<div style="margin-bottom:8px"><span class="cc-chip card">① Card limit ' + fmt(T.available) + ' · up to ' + A.floatDaysMax + 'd interest-free · 5X</span><span class="cc-chip">② OD ' + fmt(odFree) + ' free · 12.5% p.a.</span><span class="cc-chip">③ Treasury · last resort</span></div>'
+      + '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Cards only work for card-accepting payees (GST, income tax, SmartPay bills, travel) — vendor transfers and payroll still go from 0247 / OD. Card limit refills only after the card bill is paid.</div>'
+      + (plan.rows.length ? '<div class="cc-scroll"><table class="cc-tbl"><tr><th>Obligation</th><th>Amount</th><th>Route</th><th>Clear card by (cash leaves 0247)</th></tr>' + planRows + '</table></div>'
+          + '<div style="font-size:12px;margin-top:8px;color:var(--text-primary)"><b>' + fmt(plan.cardRoutable) + '</b> routable to cards · est. reward ≈ <b>' + fmt(plan.estReward) + '</b> <span style="color:var(--text-muted)">(' + plan.rewardPct + '% effective' + (A.rewardPctSource === 'default' ? ', unconfirmed' : '') + ', 1 RP = ₹1)</span></div>'
+        : '<div style="font-size:12px;color:var(--text-muted)">No unpaid statutory obligations to route.</div>')
+      + feeNote
+      + '<div class="cc-note" style="background:var(--red-bg);border-color:var(--red-border)"><b style="color:var(--red)">Never revolve:</b> pay the card bill in full by the clear-by date from 0247 / OD (12.5% p.a.). Card revolving interest is far higher than OD, and a late card bill on a statutory payment is still a late payment.</div></div>';
+    var statPage = document.getElementById('page-statutory');
+    var sub = statPage.querySelector('.page-sub');
+    if (sub) sub.insertAdjacentHTML('afterend', planHtml); else statPage.insertAdjacentHTML('afterbegin', planHtml);
+
+    // ---- Cards page ----
+    var statOnCards = txns.filter(function(t){ return t.stat; }).reduce(function(a, t){ return a + t.amt; }, 0);
+    var h2 = '<div class="page-title"><em>Credit Cards</em>' + ccDemoTag + '</div>'
+      + '<div class="page-sub">HDFC BizBlack Metal ×' + cards.length + ' · ' + fmt(T.limit) + ' combined limit · for statutory + business travel' + (CCB.asOf ? ' · as of ' + ccFmtD(CCB.asOf) : '') + '</div>'
+      + (CCB.isDemo ? '<div class="cc-note"><b>DEMO DATA:</b> the Credit_Cards / Card_Txns tabs still hold placeholder rows (marked DEMO). Sonal to replace with actuals — this banner and the DEMO tags clear automatically.</div>' : '')
+      + ((CCB.warnings || []).filter(function(w){ return /stale|utilisation/.test(w); }).map(function(w){ return '<div class="cc-note"><b>⚠</b> ' + esc(w) + '</div>'; }).join(''))
+      + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px">'
+      +   '<div class="stat"><div class="stat-label">Outstanding</div><div class="stat-val amber">' + fmt(T.outstanding) + '</div><div class="stat-hint">' + T.utilPct + '% of limit</div></div>'
+      +   '<div class="stat"><div class="stat-label">Available</div><div class="stat-val green">' + fmt(T.available) + '</div><div class="stat-hint">spendable now</div></div>'
+      +   '<div class="stat"><div class="stat-label">Reward points</div><div class="stat-val accent">' + T.points.toLocaleString('en-IN') + '</div><div class="stat-hint">≈ ' + fmt(T.points * A.rpValueInr) + ' @ 1 RP = ₹1</div></div>'
+      +   '<div class="stat"><div class="stat-label">Statutory on cards</div><div class="stat-val">' + fmt(statOnCards) + '</div><div class="stat-hint">all logged spends</div></div>'
+      + '</div><div class="cc-grid">';
+    cards.forEach(function(c){
+      var lv = c.utilPct >= 90 ? 'danger' : c.utilPct >= A.utilisationAlertPct ? 'warn' : '';
+      var e = c.earliestClearBy;
+      h2 += '<div class="cc-card"><div class="cc-card-top"><span class="cc-card-name">' + esc(c.holder || c.product) + ' <span style="font-weight:400;color:var(--text-muted);font-size:11px">· ' + esc(c.product) + '</span></span><span class="cc-card-num">•••• ' + esc(c.last4) + '</span></div>'
+        + '<div class="cc-kv"><span>Outstanding</span><b>' + fmt(c.outstanding) + '</b></div>'
+        + '<div class="cc-bar"><i class="' + lv + '" style="width:' + Math.min(c.utilPct, 100) + '%"></i></div>'
+        + '<div class="cc-kv"><span>Available / Limit</span><b>' + fmt(c.available) + ' / ' + fmt(c.limit) + '</b></div>'
+        + '<div class="cc-kv"><span>Next statement → due</span><b>' + ccFmtD(c.nextStatement) + ' → ' + ccFmtD(c.nextDue) + '</b></div>'
+        + '<div class="cc-kv"><span>Earliest clear-by</span><b>' + (e ? ccFmtD(e.date) + ' · ' + e.days + 'd' : '—') + '</b></div>'
+        + '<div class="cc-kv"><span>Reward points</span><b>' + c.points.toLocaleString('en-IN') + '</b></div>'
+        + (c.welcomePct != null ? '<div class="cc-kv"><span>Welcome spend ' + fmt(c.welcomeTarget) + (c.welcomeDeadline ? ' by ' + ccFmtD(c.welcomeDeadline) : '') + '</span><b>' + (c.welcomePct >= 100 ? '✓ done' : c.welcomePct + '%') + '</b></div><div class="cc-bar"><i style="width:' + c.welcomePct + '%"></i></div>' : '')
+        + '</div>';
+    });
+    h2 += '</div>'
+      + '<div class="cc-sec">Spend ledger</div><div class="cc-scroll"><table class="cc-tbl"><tr><th>Date</th><th>Card</th><th>Description</th><th>Category</th><th>Amount</th><th>Clear by</th><th>Pts</th></tr>'
+      + txns.slice().sort(function(a, b){ return b.date < a.date ? -1 : b.date > a.date ? 1 : 0; }).map(function(t){
+          var clr = t.clearBy ? ccFmtD(t.clearBy) : (t.clearedOn ? 'paid ' + ccFmtD(t.clearedOn) + ' ✓' : '—');
+          return '<tr><td>' + ccFmtD(t.date) + '</td><td>' + esc(ccLabel(t.card)) + '</td><td>' + esc(t.desc) + (t.stat ? ' <span class="tag tag-amber">statutory</span>' : '') + '</td><td>' + esc(t.cat) + '</td><td>' + fmt(t.amt) + '</td><td>' + clr + '</td><td>' + t.points + '</td></tr>';
+        }).join('') + '</table></div>'
+      + '<div class="cc-sec">How this feeds the numbers</div>'
+      + '<div class="cc-note" style="background:var(--bg-secondary);border-color:var(--border)">'
+      +   '<b style="color:var(--text-primary)">Funding order:</b> for any card-payable item, exhaust card limit first (' + fmt(T.available) + ' available now), then size the OD draw to the remaining net gap.<br>'
+      +   '<b style="color:var(--text-primary)">Clear-by rule:</b> each spend must be cleared by use date + ' + (A.floatDaysMax - A.clearBufferDays) + ' days (' + A.floatDaysMax + 'd float − ' + A.clearBufferDays + 'd buffer), never later than HDFC\'s bill due date. Due items inside ' + A.priorityWindowDays + ' days (or overdue) appear in Priority today and the daily Telegram.<br>'
+      +   '<b style="color:var(--text-primary)">Cash view:</b> card bills are shown as due items here and in Priority today; they are not yet netted into the cash forecast / runway.<br>'
+      +   '<b style="color:var(--text-primary)">Guardrails:</b> alert at ≥' + A.utilisationAlertPct + '% utilisation · alert when due within ' + A.priorityWindowDays + ' days · alert if gateway fee ≥ reward % · stale-data alert if Credit_Cards as_of_date is &gt;2 days old.'
+      + '</div>'
+      + '<div class="cc-sec">What Sonal enters in the Cashflow Master sheet</div>'
+      + '<div class="cc-scroll"><table class="cc-tbl">'
+      +   '<tr><th>Tab</th><th>Columns</th><th>Cadence</th></tr>'
+      +   '<tr><td><code>Credit_Cards</code><br>1 row per card</td><td><code>card_last4 · card_holder · product · credit_limit · outstanding · available · reward_points · statement_day · due_gap_days · activated_on · welcome_spend_target · welcome_deadline · as_of_date · updated_by · notes</code></td><td>Daily with Cash_Position (update outstanding, points, as_of_date)</td></tr>'
+      +   '<tr><td><code>Card_Txns</code><br>1 row per spend</td><td><code>date · card_last4 · description · category · amount · linked_obligation · challan_ref · points_earned · notes · cleared_on</code></td><td>On each spend; fill <code>cleared_on</code> when the bill is paid</td></tr>'
+      +   '<tr><td><code>Card_Config</code></td><td><code>key · value · note</code> (reward %, gateway fee %, float days, buffer days, priority window, utilisation alert)</td><td>Once, then when T&amp;C change</td></tr>'
+      + '</table></div>'
+      + '<div class="cc-note"><b>Security:</b> the sheet and dashboard store the <b>last 4 digits only</b> — never the full card number, expiry or CVV.</div>';
+    document.getElementById('page-cards').innerHTML = h2;
+  })();
+
+  function _statPill(s) {
+    var isFiled = (s.status || "").toLowerCase() === "filed";
+    if (isFiled) return '<span class="tag tag-neutral">filed ✓</span>';
+    if (s.daysLeft < 0) return '<span class="tag tag-red">overdue ' + Math.abs(s.daysLeft) + 'd</span>';
+    if (s.daysLeft === 0) return '<span class="tag tag-red">due today</span>';
+    if (s.daysLeft <= 5) return '<span class="tag tag-amber">' + s.daysLeft + 'd left</span>';
+    return '<span class="tag tag-neutral">' + s.daysLeft + 'd left</span>';
+  }
+  function _statEst(s) {
+    return (s.isEstimate && (s.status || "").toLowerCase() !== "filed")
+      ? ' <span class="est-tag">EST</span>' : '';
+  }
+  function _statPeriod(s) {
+    var p = String(s.periodFor || "").slice(0, 7);
+    return p ? p + ' period' : (s.type || "");
+  }
+  function _statRowHtml(s) {
+    var isFiled = (s.status || "").toLowerCase() === "filed";
+    var rowCls = isFiled ? "stat-filed" : s.daysLeft <= 0 ? "critical" : s.daysLeft <= 5 ? "warning" : s.daysLeft <= 14 ? "watch" : "";
+    return '<div class="list-row ' + rowCls + '">'
       + '<div class="list-row-main">'
-      +   '<div class="list-row-title">' + esc(s.name) + pill + '</div>'
-      +   '<div class="list-row-sub">' + esc(s.type || "") + (s.due ? ' · due ' + esc(s.due) : '') + '</div>'
+      +   '<div class="list-row-title">' + esc(s.name) + _statPill(s) + _statEst(s) + '</div>'
+      +   '<div class="list-row-sub">' + esc(_statPeriod(s)) + (s.due ? (isFiled ? ' · paid ' : ' · due ') + esc(s.due) : '') + '</div>'
       + '</div>'
       + '<div class="list-row-right">'
       +   '<div class="list-row-amount">' + fmt(s.amount||s.amountPayable||0) + '</div>'
       +   '<div class="list-row-amount-sub">' + esc(s.status || "") + '</div>'
       + '</div>'
       + '</div>';
-  });
-  document.getElementById("page-statutory").innerHTML = statHtml;
+  }
+
+  // Type groups: header total = UNPAID only; filed history nested, muted.
+  var _statGroups = [];
+  (function() {
+    var byT = {};
+    statSorted.forEach(function(s) {
+      var k = s.name || "—";
+      if (!byT[k]) { byT[k] = { type: k, rows: [], unpaid: 0, unpaidN: 0, filedN: 0, minDays: 9999 }; _statGroups.push(byT[k]); }
+      var d = byT[k];
+      d.rows.push(s);
+      if ((s.status || "").toLowerCase() === "filed") { d.filedN++; }
+      else {
+        d.unpaid += (s.amount || s.amountPayable || 0);
+        d.unpaidN++;
+        if (s.daysLeft < d.minDays) d.minDays = s.daysLeft;
+      }
+    });
+    _statGroups.sort(function(a, b) { return a.minDays - b.minDays; });
+  })();
+
+  window._statSortMode = "type";
+  window._statOpen = {};
+  window._toggleStatGroup = function(i) { window._statOpen[i] = !window._statOpen[i]; window._renderStatList(); };
+  window._setStatSort = function(m) {
+    window._statSortMode = m;
+    var bt = document.getElementById("stat-sort-type"), bd = document.getElementById("stat-sort-due");
+    if (bt) bt.className = m === "type" ? "on" : "";
+    if (bd) bd.className = m === "due" ? "on" : "";
+    window._renderStatList();
+  };
+  window._renderStatList = function() {
+    var el = document.getElementById("stat-list");
+    if (!el) return;
+    var h = "";
+    if (window._statSortMode === "type") {
+      _statGroups.forEach(function(g, i) {
+        var cls = g.unpaidN === 0 ? "" : g.minDays <= 0 ? "critical" : g.minDays <= 5 ? "warning" : "";
+        var pill = g.unpaidN === 0 ? '<span class="tag tag-neutral">all filed</span>' :
+                   g.minDays < 0 ? '<span class="tag tag-red">overdue ' + Math.abs(g.minDays) + 'd</span>' :
+                   g.minDays === 0 ? '<span class="tag tag-red">due today</span>' :
+                   g.minDays <= 5 ? '<span class="tag tag-amber">' + g.minDays + 'd left</span>' :
+                                    '<span class="tag tag-neutral">' + g.minDays + 'd left</span>';
+        h += '<div class="vendor-group ' + cls + (window._statOpen[i] ? ' open' : '') + '">'
+          + '<div class="vendor-group-head" onclick="window._toggleStatGroup(' + i + ')">'
+          +   '<div class="vendor-group-name">' + esc(g.type) + ' <span class="vendor-group-count">· ' + g.unpaidN + ' upcoming · ' + g.filedN + ' filed</span></div>'
+          +   pill
+          +   '<div class="vendor-group-amt">' + fmt(g.unpaid) + '</div>'
+          +   '<span class="vendor-chev">›</span>'
+          + '</div>';
+        if (window._statOpen[i]) {
+          h += '<div class="vendor-group-body">';
+          g.rows.slice().sort(function(a, b) {
+            var fa = (a.status || "").toLowerCase() === "filed", fb = (b.status || "").toLowerCase() === "filed";
+            return (fa - fb) || (a.daysLeft - b.daysLeft);
+          }).forEach(function(s) {
+            var paid = (s.status || "").toLowerCase() === "filed";
+            h += '<div class="vendor-inv' + (paid ? ' stat-filed' : '') + '">'
+              + '<div class="vendor-inv-l">' + esc(_statPeriod(s)) + (s.due ? (paid ? ' · paid ' : ' · due ') + esc(String(s.due).slice(5)) : '') + _statEst(s) + (paid ? ' · filed ✓' : '') + '</div>'
+              + '<div class="vendor-inv-r">' + fmt(s.amount || s.amountPayable || 0) + '</div>'
+              + '</div>';
+          });
+          h += '</div>';
+        }
+        h += '</div>';
+      });
+    } else {
+      h += '<div class="due-head"><span class="due-head-label" style="color:var(--amber)">Upcoming</span>'
+        + '<span class="due-head-total">' + fmt(totalStat) + '</span></div>';
+      _statUnpaidRows.slice().sort(function(a, b) { return a.daysLeft - b.daysLeft; }).forEach(function(s) { h += _statRowHtml(s); });
+      h += '<div class="due-head"><span class="due-head-label">Filed FY-to-date</span>'
+        + '<span class="due-head-total" style="color:var(--text-muted)">' + fmt(_statFiledTot) + '</span></div>';
+      _statFiledRows.slice().sort(function(a, b) { return String(b.due).localeCompare(String(a.due)); }).forEach(function(s) { h += _statRowHtml(s); });
+    }
+    el.innerHTML = h;
+    var foot = document.getElementById("stat-foot");
+    if (foot) {
+      var today = _statUnpaidRows.filter(function(s) { return s.daysLeft <= 0 && s.daysLeft > -900; });
+      var d30 = _statUnpaidRows.filter(function(s) { return s.daysLeft > -900 && s.daysLeft <= 30; })
+        .reduce(function(t, s) { return t + (s.amount || s.amountPayable || 0); }, 0);
+      var todayTxt = today.length
+        ? '<span style="color:var(--red)">Due now: ' + today.map(function(s) { return esc(s.name) + ' ' + fmt(s.amount || s.amountPayable || 0); }).join(', ') + '</span>'
+        : '<span>Nothing due today</span>';
+      foot.innerHTML = todayTxt + '<span class="heavy">Next 30d: ' + fmt(d30) + ' · never delay statutory</span>';
+    }
+  };
+  if (statSorted.length) window._renderStatList();
 
   /* HEALTH */
   var hHtml = '<div class="page-title">Financial <em>health</em></div>'
@@ -2791,6 +3466,7 @@ body{
       +   '<div class="dim-row"><div class="dim-row-label">First Rain</div><div class="dim-row-val first-rain ' + scoreCls + '">' + esc(d.actual) + '</div></div>'
       +   '<div class="dim-row"><div class="dim-row-label">Gap / Action</div><div class="dim-row-val gap ' + scoreCls + '">' + esc(d.gap) + '</div></div>'
       +   '<div class="dim-row"><div class="dim-row-label">Source</div><div class="dim-row-val source">' + esc(d.source) + '</div></div>'
+      +   (d.extra || '')
       + '</div>'
       + '</div>';
   });
@@ -2818,14 +3494,21 @@ body{
 
     // Bigin Won deals not yet in Projects sheet — Sonal/Chinmay still need to
     // add CP rows. Surfaced separately so YTD reflects ALL signed revenue.
-    // Match: take first 5 chars of sheet project name to tolerate small
-    // spelling differences (e.g. "Vitafoods" vs "Vitafood").
+    // The builder matches deals↔projects with token+amount matching (the old
+    // 5-char prefix missed MEE/STAI and double-counted ₹26.3L — 07-Aug-2026);
+    // the prefix heuristic remains only as a fallback for pre-fix data.
     var sheetShowPrefix = proj.map(function(p){
       var first = (p.project||'').toLowerCase().split(' ')[0];
       return first ? first.substring(0, Math.min(5, first.length)) : '';
     }).filter(Boolean);
     var biginWon = pipeline.filter(function(d){return d.bucket==='won';});
+    var _wnisSet = null;
+    if (FR.wonDealIdsNotInSheet) {
+      _wnisSet = {};
+      FR.wonDealIdsNotInSheet.forEach(function(id){ _wnisSet[id] = true; });
+    }
     var biginWonNotInSheet = biginWon.filter(function(d){
+      if (_wnisSet) return _wnisSet[d.id] === true;
       var dn = (d.deal||'').toLowerCase();
       return !sheetShowPrefix.some(function(pn){return pn && dn.indexOf(pn) !== -1;});
     });
@@ -2845,8 +3528,10 @@ body{
     function isSecure(name){ return (name || '').toLowerCase().indexOf('secure meters') === 0; }
     var secureClosed = proj.filter(function(p){return isSecure(p.company);}).reduce(function(s,p){return s+p.sales;},0);
     var securePipeWt = active.filter(function(d){return d.account===SECURE_ACCT;}).reduce(function(s,d){return s+(d.weighted||0);},0);
-    // Reuse the same prefix-match dedup as biginWonNotInSheet above
+    // Same membership test as biginWonNotInSheet above (builder id set,
+    // prefix heuristic only as pre-fix fallback)
     function inSheet(d){
+      if (_wnisSet) return _wnisSet[d.id] !== true;
       var dn = (d.deal||'').toLowerCase();
       return sheetShowPrefix.some(function(pn){return pn && dn.indexOf(pn) !== -1;});
     }
@@ -3103,7 +3788,7 @@ body{
       + '<div class="v7-hero-kicker">THE 3-YEAR BET</div>'
       + '<div class="v7-hero-headline">From <em>₹6.84 Cr</em> to <em>₹24 Cr</em> by FY29 · 3.5× in three years</div>'
       + '<div class="v7-hero-chart">' + svgTrajectory(trajSteps, closedSales) + '</div>'
-      + '<div class="v7-hero-frame">Three things make ₹24 Cr happen or don\'t: <strong>two sales hunters · three new enterprise accounts · international scale</strong>. Everything else is secondary.</div>'
+      + '<div class="v7-hero-frame">Three things make ₹24 Cr happen or don\'t: <strong>sales hunters (3 hired Aug\'26 ✓) · three new enterprise accounts · international scale</strong>. Everything else is secondary.</div>'
       + '</div>';
 
     /* ════════ FY27 INDICATORS ════════ */
@@ -3209,19 +3894,47 @@ body{
       Q4: {val: qc.Q4, pct: qc.Q4 / QUARTER_TARGET * 100}
     };
 
+    /* Live inputs for indicator notes — no hardcoded narrative (07-Aug-2026:
+       stale claims contradicted the numbers beside them). */
+    var _execArr = Object.keys(execPipe).map(function(e){ return {e: e, w: execPipe[e].weighted}; })
+      .sort(function(a, b){ return b.w - a.w; });
+    var _topExec = _execArr.length && activeWt > 0 ? _execArr[0] : null;
+    var _topExecShare = _topExec ? _topExec.w / activeWt * 100 : 0;
+    var _intlProj = proj.filter(function(p){ return p.region !== 'India'; });
+    var _worstIntl = _intlProj.slice().sort(function(a, b){ return a.contributionPct - b.contributionPct; })[0];
+    var _indiaCMP = proj.filter(function(p){ return p.region === 'India'; });
+    var _indiaSales = _indiaCMP.reduce(function(s, p){ return s + p.sales; }, 0);
+    var _indiaCM = _indiaSales > 0 ? _indiaCMP.reduce(function(s, p){ return s + p.contribution; }, 0) / _indiaSales * 100 : 0;
+    var _regCM = {};
+    proj.forEach(function(p){
+      var r = p.region || 'Unknown';
+      if (!_regCM[r]) _regCM[r] = {s: 0, c: 0};
+      _regCM[r].s += p.sales; _regCM[r].c += p.contribution;
+    });
+    var _worstReg = null;
+    Object.keys(_regCM).forEach(function(r){
+      if (_regCM[r].s <= 0) return;
+      var cm = _regCM[r].c / _regCM[r].s * 100;
+      if (!_worstReg || cm < _worstReg.cm) _worstReg = {name: r, cm: cm};
+    });
+
     pjHtml += indicator('FY27 pipeline coverage', coverageRatio.toFixed(2) + '×', '2.0× target',
       coverageRatio >= 2.0 ? 'on' : coverageRatio >= 1.0 ? 'gap' : 'risk',
       coverageRatio / 2.0 * 100,
-      fmt(closedSales) + ' closed YTD · ₹' + (fy27GapLow/10000000).toFixed(1) + ' Cr remaining gap · ₹' + (activeWt/10000000).toFixed(2) + ' Cr weighted pipeline. SMB benchmark is 2× coverage to confidently hit target. Need ₹' + (coverageGapAmount/10000000).toFixed(1) + ' Cr more weighted pipeline OR raise win rate.',
+      fmt(closedSales) + ' closed YTD · ₹' + (fy27GapLow/10000000).toFixed(1) + ' Cr remaining gap · ₹' + (activeWt/10000000).toFixed(2) + ' Cr weighted pipeline. SMB benchmark is 2× coverage to confidently hit target. Need ₹' + (coverageGapAmount/10000000).toFixed(1) + ' Cr more weighted pipeline OR raise win rate. SDR engine live (as of 07-Aug-26): 3 hunters · 20 shows · 1,113 qualified leads (>₹100Cr turnover) · calling from 10-Aug · priority ELECRAMA / India ITME / CPhI.',
       quarterCoverage);
     pjHtml += indicatorCeiling('Secure concentration', secureSharePct.toFixed(1) + '%', '30% ceiling',
       secureSharePct <= 30 ? 'on' : secureSharePct <= 40 ? 'gap' : 'risk',
       secureSharePct / 30 * 100,
-      'Already inside the 30% guardrail on client share. But CK owns 55% of total weighted pipeline — concentration is hidden in exec ownership now.');
+      (secureSharePct <= 30
+        ? 'Inside the 30% guardrail on client share of forward book (closed + weighted pipeline).'
+        : (secureSharePct - 30).toFixed(0) + ' pts above the 30% ceiling on forward book (closed + weighted pipeline).')
+      + (_topExec ? ' Exec lens: ' + _topExec.e + ' holds ' + _topExecShare.toFixed(0) + '% of weighted pipeline — ownership concentration compounds client concentration.' : ''));
     pjHtml += indicator('International revenue', fmt(intlClosed + intlWonExtra + intlPipeWt) + ' fwd', '₹4 Cr',
       (intlClosed + intlWonExtra + intlPipeWt) >= 40000000 ? 'on' : (intlClosed + intlWonExtra + intlPipeWt) >= 25000000 ? 'gap' : 'risk',
       (intlClosed + intlWonExtra + intlPipeWt) / 40000000 * 100,
-      intlSharePct.toFixed(0) + '% of forward book is international. Driven by Secure Meters export circuit (Housing/Installer/UW Birmingham). Amaara at 21% CM needs FY27 pricing fix.');
+      intlSharePct.toFixed(0) + '% of forward book is international.'
+      + (_worstIntl ? ' Lowest intl CM: ' + _worstIntl.company + ' at ' + _worstIntl.contributionPct.toFixed(1) + '% (' + _worstIntl.project + ')' + (_worstIntl.contributionPct < 38 ? ' — below the 38% intl floor, pricing fix needed.' : '.') : ''));
     pjHtml += indicator('Blended avg ticket', fmt(avgTicket), '₹15 L',
       avgTicket >= 1500000 ? 'on' : avgTicket >= 1000000 ? 'gap' : 'risk',
       avgTicket / 1500000 * 100,
@@ -3233,7 +3946,10 @@ body{
     pjHtml += indicator('Blended CM', closedCM.toFixed(1) + '%', '33%+ floor',
       closedCM >= 38 ? 'on' : closedCM >= 33 ? 'gap' : 'risk',
       closedCM / 33 * 100,
-      'CM tracked for ' + proj.length + ' of ' + totalClosedCount + ' closed (' + wonExtraCount + ' Bigin Won deals lack CP rows in Sonal sheet — ' + fmt(wonExtraTotal) + ' uncosted). India CM at 46.8% is best-in-class. Europe at 21% (Amaara) drags down.');
+      'CM tracked for ' + proj.length + ' of ' + totalClosedCount + ' closed'
+      + (wonExtraCount > 0 ? ' (' + wonExtraCount + ' Bigin Won deal' + (wonExtraCount > 1 ? 's' : '') + ' lack CP rows in Sonal sheet — ' + fmt(wonExtraTotal) + ' uncosted)' : ' (every closed deal carries CP data)')
+      + '. India CM at ' + _indiaCM.toFixed(1) + '%'
+      + (_worstReg && _worstReg.name !== 'India' ? ' · lowest region: ' + _worstReg.name + ' at ' + _worstReg.cm.toFixed(1) + '%.' : '.'));
 
     pjHtml += '</div>';
 
@@ -3246,8 +3962,12 @@ body{
     pjHtml += '<div class="v7-context-card">'
       + '<div class="v7-context-chart">' + svgDonut(execSegs, fmt(Math.round(activeWt))) + '</div>'
       + '<div class="v7-context-text">'
-      +   '<div class="v7-context-h">CK owns 55% of weighted pipeline · ₹' + (execPipe['CK'].weighted/10000000).toFixed(2) + ' Cr</div>'
-      +   '<div class="v7-context-b">When the MBA-departure conversation becomes real, this is the number at risk. SP at 36% is the second largest book — already stepping up. DS at 9% has 16 deals (small-ticket volume). ND at 0% is delivery-side; that needs to change with the hunter hires.</div>'
+      +   '<div class="v7-context-h">' + (_topExec ? _topExec.e + ' owns ' + _topExecShare.toFixed(0) + '% of weighted pipeline · ₹' + (_topExec.w/10000000).toFixed(2) + ' Cr' : 'No active pipeline ownership data') + '</div>'
+      +   '<div class="v7-context-b">If the top owner steps away, this is the number at risk. '
+      +     _execArr.slice(1).filter(function(x){return x.w > 0 || (execPipe[x.e] && execPipe[x.e].count > 0);}).map(function(x){
+              return x.e + ' at ' + (activeWt > 0 ? (x.w/activeWt*100).toFixed(0) : 0) + '% (' + (execPipe[x.e] ? execPipe[x.e].count : 0) + ' deals)';
+            }).join(' · ')
+      +   '. ND is delivery-side; that changes with the hunter hires.</div>'
       +   '<div class="v7-context-stat-row">'
       +     '<span class="v7-context-stat"><span class="v7-cs-l">CK deals</span><span class="v7-cs-v">' + execPipe['CK'].count + '</span></span>'
       +     '<span class="v7-context-stat"><span class="v7-cs-l">SP deals</span><span class="v7-cs-v">' + execPipe['SP'].count + '</span></span>'
@@ -3486,7 +4206,11 @@ body{
     });
     var maxCmCount = Math.max.apply(null, cmBuckets.map(function(b){return b.count;}));
     var aboveAgencyTarget = proj.filter(function(p){return p.contributionPct >= 40;}).length;
-    var atOrAboveConstructionFloor = proj.filter(function(p){return p.contributionPct >= 30;}).length;
+    // Governance floors: 33% India / 38% international — the builder's
+    // belowMarginFloor flag applies the regional rule per project
+    // (07-Aug-2026: pod previously measured against a flat 30% "construction
+    // floor" that doesn't exist in First Rain's rules).
+    var aboveRegionalFloor = proj.filter(function(p){return !p.belowMarginFloor;}).length;
 
     /* WIP — Bigin Closed Won not yet in Sheet (zero today, but useful when drift starts) */
     var sheetCompanies = {};
@@ -3508,7 +4232,7 @@ body{
       + '<div class="v10-dh-body">';
 
     /* CM distribution histogram */
-    pjHtml += '<div class="v11-cm-dist-label">CM distribution · benchmark <strong>≥30%</strong> floor · <strong>40%+</strong> target</div>';
+    pjHtml += '<div class="v11-cm-dist-label">CM distribution · floor <strong>33% India / 38% intl</strong> · <strong>40%+</strong> target</div>';
     pjHtml += '<div class="v11-cm-dist">';
     cmBuckets.forEach(function(b){
       var widthPct = maxCmCount > 0 ? (b.count / maxCmCount * 100) : 0;
@@ -3521,8 +4245,8 @@ body{
     pjHtml += '</div>';
 
     pjHtml += '<div class="v11-cm-summary">'
-      + '<strong>' + atOrAboveConstructionFloor + '/' + proj.length + '</strong> at or above 30% construction floor · '
-      + '<strong>' + aboveAgencyTarget + '/' + proj.length + '</strong> at or above 40% agency target'
+      + '<strong>' + aboveRegionalFloor + '/' + proj.length + '</strong> at or above the regional margin floor (33% India / 38% intl) · '
+      + '<strong>' + aboveAgencyTarget + '/' + proj.length + '</strong> at or above 40% target'
       + '</div>';
 
     pjHtml += '<div class="v11-econ-divider"></div>';
@@ -3543,7 +4267,7 @@ body{
     var levers = [
       {num:1, title:'Raise the average ticket', pct: avgTicket / 4000000 * 100, subLabel: fmt(avgTicket) + ' → ₹40L'},
       {num:2, title:'Reduce Secure dependency', pct: secureSharePct <= 25 ? 100 : secureSharePct <= 30 ? 80 : secureSharePct <= 40 ? 50 : 25, subLabel: secureSharePct.toFixed(0) + '% → ≤25%', inverted:true},
-      {num:3, title:'Hire two sales hunters', pct: 0, subLabel: '0 → 2', isPriority:true},
+      {num:3, title:'Sales hunters hired', pct: 100, subLabel: '3 hired Aug\'26 · target was 2', isPriority:true},
       {num:4, title:'Build international engine', pct: 31500000 / 100000000 * 100, subLabel: '₹3.15 → ₹10Cr'},
       {num:5, title:'Raise India project floor', pct: indiaAvg / 2000000 * 100, subLabel: fmt(indiaAvg) + ' → ₹20L'},
     ];
@@ -3672,5 +4396,265 @@ body{
 })();
 </script>
 
+
+<style>
+/* ═══ IPO tab (listing readiness) — lr- namespaced, house tokens, data via DATA.IPO ═══ */
+#page-ipo .lr-banner{display:flex;gap:10px;align-items:flex-start;background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--text-secondary);border-radius:12px;padding:12px 14px;font-size:12.5px;margin-bottom:16px}
+#page-ipo .lr-banner b{color:var(--amber)}
+#page-ipo .lr-ico{color:var(--amber);font-weight:700;flex-shrink:0}
+#page-ipo .lr-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);padding:18px 20px}
+#page-ipo .lr-card h2{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--text-muted);margin:0 0 12px}
+#page-ipo .lr-grid-top{display:grid;grid-template-columns:270px 1fr 330px;gap:14px;margin-bottom:14px}
+@media(max-width:1150px){#page-ipo .lr-grid-top{grid-template-columns:1fr 1fr}#page-ipo .lr-ps-card{grid-column:1/-1}}
+@media(max-width:640px){#page-ipo .lr-grid-top{grid-template-columns:1fr}}
+#page-ipo .lr-score-big{display:flex;align-items:baseline;gap:6px}
+#page-ipo .lr-score-num{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-size:56px;line-height:1;color:var(--text-primary)}
+#page-ipo .lr-score-den{font-size:15px;color:var(--text-muted)}
+#page-ipo .lr-chip{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;letter-spacing:.04em;padding:2px 8px;border-radius:99px;white-space:nowrap}
+#page-ipo .lr-chip.lr-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
+#page-ipo .lr-chip.lr-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+#page-ipo .lr-chip.lr-gray{background:var(--bg-tertiary);color:var(--text-tertiary);border:1px solid var(--border-strong)}
+#page-ipo .lr-chip.lr-acc{background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-border)}
+#page-ipo .lr-meter{position:relative;height:8px;border-radius:4px;background:var(--bg-tertiary);margin:14px 0 6px}
+#page-ipo .lr-meter .lr-fill,#page-ipo .lr-mini .lr-fill{position:absolute;left:0;top:0;height:100%;border-radius:4px;background:var(--accent)}
+#page-ipo .lr-score-note{font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.5}
+#page-ipo .lr-lever-name{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-size:22px;line-height:1.15;margin-bottom:4px}
+#page-ipo .lr-lever-line{font-size:12.5px;color:var(--text-secondary);margin-bottom:12px}
+#page-ipo .lr-lever-line b{color:var(--accent)}
+#page-ipo .lr-lever-row{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--text-secondary);padding:6px 0;border-top:1px dashed var(--border)}
+#page-ipo .lr-lever-row .lr-pts{font-weight:600;color:var(--text-primary);white-space:nowrap}
+#page-ipo .lr-ps-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+#page-ipo .lr-ps-sym{font-weight:700;font-size:15px;letter-spacing:.02em}
+#page-ipo .lr-ps-facts{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;font-size:12px}
+#page-ipo .lr-ps-facts .lr-k{color:var(--text-muted)}
+#page-ipo .lr-ps-facts .lr-v{color:var(--text-primary);font-weight:500;text-align:right;font-variant-numeric:tabular-nums}
+#page-ipo .lr-ps-note{font-size:11px;color:var(--text-muted);margin-top:10px;line-height:1.5;border-top:1px dashed var(--border);padding-top:8px}
+#page-ipo .lr-wbar{display:flex;height:26px;gap:2px}
+#page-ipo .lr-wseg{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text-secondary);background:var(--bg-tertiary);border:1px solid var(--border);border-radius:4px;min-width:0;overflow:hidden;white-space:nowrap}
+#page-ipo .lr-wseg.lr-b{background:var(--accent);border-color:var(--accent);color:#fff}
+[data-theme="dark"] #page-ipo .lr-wseg.lr-b{color:#16100b}
+#page-ipo .lr-wcap{font-size:11px;color:var(--text-muted);margin-top:8px}
+#page-ipo .lr-tbl-wrap{overflow-x:auto;margin:0 -20px;padding:0 20px}
+#page-ipo .lr-tbl-wrap table{border-collapse:collapse;width:100%;min-width:880px}
+#page-ipo .lr-tbl-wrap th{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border-strong)}
+#page-ipo .lr-tbl-wrap th.lr-num,#page-ipo .lr-tbl-wrap td.lr-num{text-align:right;font-variant-numeric:tabular-nums}
+#page-ipo .lr-tbl-wrap td{padding:10px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+#page-ipo tr.lr-grp td{background:var(--bg-secondary);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-tertiary);padding:7px 10px}
+#page-ipo tr.lr-grp td b{color:var(--accent)}
+#page-ipo tr.lr-mrow:hover td{background:var(--bg-secondary)}
+#page-ipo .lr-m-name{font-weight:600;color:var(--text-primary);display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+#page-ipo .lr-m-name .lr-m-dir{flex-basis:100%;white-space:nowrap;color:var(--text-muted);font-size:11px;font-weight:400}
+#page-ipo .lr-m-id{font-size:10px;font-weight:600;color:var(--text-muted);background:var(--bg-tertiary);border:1px solid var(--border);border-radius:4px;padding:0 5px}
+#page-ipo .lr-m-val{font-weight:600;font-size:14px;white-space:nowrap}
+#page-ipo .lr-m-val.lr-pending{color:var(--text-muted);font-weight:400}
+#page-ipo .lr-m-src{margin-top:2px}
+#page-ipo .lr-m-note{font-size:10px;color:var(--text-muted);margin-top:3px;max-width:160px;white-space:normal;line-height:1.4}
+#page-ipo .lr-mini{position:relative;height:8px;border-radius:4px;background:var(--bg-tertiary);min-width:150px}
+#page-ipo .lr-mini .lr-fill{min-width:0}
+#page-ipo .lr-mini .lr-tick{position:absolute;top:-3px;width:2px;height:14px;background:var(--text-muted);border-radius:1px}
+#page-ipo .lr-mini-lab{display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);margin-top:4px;white-space:nowrap;gap:8px}
+#page-ipo .lr-ps-cell{font-size:12px;white-space:nowrap}
+#page-ipo .lr-ps-cell .lr-v{font-weight:600}
+#page-ipo .lr-ps-cell .lr-n{display:block;font-size:10.5px;color:var(--text-muted);white-space:normal;max-width:190px}
+#page-ipo .lr-score-cell{font-weight:700;font-variant-numeric:tabular-nums}
+#page-ipo .lr-gates-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:760px){#page-ipo .lr-gates-grid{grid-template-columns:1fr}}
+#page-ipo .lr-gate{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 11px;background:var(--bg-primary)}
+#page-ipo .lr-g-ico{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+#page-ipo .lr-g-ico.lr-pass{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+#page-ipo .lr-g-ico.lr-risk{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
+#page-ipo .lr-g-ico.lr-fail{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+#page-ipo .lr-g-ico.lr-tbd{background:var(--bg-tertiary);color:var(--text-muted);border:1px solid var(--border-strong)}
+#page-ipo .lr-g-name{font-size:12.5px;font-weight:600;line-height:1.35}
+#page-ipo .lr-g-note{font-size:11px;color:var(--text-muted);margin-top:1px}
+#page-ipo .lr-gate-foot{font-size:11px;color:var(--text-muted);margin-top:12px;line-height:1.5}
+#page-ipo .lr-foot{margin-top:18px;font-size:11px;color:var(--text-muted);text-align:center;line-height:1.6}
+.lr-tip{position:fixed;z-index:999;max-width:320px;background:var(--text-primary);color:var(--bg-primary);font-size:11.5px;line-height:1.5;border-radius:8px;padding:9px 11px;pointer-events:none;box-shadow:var(--shadow-md);opacity:0;transition:opacity .12s}
+.lr-tip b{display:block;margin-bottom:3px}
+.lr-tip .lr-t-src{display:block;margin-top:5px;opacity:.75}
+</style>
+
+<script>
+/* ═══ IPO tab render — data from DATA.IPO in the injected cfo-data payload,
+   written by read_lr_tabs.py from the LR tabs in Sonal's sheet on every sync.
+   FROZEN RULE: a metric with no sheet value renders PENDING — never a fabricated
+   number. Floors/targets/weights mirror _context/listing-readiness-definitions.md §9.
+   Gates + PropShop baseline are static here; /listing-readiness runs own them. ═══ */
+(function(){
+var IPO = null;
+try {
+  var _raw = (document.getElementById("cfo-data") || {textContent:""}).textContent.trim();
+  if (_raw && _raw.indexOf("CASHFLOW_JSON") === -1 && _raw.indexOf("{{") !== 0) {
+    IPO = (JSON.parse(_raw) || {}).IPO || null;
+  }
+} catch(e) { IPO = null; }
+
+var METRICS = [
+ {id:"A1",grp:"A",name:"Revenue",unit:"₹ cr",dir:"up",value:null,floor:5,target:24,weight:8,srcLbl:"LR_Monthly · Tally",def:"Revenue from operations, net of GST, TTM. Excludes non-exhibition income (Scatterpie rent).",ps:{value:"₹51.59 cr",note:"FY25, filed"}},
+ {id:"A2",grp:"A",name:"Revenue CAGR",unit:"%",dir:"up",value:null,floor:10,target:40,weight:8,srcLbl:"LR_FY · Tally closes",def:"(FY_latest / FY_minus3)^(1/3) − 1 over Tally FY closes, Apr–Mar.",ps:{value:null,note:"3-yr CAGR not disclosed · FY24→FY25 +68.8% filed"}},
+ {id:"A3",grp:"A",name:"Blended gross margin",unit:"%",dir:"up",value:null,floor:25,target:33,weight:10,srcLbl:"LR_Monthly · Tally",def:"(Revenue − direct project cost) / Revenue, TTM. Direct = fabrication, material, freight, site labour, travel. Target = the 33% India floor (financial-rules.md).",ps:{value:null,note:"not disclosed"}},
+ {id:"A4",grp:"A",name:"EBITDA margin",unit:"%",dir:"up",value:null,floor:6,target:15,weight:8,srcLbl:"LR_Monthly · Tally",def:"Operating EBITDA / Revenue, TTM. Excludes other income (rent, treasury interest).",ps:{value:null,note:"not disclosed · FY25 net margin 12.25%"}},
+ {id:"B1",grp:"B",name:"Largest client share",unit:"%",dir:"down",value:null,floor:40,target:15,weight:16,srcLbl:"LR_Invoices · parent-grouped",marker:{value:25,label:"internal cap 25%"},def:"Top parent-account revenue ÷ total, TTM. All Secure entities roll up as one. Scored against the 15% investor bar; the internal 25% cap is the marked tick. Gated on register↔revenue reconciliation.",ps:{value:null,note:"not disclosed — RHP pass pending"}},
+ {id:"B2",grp:"B",name:"Top-5 client share",unit:"%",dir:"down",value:null,floor:90,target:60,weight:8,srcLbl:"LR_Invoices · parent-grouped",def:"Sum of top 5 parent accounts ÷ total revenue, TTM.",ps:{value:null,note:"not disclosed"}},
+ {id:"B3",grp:"B",name:"Repeat-client revenue",unit:"%",dir:"up",value:null,floor:40,target:65,weight:8,srcLbl:"LR_Invoices history",def:"Revenue from parent accounts billed in the PRECEDING 12 months ÷ total. Frozen — never widened to 'ever billed'.",ps:{value:null,note:"not disclosed"}},
+ {id:"B4",grp:"B",name:"Order book cover",unit:"%",dir:"up",value:null,floor:20,target:55,weight:12,srcLbl:"Bigin + Notion · /listing-readiness",def:"Signed, uninvoiced work with a show date in the next 12 months ÷ next-12-month revenue plan. PO / signed proposal / advance received (HDFC 0247 credit match) only — verbal never counts. Computed by /listing-readiness full runs, not the daily sync.",ps:{value:null,note:"not disclosed"}},
+ {id:"C1",grp:"C",name:"Receivable days",unit:"days",dir:"down",value:null,floor:90,target:45,weight:6,srcLbl:"LR_Monthly month-end",def:"(Receivables at period end ÷ Revenue TTM) × 365.",ps:{value:null,note:"not disclosed — RHP pass pending"}},
+ {id:"C2",grp:"C",name:"Cash conversion",unit:"x",dir:"up",value:null,floor:0.5,target:1.0,weight:6,srcLbl:"LR_Monthly · Tally",def:"Operating cash flow ÷ PAT, TTM. Rising PAT with falling C2 = profit stuck in receivables — escalate.",ps:{value:null,note:"not disclosed"}},
+ {id:"C3",grp:"C",name:"Debt to equity",unit:"x",dir:"down",value:null,floor:1.0,target:0.3,weight:2,srcLbl:"LR_Monthly month-end",def:"Total borrowings ÷ shareholders' funds at period end. OD utilization counts.",ps:{value:null,note:"not disclosed"}},
+ {id:"D1",grp:"D",name:"Revenue per head",unit:"₹ L",dir:"up",value:null,floor:50,target:120,weight:4,srcLbl:"LR_Monthly headcount",def:"Revenue ÷ average headcount over the period. Interns at 0.5; external partners/agencies excluded.",ps:{value:null,note:"not disclosed (headcount undisclosed)"}},
+ {id:"D2",grp:"D",name:"ROCE",unit:"%",dir:"up",value:null,floor:12,target:25,weight:4,srcLbl:"LR_Monthly · Tally",def:"EBIT ÷ (equity + debt − cash) at period end. EBIT = operating EBITDA − D&A.",ps:{value:null,note:"not disclosed"}}];
+
+var GATES = [
+ {gate:"3-year operating track record",status:"pass",note:"20 years — First Rain Exhibits India Pvt. Ltd."},
+ {gate:"EBITDA ≥ ₹1 cr in 2 of 3 preceding FYs",status:"tbd",note:"SEBI ICDR (Mar 2025) — needs LR_FY backfill"},
+ {gate:"Positive net worth",status:"tbd",note:"Tally balance sheet — first gate review"},
+ {gate:"Positive FCFE in 2 of 3 FYs",status:"tbd",note:"NSE Emerge — compute from C2 + capex"},
+ {gate:"Post-issue paid-up capital ₹1–25 cr",status:"tbd",note:"structural — set at filing"},
+ {gate:"OFS ≤ 20% of issue · promoter sale ≤ 50%",status:"tbd",note:"structural — set at filing"},
+ {gate:"Restated 3-yr audited financials, peer-reviewed auditor",status:"tbd",note:"auditor appointment at DRHP prep"},
+ {gate:"No NCLT reference · no capital-market debarment",status:"tbd",note:"confirm on first gate review"},
+ {gate:"Board & governance — IDs, audit committee, RPT policy, CS",status:"tbd",note:"build-out pre-filing"},
+ {gate:"Promoter contribution 20% of post-issue capital, 3-yr lock-in",status:"tbd",note:"structural — set at filing"}];
+
+var PS = { symbol:"PROPSHOP", exchange:"NSE Emerge (SME)", series:"ST", listed:"2026-08-03", last_checked:"2026-08-03",
+  issue:"₹28.57 cr @ ₹65–69", open:"₹55.20 (−20.0%)", range:"₹52.45–57.9", mcap:"₹84.64 cr", ratios:"~13.4× · ~1.64×",
+  fy25:"₹51.59 cr / ₹6.32 cr", margin:"12.25%", growth:"+68.8% rev · +188.6% PAT",
+  note:"SME half-yearly filer. Listing-day baseline — refreshed by /listing-readiness --propshop, not the daily sync. Blanks in the table are filings-only: not disclosed, never estimated." };
+
+var GROUPS = {A:"Growth & profitability",B:"Revenue quality",C:"Cash & balance sheet",D:"Efficiency"};
+var q = function(id){ return document.getElementById(id); };
+var score01 = function(m){ if (m.value === null || m.value === undefined) return null;
+  var s = m.dir === "up" ? (m.value-m.floor)/(m.target-m.floor) : (m.floor-m.value)/(m.floor-m.target);
+  return Math.max(0, Math.min(1, s)); };
+var fmtVal = function(v,u){ return (v===null||v===undefined) ? "—"
+  : u==="₹ cr"?"₹"+v+" cr":u==="%"?v+"%":u==="days"?v+" days":u==="x"?v+"×":u==="₹ L"?"₹"+v+"L":v; };
+
+// merge live values from the sheet feed
+var ipoM = (IPO && IPO.metrics) || {};
+METRICS.forEach(function(m){
+  var v = ipoM[m.id];
+  if (v && typeof v.value === "number") m.value = v.value;
+  m.note = (v && v.note) || null;
+});
+var scored = METRICS.filter(function(m){ return m.value !== null; });
+var avail = scored.length;
+
+// header chips + banner
+q("lr-period").textContent = IPO ? (IPO.period + " · as of " + IPO.as_of) : "period pending";
+q("lr-period-chip").textContent = IPO ? IPO.period : "—";
+q("lr-live-chip").textContent = "LIVE FEED · " + avail + "/13";
+q("lr-live-chip").className = "lr-chip " + (avail > 0 ? "lr-green" : "lr-amber");
+var monthsFilled = IPO && IPO.inputs ? IPO.inputs.monthly_filled : 0;
+q("lr-banner-text").innerHTML = !IPO
+  ? "<b>NO DATA BLOCK.</b> This build carries no listing-readiness payload — run the pipeline (read_lr_tabs.py) and re-render."
+  : avail === 0
+  ? "<b>LIVE WIRING ACTIVE — AWAITING DATA.</b> The daily sync reads the LR tabs in Sonal's finance sheet on every refresh; the backfill has not landed yet (" + monthsFilled + "/12 TTM months filled). Nothing here is estimated — every metric stays blank until its real inputs exist. B4 and the gates come from /listing-readiness runs."
+  : "<b>" + avail + " of 13 metrics live</b> from the LR tabs (refreshed every sync). Pending metrics stay blank until their inputs are complete — never estimated. B4 and the gates come from /listing-readiness runs.";
+
+// score
+if (avail) {
+  var wSum = 0, tot = 0;
+  scored.forEach(function(m){ wSum += m.weight; tot += score01(m)*m.weight; });
+  var score100 = Math.round(tot/wSum*100);
+  q("lr-score-num").textContent = score100;
+  q("lr-score-fill").style.width = score100 + "%";
+  q("lr-score-chip").textContent = avail < 13 ? "PARTIAL — " + avail + "/13 · unweighted metrics excluded" : "ALL 13 LIVE";
+  q("lr-score-chip").className = "lr-chip " + (avail < 13 ? "lr-amber" : "lr-green");
+} else {
+  q("lr-score-num").textContent = "—";
+  q("lr-score-fill").style.width = "0%";
+  q("lr-score-chip").textContent = "NO DATA YET — awaiting LR backfill";
+}
+
+// levers
+if (avail) {
+  var levers = scored.map(function(m){ return {m:m, pts:(1-score01(m))*m.weight}; }).sort(function(a,b){ return b.pts-a.pts; });
+  var L0 = levers[0];
+  q("lr-lever-main").innerHTML = '<div class="lr-lever-name">' + L0.m.name + '</div>'
+    + '<div class="lr-lever-line">' + fmtVal(L0.m.value,L0.m.unit) + ' today → target ' + fmtVal(L0.m.target,L0.m.unit)
+    + ' recovers up to <b>' + L0.pts.toFixed(1) + ' weighted points</b> (weight ' + L0.m.weight + '/100).</div>';
+  q("lr-lever-rest").innerHTML = levers.slice(1,4).map(function(x){
+    return '<div class="lr-lever-row"><span>' + x.m.id + ' · ' + x.m.name + ' — ' + fmtVal(x.m.value,x.m.unit)
+      + ' → ' + fmtVal(x.m.target,x.m.unit) + '</span><span class="lr-pts">+' + x.pts.toFixed(1) + '</span></div>'; }).join("");
+} else {
+  q("lr-lever-main").innerHTML = '<div class="lr-lever-line">Levers appear once metrics land. The sheet feed is wired and refreshes on every sync — it is waiting on the LR-tab backfill (LR_Monthly TTM months, LR_FY closes, LR_Invoices register).</div>';
+}
+
+// propshop ticker (static baseline — /listing-readiness --propshop refreshes)
+q("lr-ps-body").innerHTML =
+  '<div class="lr-ps-head"><span class="lr-ps-sym">' + PS.symbol + '</span>'
+  + '<span class="lr-chip lr-acc">' + PS.exchange + ' · ' + PS.series + '</span>'
+  + '<span class="lr-chip lr-gray">last checked ' + PS.last_checked + '</span></div>'
+  + '<div class="lr-ps-facts">'
+  + '<span class="lr-k">Listed</span><span class="lr-v">' + PS.listed + '</span>'
+  + '<span class="lr-k">Issue</span><span class="lr-v">' + PS.issue + '</span>'
+  + '<span class="lr-k">Listing open</span><span class="lr-v">' + PS.open + '</span>'
+  + '<span class="lr-k">Day range</span><span class="lr-v">' + PS.range + '</span>'
+  + '<span class="lr-k">Market cap</span><span class="lr-v">' + PS.mcap + '</span>'
+  + '<span class="lr-k">P/E · P/S</span><span class="lr-v">' + PS.ratios + '</span>'
+  + '<span class="lr-k">FY25 rev / PAT</span><span class="lr-v">' + PS.fy25 + '</span>'
+  + '<span class="lr-k">Net margin FY25</span><span class="lr-v">' + PS.margin + '</span>'
+  + '<span class="lr-k">FY24→25 growth</span><span class="lr-v">' + PS.growth + '</span>'
+  + '</div><div class="lr-ps-note">' + PS.note + '</div>';
+
+// weights strip
+var gw = {}; METRICS.forEach(function(m){ gw[m.grp] = (gw[m.grp]||0) + m.weight; });
+q("lr-wbar").innerHTML = Object.keys(GROUPS).map(function(g){
+  return '<div class="lr-wseg' + (g==="B" ? " lr-b" : "") + '" style="flex:' + gw[g] + '" title="' + GROUPS[g] + '">' + g + ' · ' + gw[g] + '</div>'; }).join("");
+
+// metrics table
+var html = "", lastGrp = "";
+METRICS.forEach(function(m){
+  if (m.grp !== lastGrp){ lastGrp = m.grp;
+    html += '<tr class="lr-grp"><td colspan="6">' + m.grp + ' · ' + GROUPS[m.grp] + ' — <b>' + gw[m.grp] + '/100</b></td></tr>'; }
+  var s = score01(m), pct = s===null ? 0 : Math.round(s*100), ticks = "";
+  if (m.marker){
+    var mp = m.dir==="up" ? (m.marker.value-m.floor)/(m.target-m.floor) : (m.floor-m.marker.value)/(m.floor-m.target);
+    ticks = '<div class="lr-tick" style="left:' + (Math.max(0,Math.min(1,mp))*100) + '%"></div>'; }
+  var live = m.value !== null;
+  var valCell = live
+    ? '<div class="lr-m-val">' + fmtVal(m.value,m.unit) + '</div><div class="lr-m-src"><span class="lr-chip lr-green">LIVE · sheet</span></div>'
+    : '<div class="lr-m-val lr-pending">—</div><div class="lr-m-src"><span class="lr-chip lr-amber">PENDING</span></div>'
+      + (m.note ? '<div class="lr-m-note">' + m.note + '</div>' : '');
+  var psc = m.ps.value !== null
+    ? '<span class="lr-v">' + m.ps.value + '</span><span class="lr-n">' + m.ps.note + '</span>'
+    : '<span class="lr-chip lr-gray">not disclosed</span><span class="lr-n">' + m.ps.note + '</span>';
+  html += '<tr class="lr-mrow" data-def="' + m.def.replace(/"/g,"&quot;") + '" data-truth="' + m.srcLbl.replace(/"/g,"&quot;") + '" data-name="' + m.id + ' · ' + m.name + '">'
+    + '<td><div class="lr-m-name"><span class="lr-m-id">' + m.id + '</span>' + m.name
+    + '<span class="lr-m-dir">' + (m.dir==="up" ? "↑ higher is better" : "↓ lower is better") + '</span></div></td>'
+    + '<td>' + valCell + '</td>'
+    + '<td><div class="lr-mini"><div class="lr-fill" style="width:' + pct + '%"></div>' + ticks + '</div>'
+    + '<div class="lr-mini-lab"><span>floor ' + fmtVal(m.floor,m.unit) + '</span>'
+    + (m.marker ? '<span>' + m.marker.label + '</span>' : '')
+    + '<span>target ' + fmtVal(m.target,m.unit) + '</span></div></td>'
+    + '<td class="lr-num">' + m.weight + '</td>'
+    + '<td class="lr-num lr-score-cell">' + (s===null ? "—" : pct) + '</td>'
+    + '<td class="lr-ps-cell">' + psc + '</td></tr>'; });
+document.querySelector("#lr-mtable tbody").innerHTML = html;
+
+// gates
+var GI = {pass:"✓",risk:"!",fail:"✕",tbd:"◌"}, GL = {pass:"PASS",risk:"AT RISK",fail:"FAIL",tbd:"PENDING FIRST RUN"};
+q("lr-gates").innerHTML = GATES.map(function(g){
+  return '<div class="lr-gate"><div class="lr-g-ico lr-' + g.status + '">' + GI[g.status] + '</div><div>'
+    + '<div class="lr-g-name">' + g.gate + '</div>'
+    + '<div class="lr-g-note">' + GL[g.status] + (g.note ? " — " + g.note : "") + '</div></div></div>'; }).join("");
+
+q("lr-foot").innerHTML = "IPO tab · metric feed: LR tabs in Sonal's finance sheet via the daily syncs (read_lr_tabs.py)"
+  + " · frozen definitions: _context/listing-readiness-definitions.md"
+  + "<br>B4, hard-gate statuses and the PropShop refresh come from /listing-readiness runs · blanks are never estimated · directors only";
+
+// tooltips
+var tip = q("lr-tip");
+var rows = document.querySelectorAll("tr.lr-mrow");
+Array.prototype.forEach.call(rows, function(r){
+  r.addEventListener("mousemove", function(e){
+    tip.innerHTML = "<b>" + r.dataset.name + "</b>" + r.dataset.def + '<span class="lr-t-src">Source of truth: ' + r.dataset.truth + "</span>";
+    tip.style.opacity = 1;
+    var w = tip.offsetWidth, h = tip.offsetHeight;
+    tip.style.left = Math.min(e.clientX+14, innerWidth-w-10) + "px";
+    tip.style.top = (e.clientY+16+h > innerHeight ? e.clientY-h-10 : e.clientY+16) + "px"; });
+  r.addEventListener("mouseleave", function(){ tip.style.opacity = 0; }); });
+})();
+</script>
 </body>
 </html>
