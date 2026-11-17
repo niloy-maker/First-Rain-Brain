@@ -115,14 +115,27 @@ def bill_due(stmt_day: int | None, due_gap_days: int | None, use: date) -> date 
     return st + timedelta(days=int(due_gap_days))
 
 
+def stmt_covers(st: dict | None, use: date) -> bool:
+    """True when `use` falls inside the billing cycle that ended on the posted statement date."""
+    if not st:
+        return False
+    sd = date.fromisoformat(st["date"])
+    return sd - timedelta(days=31) < use <= sd
+
+
 def clear_by(card: dict, use: date, A: dict) -> tuple[date, str]:
-    """use + (float - buffer) days, capped at HDFC's actual bill due date."""
+    """use + (float - buffer) days, capped at HDFC's actual bill due date. A posted statement's
+    printed due date beats the computed cycle."""
     win = A["floatDaysMax"] - A["clearBufferDays"]
     rule = use + timedelta(days=win)
-    bd = bill_due(card["stmtDay"], card["dueGapDays"], use)
+    st = card.get("statement")
+    if stmt_covers(st, use):
+        bd, label = date.fromisoformat(st["dueDate"]), "HDFC statement due"
+    else:
+        bd, label = bill_due(card["stmtDay"], card["dueGapDays"], use), "HDFC bill due"
     if bd is None:
         return rule, f"use + {win}d, statement day not set"
-    return (bd, "HDFC bill due") if bd < rule else (rule, f"use + {win}d")
+    return (bd, label) if bd < rule else (rule, f"use + {win}d")
 
 
 def _is_demo(row: dict) -> bool:
@@ -169,6 +182,14 @@ def compute_cards(raw: dict | None, today: date | None = None, statutory: list |
         }
         c["available"] = max(0.0, limit - outstanding)
         c["utilPct"] = round(outstanding / limit * 100) if limit else 0
+        sd, dd, total = _iso(r.get("stmt_date")), _iso(r.get("stmt_due_date")), _num(r.get("stmt_total_due"))
+        if sd and dd and total > 0:
+            paid = _iso(r.get("stmt_paid_on"))
+            c["statement"] = {"date": sd, "totalDue": total, "minDue": _num(r.get("stmt_min_due")),
+                              "dueDate": dd, "paidOn": paid,
+                              "daysToDue": (date.fromisoformat(dd) - today).days, "unpaid": not paid}
+        else:
+            c["statement"] = None
         demo = demo or c["demo"]
         cards.append(c)
     by_last4 = {c["last4"]: c for c in cards}
@@ -178,6 +199,15 @@ def compute_cards(raw: dict | None, today: date | None = None, statutory: list |
         c = by_last4.get(t["card"])
         t["stat"] = t["cat"].strip().lower() in STATUTORY_CATEGORIES or bool(t["linked"])
         t["clearBy"], t["clearByDays"], t["basis"] = None, None, None
+        st = c.get("statement") if c else None
+        t["stmtCovered"] = bool(c and stmt_covers(st, date.fromisoformat(t["date"])))
+        if t["stmtCovered"]:
+            if t["clearedOn"] and t["clearedOn"] <= st["date"]:
+                # a card bill cannot be paid before its statement exists: this is the underlying
+                # obligation (e.g. the GST challan) being marked done, not the card bill
+                t["clearedOn"] = None
+            if st["paidOn"]:
+                t["clearedOn"] = t["clearedOn"] or st["paidOn"]
         if c and not t["clearedOn"]:
             cb, basis = clear_by(c, date.fromisoformat(t["date"]), A)
             t["clearBy"], t["clearByDays"], t["basis"] = cb.isoformat(), (cb - today).days, basis
@@ -202,6 +232,9 @@ def compute_cards(raw: dict | None, today: date | None = None, statutory: list |
     # Due items: open spends whose clear-by falls inside the priority window (or is overdue)
     groups: dict[tuple, dict] = {}
     for t in open_items:
+        c = by_last4[t["card"]]
+        if t["stmtCovered"] and c["statement"] and c["statement"]["unpaid"]:
+            continue                       # reported once, at statement level, below
         if t["clearByDays"] > A["priorityWindowDays"]:
             continue
         k = (t["card"], t["clearBy"])
@@ -209,6 +242,23 @@ def compute_cards(raw: dict | None, today: date | None = None, statutory: list |
                                   "days": t["clearByDays"], "amt": 0.0, "n": 0, "basis": t["basis"]})
         g["amt"] += t["amt"]
         g["n"] += 1
+    for c in cards:
+        st = c["statement"]
+        if not st or not st["unpaid"]:
+            continue
+        cov = [t for t in open_items if t["card"] == c["last4"] and t["stmtCovered"]]
+        all_cov = [t for t in txns if t["card"] == c["last4"] and t["stmtCovered"]]
+        if all_cov and not cov:
+            continue                       # every spend in the cycle is individually marked paid
+        due_d = date.fromisoformat(st["dueDate"])
+        target = min([due_d] + [date.fromisoformat(t["clearBy"]) for t in cov])
+        days = (target - today).days
+        c["statementTarget"] = target.isoformat()
+        if days <= A["priorityWindowDays"]:
+            groups[(c["last4"], "stmt")] = {
+                "card": c["last4"], "holder": c["holder"], "date": target.isoformat(), "days": days,
+                "amt": st["totalDue"], "n": len(cov) or 1, "basis": "HDFC statement due", "kind": "statement",
+                "dueDate": st["dueDate"], "minDue": st["minDue"], "stmtDate": st["date"]}
     due_items = sorted(groups.values(), key=lambda g: g["days"])
     for g in due_items:
         g["severity"] = "red" if g["days"] <= 3 else "amber"
@@ -227,6 +277,11 @@ def compute_cards(raw: dict | None, today: date | None = None, statutory: list |
         warnings.append("no as_of_date on Credit_Cards")
     elif age > STALE_AFTER_DAYS:
         warnings.append(f"Credit_Cards as_of_date is {age}d old")
+    for t in txns:
+        c = by_last4.get(t["card"])
+        if c and t["clearedOn"] and t["clearedOn"] == t["date"] and not t["stmtCovered"]:
+            warnings.append(f"card ·{t['card']}: {_fmt(t['amt'])} spend on {t['date']} is marked cleared the same day — "
+                            "card bills are paid after the statement; confirm it was really paid or clear cleared_on")
     for c in cards:
         if not c["stmtDay"] or not c["dueGapDays"]:
             warnings.append(f"card ·{c['last4']}: statement_day / due_gap_days not set — clear-by uses the 48-day rule only")
@@ -300,6 +355,11 @@ def _dfmt(iso: str) -> str:
 def due_line(g: dict) -> str:
     when = f"{abs(g['days'])}d overdue" if g["days"] < 0 else ("due today" if g["days"] == 0 else f"due in {g['days']}d")
     who = f"{g['holder']} ·{g['card']}" if g.get("holder") else f"·{g['card']}"
+    if g.get("kind") == "statement":
+        tail = f"clear by {_dfmt(g['date'])}" if g["date"] != g["dueDate"] else f"HDFC due {_dfmt(g['dueDate'])}"
+        if g["date"] != g["dueDate"]:
+            tail += f" · HDFC due {_dfmt(g['dueDate'])}"
+        return f"Pay HDFC card {who} · {_fmt(g['amt'])} (min {_fmt(g['minDue'])}) · {when} ({tail})"
     return f"Pay HDFC card {who} · {_fmt(g['amt'])} · {when} (clear by {_dfmt(g['date'])})"
 
 

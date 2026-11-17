@@ -644,6 +644,10 @@ def parse_cards(wb) -> dict:
             "welcome_deadline": _iso_or_blank(d.get("welcome_deadline")),
             "as_of_date": _iso_or_blank(d.get("as_of_date")),
             "updated_by": _clean(d.get("updated_by")), "notes": _clean(d.get("notes")),
+            # latest posted HDFC statement (all optional — blank until a statement is received)
+            "stmt_date": _iso_or_blank(d.get("stmt_date")), "stmt_total_due": _to_float(d.get("stmt_total_due")),
+            "stmt_min_due": _to_float(d.get("stmt_min_due")), "stmt_due_date": _iso_or_blank(d.get("stmt_due_date")),
+            "stmt_paid_on": _iso_or_blank(d.get("stmt_paid_on")),
         })
 
     txns = []

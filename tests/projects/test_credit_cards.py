@@ -220,6 +220,102 @@ class TestStatementCycleNotSet(unittest.TestCase):
         self.assertEqual(b["dueItems"], [])
 
 
+class TestPostedStatement(unittest.TestCase):
+    """HDFC statement for card 3079 dated 12-Nov-2026: billed Rs 3,93,414, min Rs 19,680, due 7-Dec-2026."""
+
+    def blk(self, today=date(2026, 11, 17), paid="", cleared="2026-10-19", stmt=True):
+        r = raw(txns=[
+            {"date": "2026-10-19", "card_last4": "3079", "description": "GST", "category": "GST", "amount": 100.72,
+             "cleared_on": cleared},
+            {"date": "2026-10-19", "card_last4": "3079", "description": "GST", "category": "GST", "amount": 393313.44,
+             "cleared_on": cleared}])
+        for c in r["cards"]:
+            if c["card_last4"] == "3079":
+                c.update(statement_day=12, due_gap_days=25, outstanding=393414.16)
+                if stmt:
+                    c.update(stmt_date="2026-11-12", stmt_total_due=393414.0, stmt_min_due=19680.0,
+                             stmt_due_date="2026-12-07", stmt_paid_on=paid)
+        return C.compute_cards(r, today)
+
+    def card(self, b):
+        return [c for c in b["cards"] if c["last4"] == "3079"][0]
+
+    def test_statement_is_parsed(self):
+        st = self.card(self.blk())["statement"]
+        self.assertEqual((st["date"], st["totalDue"], st["minDue"], st["dueDate"]),
+                         ("2026-11-12", 393414.0, 19680.0, "2026-12-07"))
+        self.assertEqual(st["daysToDue"], 20)
+        self.assertTrue(st["unpaid"])
+
+    def test_cycle_matches_statement_dates(self):
+        # statement 12 Nov + 25 days = 7 Dec, as printed
+        self.assertEqual(C.bill_due(12, 25, date(2026, 10, 19)), date(2026, 12, 7))
+
+    def test_gst_marked_cleared_on_spend_day_does_not_hide_an_unpaid_card_bill(self):
+        b = self.blk()
+        self.assertTrue(all(t["clearedOn"] is None for t in b["txns"] if t["card"] == "3079"))
+        self.assertTrue(all(t["clearBy"] for t in b["txns"] if t["card"] == "3079"))
+
+    def test_clear_by_follows_the_48_day_rule_capped_at_statement_due(self):
+        t = self.blk()["txns"][0]
+        self.assertEqual(t["clearBy"], "2026-12-06")       # 19 Oct + 48d, one day before HDFC's 7 Dec
+        d, basis = C.clear_by(self.card(self.blk()), date(2026, 10, 25), A)
+        self.assertEqual((d, basis), (date(2026, 12, 7), "HDFC statement due"))   # 25 Oct + 48d = 12 Dec > 7 Dec
+
+    def test_no_priority_item_until_inside_the_window(self):
+        self.assertEqual(self.blk(today=date(2026, 11, 17))["dueItems"], [])      # 19 days to clear-by
+
+    def test_one_statement_level_item_inside_the_window(self):
+        b = self.blk(today=date(2026, 11, 30))
+        self.assertEqual(len(b["dueItems"]), 1)                                    # not one per spend
+        g = b["dueItems"][0]
+        self.assertEqual((g["kind"], g["amt"], g["minDue"], g["date"], g["dueDate"], g["days"]),
+                         ("statement", 393414.0, 19680.0, "2026-12-06", "2026-12-07", 6))
+        line = C.due_line(g)
+        self.assertIn("₹3.9L (min ₹20K)", line)
+        self.assertIn("clear by 6 Dec · HDFC due 7 Dec", line)
+        self.assertEqual(g["severity"], "amber")
+
+    def test_overdue_statement_is_red(self):
+        g = self.blk(today=date(2026, 12, 9))["dueItems"][0]
+        self.assertLess(g["days"], 0)
+        self.assertEqual(g["severity"], "red")
+        self.assertIn("overdue", C.due_line(g))
+
+    def test_paid_statement_clears_everything(self):
+        b = self.blk(today=date(2026, 11, 30), paid="2026-11-28")
+        self.assertEqual(b["dueItems"], [])
+        self.assertFalse(self.card(b)["statement"]["unpaid"])
+        self.assertTrue(all(t["clearedOn"] == "2026-11-28" for t in b["txns"] if t["card"] == "3079"))
+
+    def test_real_payment_after_statement_date_is_honoured(self):
+        b = self.blk(today=date(2026, 11, 30), cleared="2026-11-25")
+        self.assertEqual(b["dueItems"], [])
+
+    def test_without_a_statement_cleared_on_still_works(self):
+        b = self.blk(stmt=False)
+        self.assertIsNone(self.card(b)["statement"])
+        self.assertTrue(all(t["clearedOn"] == "2026-10-19" for t in b["txns"] if t["card"] == "3079"))
+
+    def test_same_day_clearing_without_a_statement_is_warned(self):
+        b = self.blk(stmt=False)
+        self.assertTrue(any("marked cleared the same day" in w for w in b["warnings"]))
+        self.assertFalse(any("marked cleared the same day" in w for w in self.blk()["warnings"]))
+
+    def test_statement_columns_are_read_from_the_sheet(self):
+        from datetime import datetime as dt
+        from openpyxl import Workbook
+        wb = Workbook(); wb.active.title = "README"
+        ws = wb.create_sheet("Credit_Cards")
+        ws.append(["card_last4", "card_holder", "credit_limit", "outstanding", "statement_day", "due_gap_days",
+                   "as_of_date", "stmt_date", "stmt_total_due", "stmt_min_due", "stmt_due_date", "stmt_paid_on"])
+        ws.append([3079, "Niloy Debnath", 400000, 393414.16, 12, 25, dt(2026, 11, 12),
+                   dt(2026, 11, 12), 393414, 19680, dt(2026, 12, 7), None])
+        c = R.parse_cards(wb)["cards"][0]
+        self.assertEqual((c["stmt_date"], c["stmt_total_due"], c["stmt_min_due"], c["stmt_due_date"], c["stmt_paid_on"]),
+                         ("2026-11-12", 393414.0, 19680.0, "2026-12-07", ""))
+
+
 class TestSheetReader(unittest.TestCase):
     def wb(self, cards_rows=None, txn_rows=None, cfg_rows=None, tabs=True):
         from openpyxl import Workbook

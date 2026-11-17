@@ -2436,6 +2436,15 @@ body{
         + '<div style="display:flex;justify-content:space-between;gap:10px;font-size:12px"><span style="opacity:.9">' + esc(t.desc) + '</span><b style="white-space:nowrap">' + fmtP(t.amt) + '</b></div>'
         + '<div style="font-size:11px;opacity:.8">' + esc(ccLabel(t.card)) + ' · used ' + ccFmtD(t.date) + ' → <span style="color:' + col + ';font-weight:700">clear by ' + ccFmtD(t.clearBy) + ' · ' + t.clearByDays + 'd left</span> <span style="opacity:.6">(' + esc(t.basis) + ')</span></div></div>';
     }).join('') + (ccOpen.length > 6 ? '<div style="font-size:11px;opacity:.6;padding-top:4px">+' + (ccOpen.length - 6) + ' more on the Cards tab</div>' : '');
+    var ccStmtRows = (CCB.cards || []).filter(function(k){ return k.statement; }).map(function(k){
+      var st = k.statement, tgt = k.statementTarget, d = st.daysToDue;
+      var col = st.paidOn ? 'inherit' : d < 0 ? '#ff8a73' : d <= 7 ? '#f5c97a' : 'inherit';
+      var status = st.paidOn ? '<span style="color:#5fb98a;font-weight:700">paid ' + ccFmtD(st.paidOn) + ' ✓</span>'
+        : '<span style="color:' + col + ';font-weight:700">pay by ' + ccFmtD(st.dueDate) + ' · ' + (d < 0 ? Math.abs(d) + 'd overdue' : d + 'd left') + '</span>';
+      return '<div style="padding:7px 0;border-top:1px solid rgba(255,255,255,.1)">'
+        + '<div style="display:flex;justify-content:space-between;gap:10px;font-size:12px"><span style="opacity:.9">' + esc(ccLabel(k.last4, true)) + ' · statement ' + ccFmtD(st.date) + '</span><b style="white-space:nowrap">' + fmtP(st.totalDue) + '</b></div>'
+        + '<div style="font-size:11px;opacity:.85">HDFC payment due ' + status + ' <span style="opacity:.6">· minimum ' + fmtP(st.minDue) + (!st.paidOn && tgt && tgt !== st.dueDate ? ' · target ' + ccFmtD(tgt) + ' (use + ' + (ccA.floatDaysMax - ccA.clearBufferDays) + 'd)' : '') + '</span></div></div>';
+    }).join('');
     ccStripHtml = '<div class="od-strip">'
       + '<div class="od-strip-top"><span class="od-strip-label">Credit Cards · HDFC BizBlack ×' + CCB.cards.length + ccDemoTag + '</span><span class="od-strip-pct ' + ccLvl + '">' + ccT.utilPct + '% used</span></div>'
       + '<div class="od-bar"><div class="od-bar-fill ' + ccLvl + '" style="width:' + Math.min(ccT.utilPct, 100) + '%"></div></div>'
@@ -2444,6 +2453,7 @@ body{
       +   '<div class="od-cell"><div class="od-cell-n green">' + fmtP(ccT.available) + '</div><div class="od-cell-l">Available</div></div>'
       +   '<div class="od-cell"><div class="od-cell-n">' + fmtP(ccT.limit) + '</div><div class="od-cell-l">Limit</div></div>'
       + '</div>'
+      + ccStmtRows
       + (ccOpen.length ? '<div class="acct-txn-head" style="margin-top:10px">Clear card payments by · use + ' + (ccA.floatDaysMax - ccA.clearBufferDays) + 'd (' + ccA.floatDaysMax + 'd − ' + ccA.clearBufferDays + 'd buffer)</div>' + ccRows : '')
       + '<div class="acct-strip-meta" style="margin-top:8px">' + ccT.points.toLocaleString('en-IN') + ' reward pts · card bill is a payable — settle in full from 0247 · <b>use card limit before OD</b></div>'
       + '</div>';
@@ -2628,7 +2638,9 @@ body{
       var when = g.days < 0 ? Math.abs(g.days) + 'd overdue' : g.days === 0 ? 'due today' : 'due in ' + g.days + 'd';
       var ic = g.severity === 'red' ? '🔴' : '🟠';
       return { icon: ic, grouped: false, card: true,
-        raw: { icon: ic, text: 'Pay HDFC card ' + ccLabel(g.card, true) + ' · ' + fmt(g.amt) + ' · ' + when + ' (clear by ' + ccFmtD(g.date) + ')' } };
+        raw: { icon: ic, text: g.kind === 'statement'
+          ? 'Pay HDFC card ' + ccLabel(g.card, true) + ' · ' + fmt(g.amt) + ' (min ' + fmt(g.minDue) + ') · ' + when + ' (' + (g.date !== g.dueDate ? 'clear by ' + ccFmtD(g.date) + ' · ' : '') + 'HDFC due ' + ccFmtD(g.dueDate) + ')'
+          : 'Pay HDFC card ' + ccLabel(g.card, true) + ' · ' + fmt(g.amt) + ' · ' + when + ' (clear by ' + ccFmtD(g.date) + ')' } };
     });
     priFinal = priCard.concat(priCritical, priGrouped);
   }
@@ -3337,7 +3349,7 @@ body{
     var h2 = '<div class="page-title"><em>Credit Cards</em>' + ccDemoTag + '</div>'
       + '<div class="page-sub">HDFC BizBlack Metal ×' + cards.length + ' · ' + fmt(T.limit) + ' combined limit · for statutory + business travel' + (CCB.asOf ? ' · as of ' + ccFmtD(CCB.asOf) : '') + '</div>'
       + (CCB.isDemo ? '<div class="cc-note"><b>DEMO DATA:</b> the Credit_Cards / Card_Txns tabs still hold placeholder rows (marked DEMO). Sonal to replace with actuals — this banner and the DEMO tags clear automatically.</div>' : '')
-      + ((CCB.warnings || []).filter(function(w){ return /stale|utilisation|statement_day/.test(w); }).map(function(w){ return '<div class="cc-note"><b>⚠</b> ' + esc(w) + '</div>'; }).join(''))
+      + ((CCB.warnings || []).filter(function(w){ return /stale|utilisation|statement_day|marked cleared/.test(w); }).map(function(w){ return '<div class="cc-note"><b>⚠</b> ' + esc(w) + '</div>'; }).join(''))
       + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px">'
       +   '<div class="stat"><div class="stat-label">Outstanding</div><div class="stat-val amber">' + fmt(T.outstanding) + '</div><div class="stat-hint">' + T.utilPct + '% of limit</div></div>'
       +   '<div class="stat"><div class="stat-label">Available</div><div class="stat-val green">' + fmt(T.available) + '</div><div class="stat-hint">spendable now</div></div>'
@@ -3351,6 +3363,9 @@ body{
         + '<div class="cc-kv"><span>Outstanding</span><b>' + fmt(c.outstanding) + '</b></div>'
         + '<div class="cc-bar"><i class="' + lv + '" style="width:' + Math.min(c.utilPct, 100) + '%"></i></div>'
         + '<div class="cc-kv"><span>Available / Limit</span><b>' + fmt(c.available) + ' / ' + fmt(c.limit) + '</b></div>'
+        + (c.statement ? '<div class="cc-kv"><span>Latest statement (' + ccFmtD(c.statement.date) + ')</span><b>' + fmt(c.statement.totalDue) + '</b></div>'
+            + '<div class="cc-kv"><span>Payment due' + (c.statement.paidOn ? '' : ' · ' + (c.statement.daysToDue < 0 ? Math.abs(c.statement.daysToDue) + 'd overdue' : c.statement.daysToDue + 'd left')) + '</span><b' + (!c.statement.paidOn && c.statement.daysToDue < 0 ? ' style="color:var(--red)"' : '') + '>' + (c.statement.paidOn ? 'paid ' + ccFmtD(c.statement.paidOn) + ' ✓' : ccFmtD(c.statement.dueDate)) + '</b></div>'
+            + '<div class="cc-kv"><span>Minimum due</span><b>' + fmt(c.statement.minDue) + '</b></div>' : '')
         + '<div class="cc-kv"><span>Next statement → due</span><b>' + (c.nextStatement ? ccFmtD(c.nextStatement) + ' → ' + ccFmtD(c.nextDue) : '— (statement day not set)') + '</b></div>'
         + '<div class="cc-kv"><span>Earliest clear-by</span><b>' + (e ? ccFmtD(e.date) + ' · ' + e.days + 'd' : '—') + '</b></div>'
         + '<div class="cc-kv"><span>Reward points</span><b>' + c.points.toLocaleString('en-IN') + '</b></div>'
@@ -3373,7 +3388,7 @@ body{
       + '<div class="cc-sec">What Sonal enters in the Cashflow Master sheet</div>'
       + '<div class="cc-scroll"><table class="cc-tbl">'
       +   '<tr><th>Tab</th><th>Columns</th><th>Cadence</th></tr>'
-      +   '<tr><td><code>Credit_Cards</code><br>1 row per card</td><td><code>card_last4 · card_holder · product · credit_limit · outstanding · available · reward_points · statement_day · due_gap_days · activated_on · welcome_spend_target · welcome_deadline · as_of_date · updated_by · notes</code></td><td>Daily with Cash_Position (update outstanding, points, as_of_date)</td></tr>'
+      +   '<tr><td><code>Credit_Cards</code><br>1 row per card</td><td><code>card_last4 · card_holder · product · credit_limit · outstanding · available · reward_points · statement_day · due_gap_days · activated_on · welcome_spend_target · welcome_deadline · as_of_date · updated_by · notes</code><br><span style="color:var(--text-muted)">From each HDFC statement:</span> <code>stmt_date · stmt_total_due · stmt_min_due · stmt_due_date · stmt_paid_on</code></td><td>Daily with Cash_Position (update outstanding, points, as_of_date)</td></tr>'
       +   '<tr><td><code>Card_Txns</code><br>1 row per spend</td><td><code>date · card_last4 · description · category · amount · linked_obligation · challan_ref · points_earned · notes · cleared_on</code></td><td>On each spend; fill <code>cleared_on</code> when the bill is paid</td></tr>'
       +   '<tr><td><code>Card_Config</code></td><td><code>key · value · note</code> (reward %, gateway fee %, float days, buffer days, priority window, utilisation alert)</td><td>Once, then when T&amp;C change</td></tr>'
       + '</table></div>'
