@@ -140,6 +140,15 @@ P_ACH_DEBIT = re.compile(
     re.IGNORECASE,
 )
 
+# Same template when the Gmail snippet is cut off before "... account on DD-MMM-YYYY" (snippets are
+# ~200 chars; own-account / ACH narrations are long). Direction is still unambiguous: money LEFT the
+# named account. The date falls back to the message date.
+P_ACH_DEBIT_TRUNC = re.compile(
+    r"Rs\.?\s*(?:INR\s*)?([\d,]+\.?\d*)\s+is deducted from your account ending XX(\d{4})"
+    r"\s+and added to\s+(.+)",
+    re.IGNORECASE | re.DOTALL,
+)
+
 # Pattern: "Rs.INR X has been successfully added to your account ending XXNNNN from Y on DD-MMM-YYYY"
 P_CREDIT = re.compile(
     r"Rs\.?\s*(?:INR\s*)?([\d,]+\.?\d*)\s+has been successfully added to your account ending XX(\d{4})"
@@ -320,7 +329,9 @@ def _generic_hdfc_fallback(text: str | None) -> dict | None:
     if account not in ALLOWED_ACCOUNTS:
         return None  # personal-account noise — same policy as the main parser
     low = text.lower()
-    if any(h in low for h in _CREDIT_HINTS):
+    if "deducted from your account" in low or "deducted from your hdfc bank account" in low:
+        direction = "debit"       # money left the named account, even though the text also says "added to"
+    elif any(h in low for h in _CREDIT_HINTS):
         direction = "credit"
     elif any(h in low for h in _DEBIT_HINTS):
         direction = "debit"
@@ -587,6 +598,23 @@ def _parse_hdfc_email_impl(message: dict) -> dict | None:
         return {
             "type": "ACH_DEBIT",
             "date": txn_date.isoformat() if txn_date else msg_date,
+            "amount": _amt(amt),
+            "direction": "debit",
+            "account": account,
+            "counterparty": towards.strip(),
+            "reference": "",
+            "purpose": "ACH debit",
+            "subject": subject,
+            "_sender": sender,
+        }
+
+    # ACH / own-account debit with a truncated snippet (see P_ACH_DEBIT_TRUNC)
+    m = P_ACH_DEBIT_TRUNC.search(snippet)
+    if m:
+        amt, account, towards = m.groups()
+        return {
+            "type": "ACH_DEBIT",
+            "date": msg_date,
             "amount": _amt(amt),
             "direction": "debit",
             "account": account,
