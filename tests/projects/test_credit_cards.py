@@ -292,10 +292,12 @@ class TestPostedStatement(unittest.TestCase):
         b = self.blk(today=date(2026, 11, 30), cleared="2026-11-25")
         self.assertEqual(b["dueItems"], [])
 
-    def test_without_a_statement_cleared_on_still_works(self):
-        b = self.blk(stmt=False)
+    def test_without_a_statement_a_later_cleared_on_is_honoured_same_day_is_not(self):
+        b = self.blk(stmt=False, cleared="2026-10-25")
         self.assertIsNone(self.card(b)["statement"])
-        self.assertTrue(all(t["clearedOn"] == "2026-10-19" for t in b["txns"] if t["card"] == "3079"))
+        self.assertTrue(all(t["clearedOn"] == "2026-10-25" for t in b["txns"] if t["card"] == "3079"))
+        same = self.blk(stmt=False)                       # cleared on the spend day = the GST challan, not the card bill
+        self.assertTrue(all(t["clearedOn"] is None for t in same["txns"] if t["card"] == "3079"))
 
     def test_same_day_clearing_without_a_statement_is_warned(self):
         b = self.blk(stmt=False)
@@ -314,6 +316,87 @@ class TestPostedStatement(unittest.TestCase):
         c = R.parse_cards(wb)["cards"][0]
         self.assertEqual((c["stmt_date"], c["stmt_total_due"], c["stmt_min_due"], c["stmt_due_date"], c["stmt_paid_on"]),
                          ("2026-11-12", 393414.0, 19680.0, "2026-12-07", ""))
+
+
+class TestAppendedRowsAndPayments(unittest.TestCase):
+    """Nov-2026 sheet: Credit_Cards gets a new dated row per update; Card_Txns logs 'Payment Received' rows."""
+    TODAY = date(2026, 11, 23)
+
+    def row(self, last4, out, asof, pts=0):
+        return {"card_last4": last4, "card_holder": "X", "product": "HDFC BizBlack Metal", "credit_limit": 400000,
+                "outstanding": out, "reward_points": pts, "statement_day": 15, "due_gap_days": 25, "as_of_date": asof}
+
+    def sp(self, d, l4, desc, amt, cat="GST", cleared=None):
+        return {"date": d, "card_last4": l4, "description": desc, "category": cat, "amount": amt, "cleared_on": cleared}
+
+    def blk(self, cards, txns):
+        return C.compute_cards({"present": True, "config": {}, "meta": {"warnings": []}, "cards": cards, "txns": txns}, self.TODAY)
+
+    def test_latest_dated_row_per_card_wins_and_limits_are_not_tripled(self):
+        cards = [self.row("9986", 393414.16, "2026-10-19"), self.row("3079", 393414.16, "2026-10-19"),
+                 self.row("9986", 0, "2026-11-20"), self.row("3079", 0, "2026-11-20"),
+                 self.row("9986", 393414.16, "2026-11-20"), self.row("3079", 393414.16, "2026-11-20")]   # later row, same date
+        b = self.blk(cards, [])
+        self.assertEqual(len(b["cards"]), 2)
+        self.assertEqual(b["totals"]["limit"], 800000)
+        self.assertEqual(b["totals"]["outstanding"], 786828.32)
+        self.assertEqual([c["last4"] for c in b["cards"]], ["9986", "3079"])          # sheet order kept
+
+    def test_newest_by_as_of_date_even_if_listed_first(self):
+        b = self.blk([self.row("9986", 100, "2026-11-20"), self.row("9986", 999, "2026-10-19")], [])
+        self.assertEqual(b["cards"][0]["outstanding"], 100)
+
+    def test_statement_from_an_older_row_survives_a_newer_row_without_one(self):
+        old = dict(self.row("3079", 393414.16, "2026-11-12"), stmt_date="2026-11-12", stmt_total_due=393414,
+                   stmt_min_due=19680, stmt_due_date="2026-12-07")
+        b = self.blk([old, self.row("3079", 5000, "2026-11-22")], [])
+        self.assertEqual(b["cards"][0]["outstanding"], 5000)
+        self.assertEqual(b["cards"][0]["statement"]["dueDate"], "2026-12-07")
+
+    def test_payment_rows_are_payments_not_spends(self):
+        self.assertTrue(C.is_payment_row("Receipt", "Payment Received"))
+        self.assertTrue(C.is_payment_row("GST", "Payment received"))
+        self.assertFalse(C.is_payment_row("GST", "GST payment - Oct-26 RCM"))
+        b = self.blk([self.row("3079", 0, "2026-11-20")],
+                     [self.sp("2026-11-20", "3079", "Payment Received", 393414.0, cat="Receipt")])
+        t = b["txns"][0]
+        self.assertTrue(t["isPayment"])
+        self.assertFalse(t["stat"])
+        self.assertEqual(b["cards"][0]["welcomeSpent"], 0)
+
+    def test_payment_settles_the_oldest_spends_and_clears_the_bill(self):
+        b = self.blk([self.row("3079", 0, "2026-11-20")], [
+            self.sp("2026-10-19", "3079", "GST payment - Sep-26 RCM", 100.72, cleared="2026-10-19"),
+            self.sp("2026-10-19", "3079", "GST payment - Sep-26 RCM", 393313.44, cleared="2026-10-19"),
+            self.sp("2026-11-20", "3079", "Payment Received", 393414.0, cat="Receipt", cleared="2026-11-20")])
+        spends = [t for t in b["txns"] if not t["isPayment"]]
+        self.assertTrue(all(t["clearedOn"] == "2026-11-20" for t in spends))          # paid by the 20-Nov payment
+        self.assertEqual(b["dueItems"], [])
+
+    def test_a_newer_spend_stays_open_after_the_payment(self):
+        b = self.blk([self.row("3079", 393414.16, "2026-11-20")], [
+            self.sp("2026-10-19", "3079", "GST Sep", 393414.16, cleared="2026-10-19"),
+            self.sp("2026-11-20", "3079", "Payment Received", 393414.0, cat="Receipt", cleared="2026-11-20"),
+            self.sp("2026-11-20", "3079", "GST payment - Oct-26 RCM", 393313.44, cleared="2026-11-20")])
+        octs = [t for t in b["txns"] if t["desc"].startswith("GST payment - Oct")][0]
+        self.assertIsNone(octs["clearedOn"])                 # the same-day "cleared" date is ignored; the spend stays open
+        self.assertTrue(octs["clearBy"])
+        self.assertTrue(any("marked cleared the same day" in w for w in b["warnings"]))
+
+    def test_payment_does_not_cover_a_spend_made_after_it(self):
+        b = self.blk([self.row("3079", 0, "2026-11-20")], [
+            self.sp("2026-11-25", "3079", "GST later", 1000.0),
+            self.sp("2026-11-20", "3079", "Payment Received", 5000.0, cat="Receipt")])
+        later = [t for t in b["txns"] if t["desc"] == "GST later"][0]
+        self.assertIsNone(later["clearedOn"])
+
+    def test_delta_reports_payments_as_payments(self):
+        snap = C.snapshot(self.blk([self.row("3079", 393414.16, "2026-11-19")], []))
+        b = self.blk([self.row("3079", 0, "2026-11-20")],
+                     [self.sp("2026-11-20", "3079", "Payment Received", 393414.0, cat="Receipt")])
+        lines = C.delta_lines(b, dict(snap, txnKeys=[], clearedKeys=[]))
+        self.assertTrue(any(l.startswith("✅ card payment received") for l in lines))
+        self.assertFalse(any("new card spend" in l for l in lines))
 
 
 class TestSheetReader(unittest.TestCase):
@@ -460,6 +543,10 @@ class TestTemplateContract(unittest.TestCase):
         self.assertIn("(FR.cards && FR.cards.present) ? FR.cards : null", self.T)
         self.assertIn("if (CCB) (function(){", self.T)
         self.assertIn("if (FR.cards && FR.cards.present) {", self.T)   # nav item
+
+    def test_ledger_shows_payment_rows_as_payments(self):
+        self.assertIn("t.isPayment", self.T)
+        self.assertIn("bill paid", self.T)
 
     def test_no_demo_data_embedded_in_template(self):
         self.assertNotIn("demo-ribbon", self.T)

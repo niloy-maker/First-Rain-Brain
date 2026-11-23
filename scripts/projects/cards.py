@@ -138,6 +138,15 @@ def clear_by(card: dict, use: date, A: dict) -> tuple[date, str]:
     return (bd, label) if bd < rule else (rule, f"use + {win}d")
 
 
+_PAYMENT_CATS = {"receipt", "payment", "payment received", "card payment", "bill payment"}
+_PAYMENT_DESC = re.compile(r"^\s*(card\s+)?(bill\s+)?payment\s+(received|made|rec)", re.I)
+
+
+def is_payment_row(cat: str, desc: str) -> bool:
+    """A Card_Txns row recording money PAID INTO the card (the bill being settled), not a spend."""
+    return cat.strip().lower() in _PAYMENT_CATS or bool(_PAYMENT_DESC.match(desc or ""))
+
+
 def _is_demo(row: dict) -> bool:
     return str(row.get("updated_by") or "").strip().upper() == "DEMO" or \
         str(row.get("notes") or "").strip().upper().startswith("DEMO")
@@ -160,10 +169,26 @@ def compute_cards(raw: dict | None, today: date | None = None, statutory: list |
             "points": int(_num(t.get("points_earned"))),
             "clearedOn": _iso(t.get("cleared_on")), "demo": _is_demo(t),
         })
+        txns[-1]["isPayment"] = is_payment_row(txns[-1]["cat"], txns[-1]["desc"])
     txns = [t for t in txns if t["date"] and t["amt"] > 0]
 
     cards, demo = [], False
-    for r in raw["cards"]:
+    rows_in = list(enumerate(raw["cards"]))
+    rows_in.sort(key=lambda x: (_iso(x[1].get("as_of_date")) or "", x[0]))      # oldest -> newest
+    latest_row: dict[str, tuple] = {}
+    stmt_row: dict[str, dict] = {}
+    for idx, rr in rows_in:
+        l4 = str(rr.get("card_last4") or "").zfill(4)
+        latest_row[l4] = (idx, rr)                                              # newest wins
+        if _iso(rr.get("stmt_date")):
+            stmt_row[l4] = rr                                                    # newest row that carries a statement
+    first_seen = [str(rr.get("card_last4") or "").zfill(4) for rr in raw["cards"]]
+    order = [x for i, x in enumerate(first_seen) if x not in first_seen[:i]]
+    for l4 in order:
+        r = dict(latest_row[l4][1])
+        if l4 in stmt_row:
+            for k in ("stmt_date", "stmt_total_due", "stmt_min_due", "stmt_due_date", "stmt_paid_on"):
+                r[k] = stmt_row[l4].get(k)
         last4 = str(r.get("card_last4") or "").zfill(4)
         limit = _num(r.get("credit_limit"))
         outstanding = _num(r.get("outstanding"))
@@ -194,11 +219,39 @@ def compute_cards(raw: dict | None, today: date | None = None, statutory: list |
         cards.append(c)
     by_last4 = {c["last4"]: c for c in cards}
 
+    # Apply logged payments to the oldest unpaid spends first (a bill is settled by the payment that
+    # covers it; Rs 1 tolerance for paise rounding on the statement total).
+    for l4 in by_last4:
+        pays = sorted((t for t in txns if t["card"] == l4 and t["isPayment"]), key=lambda t: t["date"])
+        spends = sorted((t for t in txns if t["card"] == l4 and not t["isPayment"]), key=lambda t: t["date"])
+        for pay in pays:
+            rem = pay["amt"] + 1.0
+            for sp in spends:
+                if sp.get("paidBy") or sp["date"] > pay["date"]:
+                    continue
+                if sp["amt"] <= rem:
+                    sp["paidBy"] = pay["date"]
+                    rem -= sp["amt"]
+                else:
+                    break
+
     open_items = []
     for t in txns:
         c = by_last4.get(t["card"])
-        t["stat"] = t["cat"].strip().lower() in STATUTORY_CATEGORIES or bool(t["linked"])
+        t["stat"] = (not t["isPayment"]) and (t["cat"].strip().lower() in STATUTORY_CATEGORIES or bool(t["linked"]))
         t["clearBy"], t["clearByDays"], t["basis"] = None, None, None
+        t["sameDayIgnored"] = False
+        if t["isPayment"]:
+            t["clearedOn"] = t["date"]
+            t["stmtCovered"] = False
+            demo = demo or t["demo"]
+            continue
+        if t["clearedOn"] and t["clearedOn"] == t["date"]:
+            # marked "cleared" on the day of the spend = the underlying obligation (e.g. the GST challan)
+            # was paid with the card; the CARD BILL is paid later, by a Payment Received row / stmt_paid_on
+            t["clearedOn"], t["sameDayIgnored"] = None, True
+        if t.get("paidBy"):
+            t["clearedOn"] = t["paidBy"]
         st = c.get("statement") if c else None
         t["stmtCovered"] = bool(c and stmt_covers(st, date.fromisoformat(t["date"])))
         if t["stmtCovered"]:
@@ -225,7 +278,7 @@ def compute_cards(raw: dict | None, today: date | None = None, statutory: list |
         else:
             c["nextStatement"] = (nxt - timedelta(days=c["dueGapDays"])).isoformat()
             c["nextDue"] = nxt.isoformat()
-        spent = sum(t["amt"] for t in txns if t["card"] == c["last4"])
+        spent = sum(t["amt"] for t in txns if t["card"] == c["last4"] and not t["isPayment"])
         c["welcomeSpent"] = spent
         c["welcomePct"] = min(100, round(spent / c["welcomeTarget"] * 100)) if c["welcomeTarget"] else None
 
@@ -279,9 +332,9 @@ def compute_cards(raw: dict | None, today: date | None = None, statutory: list |
         warnings.append(f"Credit_Cards as_of_date is {age}d old")
     for t in txns:
         c = by_last4.get(t["card"])
-        if c and t["clearedOn"] and t["clearedOn"] == t["date"] and not t["stmtCovered"]:
-            warnings.append(f"card ·{t['card']}: {_fmt(t['amt'])} spend on {t['date']} is marked cleared the same day — "
-                            "card bills are paid after the statement; confirm it was really paid or clear cleared_on")
+        if c and t["sameDayIgnored"] and not t["clearedOn"] and not t["stmtCovered"]:
+            warnings.append(f"card ·{t['card']}: {_fmt(t['amt'])} spend on {t['date']} is marked cleared the same day — ignored "
+                            "(a card bill is paid later: add a 'Payment Received' row in Card_Txns or set stmt_paid_on)")
     for c in cards:
         if not c["stmtDay"] or not c["dueGapDays"]:
             warnings.append(f"card ·{c['last4']}: statement_day / due_gap_days not set — clear-by uses the 48-day rule only")
@@ -431,7 +484,11 @@ def delta_lines(block: dict | None, last: dict | None) -> list[str]:
     if "txnKeys" in last:
         seen, cleared_before = set(last["txnKeys"]), set(last.get("clearedKeys", []))
         holders = {c["last4"]: (c.get("holder") or "").split(" ")[0] for c in block["cards"]}
-        new_tx = [t for t in block["txns"] if _txn_key(t) not in seen]
+        new_all = [t for t in block["txns"] if _txn_key(t) not in seen]
+        for t in [x for x in new_all if x.get("isPayment")][:2]:
+            who = f"{holders.get(t['card'], '')} ·{t['card']}".strip()
+            lines.append(f"✅ card payment received {who} {_fmt(t['amt'])}")
+        new_tx = [t for t in new_all if not t.get("isPayment")]
         for t in new_tx[:3]:
             who = f"{holders.get(t['card'], '')} ·{t['card']}".strip()
             when = f", clear by {_dfmt(t['clearBy'])}" if t.get("clearBy") else ""

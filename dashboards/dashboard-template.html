@@ -3376,7 +3376,9 @@ body{
       + '<div class="cc-sec">Spend ledger</div><div class="cc-scroll"><table class="cc-tbl"><tr><th>Date</th><th>Card</th><th>Description</th><th>Category</th><th>Amount</th><th>Clear by</th><th>Pts</th></tr>'
       + txns.slice().sort(function(a, b){ return b.date < a.date ? -1 : b.date > a.date ? 1 : 0; }).map(function(t){
           var clr = t.clearBy ? ccFmtD(t.clearBy) : (t.clearedOn ? 'paid ' + ccFmtD(t.clearedOn) + ' ✓' : '—');
-          return '<tr><td>' + ccFmtD(t.date) + '</td><td>' + esc(ccLabel(t.card)) + '</td><td>' + esc(t.desc) + (t.stat ? ' <span class="tag tag-amber">statutory</span>' : '') + '</td><td>' + esc(t.cat) + '</td><td>' + fmt(t.amt) + '</td><td>' + clr + '</td><td>' + t.points + '</td></tr>';
+          if (t.isPayment) return '<tr><td>' + ccFmtD(t.date) + '</td><td>' + esc(ccLabel(t.card)) + '</td><td>' + esc(t.desc) + ' <span class="tag tag-green">bill paid</span></td><td>' + esc(t.cat) + '</td><td style="color:var(--green)">−' + fmt(t.amt) + '</td><td>—</td><td>—</td></tr>';
+          var spendRow = '<tr><td>' + ccFmtD(t.date) + '</td><td>' + esc(ccLabel(t.card)) + '</td><td>' + esc(t.desc) + (t.stat ? ' <span class="tag tag-amber">statutory</span>' : '') + '</td><td>' + esc(t.cat) + '</td><td>' + fmt(t.amt) + '</td><td>' + clr + '</td><td>' + t.points + '</td></tr>';
+          return spendRow;
         }).join('') + '</table></div>'
       + '<div class="cc-sec">How this feeds the numbers</div>'
       + '<div class="cc-note" style="background:var(--bg-secondary);border-color:var(--border)">'
